@@ -1,1528 +1,776 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+  <link rel="icon" type="image/png" sizes="32x32" href="logo_replica.png">
+  <link rel="shortcut icon" href="logo_replica.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="logo_replica.png">
+
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>REPLICA: An Agentic Framework for Visually Faithful Document Reconstruction</title>
-  <meta name="description" content="REPLICA — an agentic framework for converting documents into high-fidelity, layout-aware, semantically enriched HTML. Outperforms GPT-5 and Gemini 3 Pro." />
+  <meta name="description"
+    content="REPLICA — an agentic document-to-HTML framework achieving 93% visual fidelity, outperforming GPT-5 and Gemini 3 Pro on 15+ languages and document types." />
+  <meta property="og:title" content="REPLICA — ICDAR 2026" />
+  <meta property="og:description"
+    content="An Agentic Framework for Visually Faithful Document Reconstruction. ICDAR 2026." />
+  <meta property="og:type" content="website" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,wght@0,400;0,700;1,400&family=Noto+Sans:ital,wght@0,400;0,700;1,400&display=swap"
+    rel="stylesheet">
 
   <style>
-    /* ─────────────────────────────────────────────
-       TOKENS
-    ───────────────────────────────────────────── */
-    :root {
-      --ink:      #0f1117;
-      --ink-mid:  #3a3f50;
-      --ink-soft: #6b7280;
-      --paper:    #fafaf8;
-      --paper-alt:#f3f2ee;
-      --accent:   #c84b31;      /* warm red — echoes document archival */
-      --accent2:  #2d6a9f;      /* steel blue */
-      --accent3:  #3d8b5e;      /* muted green */
-      --gold:     #b5870a;
-      --border:   #e2ddd8;
-      --radius:   10px;
-      --serif: 'DM Serif Display', Georgia, serif;
-      --sans:  'DM Sans', system-ui, sans-serif;
+    /* ── Base ── */
+    body { font-family: 'Noto Sans', sans-serif; }
+    .title, h1, h2, h3, h4 { font-family: 'Google Sans', 'Noto Sans', sans-serif; }
+
+    /* ── Navbar ── */
+    .navbar { border-bottom: 1px solid #f0f0f0; }
+
+    /* ── Hero / Header ── */
+    .publication-header { background: #fff; }
+    .publication-title {
+      font-size: 2.1rem !important;
+      font-weight: 700;
+      line-height: 1.25;
     }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: var(--sans);
-      background: var(--paper);
-      color: var(--ink);
-      font-size: 16px;
-      line-height: 1.7;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    /* ─────────────────────────────────────────────
-       TOPBAR / NAVBAR
-    ───────────────────────────────────────────── */
-    .navbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(250,250,248,0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: 0 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 54px;
-    }
-
-    .navbar-brand {
-      font-family: var(--serif);
+    .publication-venue {
       font-size: 1.15rem;
-      color: var(--accent);
-      text-decoration: none;
-      letter-spacing: 0.04em;
-    }
-
-    .navbar-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
-
-    .navbar-links a {
-      font-size: 0.83rem;
-      font-weight: 500;
-      color: var(--ink-mid);
-      text-decoration: none;
-      letter-spacing: 0.02em;
-      transition: color 0.2s;
-    }
-
-    .navbar-links a:hover { color: var(--accent); }
-
-    /* ─────────────────────────────────────────────
-       HERO
-    ───────────────────────────────────────────── */
-    .hero {
-      padding: 4.5rem 1.5rem 3.5rem;
-      text-align: center;
-      border-bottom: 1px solid var(--border);
-      background: linear-gradient(160deg, #fefdfb 0%, #f5f3ee 100%);
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* decorative background stripes */
-    .hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(
-        -55deg,
-        transparent,
-        transparent 60px,
-        rgba(200,75,49,0.025) 60px,
-        rgba(200,75,49,0.025) 61px
-      );
-      pointer-events: none;
-    }
-
-    .venue-badge {
-      display: inline-block;
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--accent);
-      background: rgba(200,75,49,0.08);
-      border: 1px solid rgba(200,75,49,0.25);
-      border-radius: 4px;
-      padding: 0.25rem 0.8rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .hero-title {
-      font-family: var(--serif);
-      font-size: clamp(2rem, 4.5vw, 3.2rem);
-      line-height: 1.18;
-      max-width: 860px;
-      margin: 0 auto 0.5rem;
-      color: var(--ink);
-    }
-
-    .hero-title .replica-word {
-      color: var(--accent);
-    }
-
-    .hero-tagline {
-      font-size: 1.05rem;
-      color: var(--ink-soft);
-      max-width: 620px;
-      margin: 0 auto 0.5rem;
-      font-style: italic;
-    }
-
-    /* ─── Authors ─── */
-    .authors {
-      margin: 1.75rem auto 0;
-      max-width: 750px;
-      font-size: 0.93rem;
-      color: var(--ink-mid);
-      line-height: 2;
-    }
-
-    .author-name {
-      display: inline;
-      font-weight: 500;
-    }
-
-    .author-name a {
-      color: var(--ink-mid);
-      text-decoration: none;
-      border-bottom: 1px dotted var(--border);
-      transition: color 0.2s;
-    }
-
-    .author-name a:hover { color: var(--accent); }
-
-    sup { font-size: 0.7em; color: var(--accent); }
-
-    .affiliations {
-      margin-top: 0.4rem;
-      font-size: 0.85rem;
-      color: var(--ink-soft);
-    }
-
-    .equal-note {
-      font-size: 0.78rem;
-      color: var(--ink-soft);
-      margin-top: 0.3rem;
-      font-style: italic;
-    }
-
-    /* ─── Action buttons ─── */
-    .action-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      justify-content: center;
-      margin-top: 1.75rem;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      font-size: 0.82rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      padding: 0.5rem 1.1rem;
-      border-radius: 6px;
-      text-decoration: none;
-      border: 1.5px solid;
-      cursor: pointer;
-      transition: background 0.18s, color 0.18s, transform 0.15s;
-    }
-
-    .btn:hover { transform: translateY(-1px); }
-
-    .btn-primary {
-      background: var(--ink);
-      color: #fff;
-      border-color: var(--ink);
-    }
-
-    .btn-primary:hover { background: var(--accent); border-color: var(--accent); }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--ink-mid);
-      border-color: var(--border);
-    }
-
-    .btn-outline:hover { border-color: var(--ink-mid); color: var(--ink); }
-
-    .btn-disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
-
-    .soon-badge {
-      font-size: 0.65rem;
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      color: #856404;
       font-weight: 700;
-      padding: 1px 5px;
-      border-radius: 3px;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-
-    /* ─────────────────────────────────────────────
-       TEASER
-    ───────────────────────────────────────────── */
-    .teaser-section {
-      padding: 3rem 1.5rem;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-
-    /* ─────────────────────────────────────────────
-       GENERIC SECTION
-    ───────────────────────────────────────────── */
-    .section {
-      padding: 4rem 1.5rem;
-    }
-
-    .section-alt { background: var(--paper-alt); }
-
-    .container {
-      max-width: 880px;
-      margin: 0 auto;
-    }
-
-    .container-wide {
-      max-width: 1080px;
-      margin: 0 auto;
-    }
-
-    .section-title {
-      font-family: var(--serif);
-      font-size: 2rem;
-      text-align: center;
-      margin-bottom: 0.35rem;
-      color: var(--ink);
-    }
-
-    .section-sub {
-      text-align: center;
-      color: var(--ink-soft);
-      font-size: 0.95rem;
-      margin-bottom: 2.5rem;
-    }
-
-    /* ─────────────────────────────────────────────
-       FIGURE PLACEHOLDER
-    ───────────────────────────────────────────── */
-    .fig-wrap {
-      margin: 2rem 0;
-    }
-
-    .fig-placeholder {
-      background: #f0ede8;
-      border: 2px dashed #cdc9c2;
-      border-radius: var(--radius);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 320px;
-      color: #b0aaa1;
-      gap: 0.75rem;
-      padding: 2rem;
-    }
-
-    .fig-placeholder i { font-size: 2.5rem; opacity: 0.4; }
-    .fig-placeholder .fig-label {
-      font-size: 0.8rem;
-      font-family: monospace;
-      background: rgba(0,0,0,0.06);
-      padding: 2px 8px;
-      border-radius: 4px;
-    }
-
-    .fig-placeholder img {
-      max-width: 100%;
-      border-radius: 8px;
-    }
-
-    .fig-caption {
-      font-size: 0.875rem;
-      color: var(--ink-soft);
-      line-height: 1.65;
-      margin-top: 0.85rem;
-      text-align: center;
-    }
-
-    .fig-caption strong { color: var(--ink-mid); }
-
-    /* ─────────────────────────────────────────────
-       ABSTRACT
-    ───────────────────────────────────────────── */
-    .abstract-box {
-      font-size: 0.975rem;
-      line-height: 1.85;
-      color: var(--ink-mid);
-      max-width: 760px;
-      margin: 0 auto;
-    }
-
-    .abstract-box p + p { margin-top: 1rem; }
-
-    /* highlight stats inline */
-    .stat-inline {
-      font-weight: 700;
-      color: var(--accent);
-    }
-
-    /* ─────────────────────────────────────────────
-       KEY CONTRIBUTIONS
-    ───────────────────────────────────────────── */
-    .contribs-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-
-    .contrib-card {
-      background: #fff;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.3rem 1.25rem;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .contrib-card:hover {
-      border-color: var(--accent);
-      box-shadow: 0 4px 16px rgba(200,75,49,0.08);
-    }
-
-    .contrib-card .card-icon {
-      font-size: 1.5rem;
+      color: #3273dc;
       margin-bottom: 0.5rem;
-    }
-
-    .contrib-card h4 {
-      font-weight: 700;
-      font-size: 0.9rem;
-      margin-bottom: 0.35rem;
-      color: var(--ink);
-    }
-
-    .contrib-card p {
-      font-size: 0.82rem;
-      color: var(--ink-soft);
-      line-height: 1.6;
-    }
-
-    /* ─────────────────────────────────────────────
-       METHOD PIPELINE STAGES
-    ───────────────────────────────────────────── */
-    .pipeline-stages {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0;
-      margin: 2.5rem 0 0.5rem;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-
-    .stage {
-      padding: 1.5rem 1.1rem;
-      border-right: 1.5px solid var(--border);
-      position: relative;
-      background: #fff;
-      transition: background 0.2s;
-    }
-
-    .stage:last-child { border-right: none; }
-    .stage:hover { background: #f9f7f4; }
-
-    .stage-num {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      font-weight: 700;
-      font-size: 0.8rem;
-      color: #fff;
-      margin-bottom: 0.6rem;
-    }
-
-    .stage-1 .stage-num { background: var(--accent2); }
-    .stage-2 .stage-num { background: var(--accent3); }
-    .stage-3 .stage-num { background: var(--gold); }
-    .stage-4 .stage-num { background: var(--accent); }
-
-    .stage-name {
-      font-weight: 700;
-      font-size: 0.95rem;
-      margin-bottom: 0.35rem;
-    }
-
-    .stage-1 .stage-name { color: var(--accent2); }
-    .stage-2 .stage-name { color: var(--accent3); }
-    .stage-3 .stage-name { color: var(--gold); }
-    .stage-4 .stage-name { color: var(--accent); }
-
-    .stage p {
-      font-size: 0.8rem;
-      color: var(--ink-soft);
-      line-height: 1.55;
-    }
-
-    /* method agent rows */
-    .agent-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-top: 1.25rem;
-    }
-
-    .agent-card {
-      background: #fff;
-      border: 1.5px solid var(--border);
-      border-left: 4px solid;
-      border-radius: var(--radius);
-      padding: 1.1rem 1.2rem;
-    }
-
-    .agent-card.blue  { border-left-color: var(--accent2); }
-    .agent-card.green { border-left-color: var(--accent3); }
-    .agent-card.gold  { border-left-color: var(--gold); }
-    .agent-card.red   { border-left-color: var(--accent); }
-
-    .agent-card h4 {
-      font-size: 0.88rem;
-      font-weight: 700;
-      margin-bottom: 0.3rem;
-      color: var(--ink);
-    }
-
-    .agent-card p {
-      font-size: 0.8rem;
-      color: var(--ink-soft);
-      line-height: 1.6;
-    }
-
-    /* ─────────────────────────────────────────────
-       FID-HTML DIMENSIONS
-    ───────────────────────────────────────────── */
-    .dims-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.75rem;
-      margin-top: 1.75rem;
-    }
-
-    .dim-card {
-      background: #fff;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.1rem 1rem;
-      text-align: center;
-    }
-
-    .dim-num {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: var(--ink);
-      color: #fff;
-      font-size: 0.8rem;
-      font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 0.5rem;
-    }
-
-    .dim-card h4 { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.25rem; }
-    .dim-card p  { font-size: 0.78rem; color: var(--ink-soft); line-height: 1.5; }
-
-    /* ─────────────────────────────────────────────
-       RESULTS TABLE
-    ───────────────────────────────────────────── */
-    .table-wrap {
-      overflow-x: auto;
-      border-radius: var(--radius);
-      border: 1.5px solid var(--border);
-      margin-top: 1.75rem;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.83rem;
-    }
-
-    thead tr {
-      background: var(--ink);
-      color: #fff;
-    }
-
-    thead th {
-      padding: 0.7rem 0.8rem;
-      font-weight: 600;
       letter-spacing: 0.03em;
-      text-align: center;
-      white-space: nowrap;
+    }
+    .author-block a {
+      color: #363636;
+      text-decoration: none;
+      border-bottom: 1px dotted #aaa;
+    }
+    .author-block a:hover { color: #3273dc; border-color: #3273dc; }
+
+    /* ── Institution logos (header) ── */
+    .institution-logos {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+      padding: 1.25rem 1.5rem;
+      background: #f7f9ff;
+      border: 1px solid #e4ecff;
+      border-radius: 12px;
+    }
+    .institution-logos a {
+      display: inline-flex;
+      align-items: center;
+      opacity: 0.9;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .institution-logos a:hover { opacity: 1; transform: scale(1.05); }
+    .institution-logos img { height: 72px; width: auto; object-fit: contain; }
+
+    /* Logo placeholder (shown when image missing) */
+    .logo-placeholder {
+      height: 72px;
+      min-width: 120px;
+      background: #eef0f5;
+      border: 2px dashed #c0c8dc;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       font-size: 0.78rem;
+      color: #888;
+      font-family: monospace;
+      padding: 0 1rem;
     }
 
-    thead th:first-child { text-align: left; }
+    /* ── Sections ── */
+    .section-alt { background: #fafafa; }
 
-    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
-    tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: #f5f3ee; }
+    /* ── Teaser ── */
+    .teaser { padding: 1rem 1.5rem 2.5rem; }
+    .teaser img { border-radius: 8px; box-shadow: 0 4px 24px rgba(0,0,0,0.10); width: 100%; }
+    
+    .fig-img {
+      border-radius: 8px; 
+      width: 100%;
+      margin: 0 auto;
+      display: block;
+    }
 
-    td {
-      padding: 0.6rem 0.8rem;
+    /* ── Captions ── */
+    .fig-caption {
       text-align: center;
-      color: var(--ink-mid);
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 1rem;
+      line-height: 1.65;
     }
+    .fig-caption strong { color: #333; }
 
-    td:first-child { text-align: left; font-weight: 500; color: var(--ink); }
+    /* ── Abstract ── */
+    #abstract .content { font-size: 1rem; line-height: 1.8; color: #363636; }
 
+    /* ── Stat boxes ── */
+    .stat-box {
+      text-align: center;
+      background: #fff;
+      border: 1px solid #e4e4e4;
+      border-radius: 10px;
+      padding: 1.5rem 1rem;
+      height: 100%;
+    }
+    .stat-box .stat-num { font-size: 2rem; font-weight: 700; color: #3273dc; font-family: 'Google Sans', sans-serif; }
+    .stat-box .stat-lbl { font-size: 0.78rem; color: #777; margin-top: 0.2rem; line-height: 1.4; }
+
+    /* ── Pipeline stage cards ── */
+    .stage-card {
+      border-radius: 10px;
+      padding: 1.4rem;
+      height: 100%;
+      border: 1.5px solid #e8e8e8;
+      background: #fff;
+    }
+    .stage-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .stage-card p  { font-size: 0.85rem; color: #555; line-height: 1.65; }
+    .stage-card .stage-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; border-radius: 50%;
+      color: #fff; font-weight: 700; font-size: 0.78rem; margin-bottom: 0.6rem;
+    }
+    .stage-1 .stage-num { background: #3273dc; }
+    .stage-2 .stage-num { background: #48c78e; }
+    .stage-3 .stage-num { background: #f5a623; }
+    .stage-4 .stage-num { background: #e04a4a; }
+    .stage-1 h4 { color: #3273dc; }
+    .stage-2 h4 { color: #48c78e; }
+    .stage-3 h4 { color: #f5a623; }
+    .stage-4 h4 { color: #e04a4a; }
+
+    /* ── Results tables ── */
+    .result-table thead { background: #363636; }
+    .result-table thead th { color: white; }
+    .result-table tr.ours td { font-weight: 700; color: #3273dc; background: #eef3ff; }
+    .result-table { font-size: 0.85rem; }
+    .result-table td, .result-table th { text-align: center !important; vertical-align: middle !important; }
+    .result-table td:first-child, .result-table th:first-child { text-align: left !important; }
+    .sota {
+      background: #3273dc; color: white; font-size: 0.58rem; font-weight: 700;
+      padding: 1px 5px; border-radius: 3px; letter-spacing: .05em;
+      text-transform: uppercase; vertical-align: middle; margin-left: 4px;
+    }
+    .underline-val { text-decoration: underline; text-underline-offset: 3px; }
+
+    /* row group colours */
     .row-pipeline td:first-child { border-left: 3px solid #a8d5a2; }
     .row-expert   td:first-child { border-left: 3px solid #f4c874; }
     .row-gen      td:first-child { border-left: 3px solid #8ab4d8; }
     .row-s2html   td:first-child { border-left: 3px solid #c8a4d4; }
-    .row-ours td {
-      font-weight: 700;
-      color: var(--accent);
-      background: rgba(200,75,49,0.05);
-    }
-
-    .row-ours td:first-child { border-left: 3px solid var(--accent); }
-
-    .underline-val { text-decoration: underline; text-underline-offset: 3px; }
+    .row-ours td  { font-weight: 700; color: #3273dc; background: #eef3ff; }
+    .row-ours td:first-child { border-left: 3px solid #3273dc; }
 
     /* legend pills */
-    .legend-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-      justify-content: center;
-    }
-
+    .legend-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; justify-content: center; }
     .legend-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      font-size: 0.75rem;
-      color: var(--ink-mid);
-      padding: 0.2rem 0.65rem;
-      border-radius: 20px;
-      border: 1px solid var(--border);
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-size: 0.75rem; color: #555; padding: 0.2rem 0.65rem;
+      border-radius: 20px; border: 1px solid #ddd; background: #fff;
     }
+    .legend-dot { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
 
-    .legend-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 2px;
-      display: inline-block;
+    /* ── Fid-HTML dimension cards ── */
+    .dim-card {
+      background: #fff; border: 1px solid #e4e4e4; border-radius: 10px;
+      padding: 1.1rem; text-align: center; height: 100%;
     }
-
-    /* ─────────────────────────────────────────────
-       ABLATION TABLE
-    ───────────────────────────────────────────── */
-    .ablation-wrap {
-      overflow-x: auto;
-      border-radius: var(--radius);
-      border: 1.5px solid var(--border);
-      margin-top: 1.5rem;
+    .dim-num {
+      width: 26px; height: 26px; border-radius: 50%; background: #363636;
+      color: #fff; font-size: 0.78rem; font-weight: 700;
+      display: inline-flex; align-items: center; justify-content: center;
+      margin-bottom: 0.4rem;
     }
+    .dim-card h4 { font-size: 0.88rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .dim-card p  { font-size: 0.78rem; color: #666; line-height: 1.5; }
 
-    /* ─────────────────────────────────────────────
-       STAT BOXES
-    ───────────────────────────────────────────── */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
-      margin: 2rem 0;
-    }
-
-    .stat-box {
-      background: #fff;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem 1rem;
-      text-align: center;
-    }
-
-    .stat-box .stat-num {
-      font-family: var(--serif);
-      font-size: 2rem;
-      color: var(--accent);
-      line-height: 1.1;
-    }
-
-    .stat-box .stat-lbl {
-      font-size: 0.75rem;
-      color: var(--ink-soft);
-      margin-top: 0.2rem;
-      line-height: 1.4;
-    }
-
-    /* ─────────────────────────────────────────────
-       APPLICATIONS
-    ───────────────────────────────────────────── */
-    .apps-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-
+    /* ── Application cards ── */
     .app-card {
-      background: #fff;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
+      background: #fff; border: 1px solid #e4e4e4; border-radius: 10px;
+      padding: 1.25rem; height: 100%;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
-
-    .app-card:hover {
-      border-color: var(--accent2);
-      box-shadow: 0 4px 16px rgba(45,106,159,0.09);
-    }
-
-    .app-card .app-icon { font-size: 1.6rem; margin-bottom: 0.55rem; }
+    .app-card:hover { border-color: #3273dc; box-shadow: 0 4px 16px rgba(50,115,220,0.1); }
+    .app-card .app-icon { font-size: 1.5rem; margin-bottom: 0.45rem; }
     .app-card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.3rem; }
-    .app-card p  { font-size: 0.8rem; color: var(--ink-soft); line-height: 1.6; }
+    .app-card p  { font-size: 0.82rem; color: #666; line-height: 1.6; }
 
-    /* ─────────────────────────────────────────────
-       BENCHMARK CARD
-    ───────────────────────────────────────────── */
-    .bench-info {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-top: 1.5rem;
-    }
-
-    .bench-card {
-      background: #fff;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.4rem;
-    }
-
-    .bench-card h3 {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--accent2);
-      margin-bottom: 0.5rem;
-    }
-
-    .bench-card p {
-      font-size: 0.83rem;
-      color: var(--ink-soft);
-      line-height: 1.65;
-      margin-bottom: 0.75rem;
-    }
-
-    .bench-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.5rem;
-    }
-
-    .bench-stat {
-      background: var(--paper-alt);
-      border-radius: 6px;
-      padding: 0.55rem 0.7rem;
-      text-align: center;
-    }
-
-    .bench-stat .bnum { font-weight: 700; font-size: 1.1rem; color: var(--accent); }
-    .bench-stat .blbl { font-size: 0.72rem; color: var(--ink-soft); line-height: 1.3; }
-
-    /* ─────────────────────────────────────────────
-       BIBTEX
-    ───────────────────────────────────────────── */
-    .bibtex-wrap {
-      background: #1e1e2e;
-      border-radius: var(--radius);
-      overflow: hidden;
-      margin-top: 1.5rem;
-    }
-
+    /* ── BibTeX ── */
+    .bibtex-wrap { background: #1e1e2e; border-radius: 10px; overflow: hidden; margin-top: 1.5rem; }
     .bibtex-bar {
-      background: #13131f;
-      padding: 0.55rem 1.1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      background: #13131f; padding: 0.55rem 1.1rem;
+      display: flex; justify-content: space-between; align-items: center;
     }
-
-    .bibtex-bar span {
-      font-family: monospace;
-      font-size: 0.78rem;
-      color: #888;
-    }
-
+    .bibtex-bar span { font-family: monospace; font-size: 0.78rem; color: #888; }
     .bibtex-bar button {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.15);
-      color: #ccc;
-      border-radius: 4px;
-      padding: 0.2rem 0.7rem;
-      font-size: 0.75rem;
-      cursor: pointer;
-      font-family: var(--sans);
-      transition: background 0.18s;
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+      color: #ccc; border-radius: 4px; padding: 0.2rem 0.7rem; font-size: 0.75rem;
+      cursor: pointer; font-family: 'Noto Sans', sans-serif; transition: background 0.18s;
     }
-
-    .bibtex-bar button:hover { background: rgba(255,255,255,0.18); color: #fff; }
-
+    .bibtex-bar button:hover { background: rgba(255,255,255,0.2); color: #fff; }
     pre.bibtex-code {
-      padding: 1.25rem 1.4rem;
-      font-size: 0.82rem;
-      line-height: 1.75;
-      color: #cdd6f4;
-      white-space: pre-wrap;
-      word-break: break-all;
-      margin: 0;
-      font-family: 'Courier New', monospace;
+      padding: 1.25rem 1.4rem; font-size: 0.82rem; line-height: 1.75;
+      color: #cdd6f4; white-space: pre-wrap; word-break: break-all;
+      margin: 0; font-family: 'Courier New', monospace;
     }
 
-    .kw { color: #cba6f7; }
-    .str { color: #a6e3a1; }
-    .key { color: #89b4fa; }
+    /* ── Footer ── */
+    footer.footer { background: #fafafa; border-top: 1px solid #f0f0f0; }
+    footer .content { font-size: 0.87rem; color: #777; }
 
-    /* ─────────────────────────────────────────────
-       FOOTER
-    ───────────────────────────────────────────── */
-    footer {
-      background: var(--ink);
-      color: rgba(255,255,255,0.5);
-      text-align: center;
-      padding: 2rem 1.5rem;
-      font-size: 0.82rem;
-      line-height: 1.8;
+    /* footer logos */
+    .footer-logos {
+      display: flex; align-items: center; justify-content: center;
+      gap: 2rem; flex-wrap: wrap; margin-bottom: 1.25rem;
+    }
+    .footer-logos a {
+      display: inline-flex; align-items: center;
+      opacity: 0.7; transition: opacity 0.2s ease;
+    }
+    .footer-logos a:hover { opacity: 1; }
+    .footer-logos img { height: 36px; width: auto; object-fit: contain; }
+    .footer-logo-placeholder {
+      height: 36px; min-width: 90px; background: #eee; border: 1px dashed #ccc;
+      border-radius: 5px; display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.68rem; color: #aaa; font-family: monospace; padding: 0 0.5rem;
     }
 
-    footer a { color: rgba(255,255,255,0.7); text-decoration: none; }
-    footer a:hover { color: #fff; }
-
-    footer .footer-brand {
-      font-family: var(--serif);
-      font-size: 1.2rem;
-      color: var(--accent);
-      margin-bottom: 0.5rem;
+    /* ── Coming-soon badge ── */
+    .coming-soon {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      background: #fff3cd; border: 1px solid #ffc107; color: #856404;
+      font-size: 0.72rem; font-weight: 600; padding: 0.15rem 0.5rem;
+      border-radius: 4px; letter-spacing: 0.03em; text-transform: uppercase;
+      vertical-align: middle; margin-left: 4px;
     }
 
-    /* ─────────────────────────────────────────────
-       RESPONSIVE
-    ───────────────────────────────────────────── */
-    @media (max-width: 768px) {
-      .pipeline-stages { grid-template-columns: 1fr 1fr; }
-      .agent-row        { grid-template-columns: 1fr; }
-      .dims-grid        { grid-template-columns: 1fr 1fr; }
-      .stats-row        { grid-template-columns: 1fr 1fr; }
-      .apps-grid        { grid-template-columns: 1fr 1fr; }
-      .bench-info       { grid-template-columns: 1fr; }
-      .contribs-grid    { grid-template-columns: 1fr 1fr; }
-      .navbar-links     { display: none; }
-    }
-
-    @media (max-width: 480px) {
-      .pipeline-stages  { grid-template-columns: 1fr; }
-      .dims-grid        { grid-template-columns: 1fr; }
-      .stats-row        { grid-template-columns: 1fr 1fr; }
-      .apps-grid        { grid-template-columns: 1fr; }
-      .contribs-grid    { grid-template-columns: 1fr; }
-    }
-
-    /* ─── Agentic metric table ─── */
-    .metric-section-title {
-      font-weight: 600;
-      font-size: 0.82rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--ink-soft);
-      padding: 0.5rem 0.8rem;
-      background: var(--paper-alt);
-    }
-
-    .metric-section-title td { text-align: left; }
-
-    /* divider */
-    .divider {
-      width: 60px;
-      height: 3px;
-      background: var(--accent);
-      margin: 0.6rem auto 0;
-      border-radius: 2px;
+    /* ── Agentic metrics grouped table ── */
+    .metric-group-header td {
+      background: #f5f5f5 !important; font-weight: 700 !important;
+      font-size: 0.78rem !important; color: #555 !important;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      text-align: left !important;
     }
   </style>
 </head>
+
 <body>
 
-<!-- ══════════════════════════════════════════════
-     NAVBAR
-══════════════════════════════════════════════ -->
-<nav class="navbar">
-  <a href="#" class="navbar-brand">REPLICA</a>
-  <ul class="navbar-links">
-    <li><a href="#abstract">Abstract</a></li>
-    <li><a href="#method">Method</a></li>
-    <li><a href="#results">Results</a></li>
-    <li><a href="#applications">Applications</a></li>
-    <li><a href="#bibtex">BibTeX</a></li>
-  </ul>
-</nav>
-
-<!-- ══════════════════════════════════════════════
-     HERO
-══════════════════════════════════════════════ -->
-<header class="hero">
-  <div class="venue-badge">WACV 2026</div>
-
-  <h1 class="hero-title">
-    <span class="replica-word">REPLICA</span>: An Agentic Framework for<br>
-    Visually Faithful Document Reconstruction
-  </h1>
-  <p class="hero-tagline">Reconstructing multilingual documents into semantically enriched, layout-aware HTML with 93% visual fidelity</p>
-
-  <div class="authors">
-    <span class="author-name"><a href="#">Author One</a><sup>1,*</sup></span>,&ensp;
-    <span class="author-name"><a href="#">Author Two</a><sup>1,*</sup></span>,&ensp;
-    <span class="author-name"><a href="#">Author Three</a><sup>2,†</sup></span>,&ensp;
-    <span class="author-name"><a href="#">Author Four</a><sup>2,†</sup></span>,&ensp;
-    <span class="author-name"><a href="#">Author Five</a><sup>1,2</sup></span>
-    <div class="affiliations">
-      <sup>1</sup> Institution One &nbsp;&nbsp;&nbsp; <sup>2</sup> Institution Two
-    </div>
-    <div class="equal-note">
-      <sup>*</sup> Equal contribution &nbsp;&nbsp; <sup>†</sup> Equal contribution
-    </div>
-  </div>
-
-  <div class="action-row">
-    <a href="#" class="btn btn-primary">
-      <i class="fab fa-github"></i> Code
-    </a>
-    <a href="#" class="btn btn-outline">
-      🤗 HF Space
-    </a>
-    <span class="btn btn-outline btn-disabled">
-      <i class="fas fa-database"></i> Dataset &nbsp;<span class="soon-badge">Soon</span>
-    </span>
-    <span class="btn btn-outline btn-disabled">
-      <i class="fas fa-newspaper"></i> arXiv &nbsp;<span class="soon-badge">Soon</span>
-    </span>
-    <span class="btn btn-outline btn-disabled">
-      🤗 Models &nbsp;<span class="soon-badge">Soon</span>
-    </span>
-  </div>
-</header>
-
-<!-- ══════════════════════════════════════════════
-     TEASER FIGURE
-══════════════════════════════════════════════ -->
-<div class="teaser-section">
-  <div class="fig-wrap">
-    <div class="fig-placeholder">
-      <i class="fas fa-image"></i>
-      <div class="fig-label">Teaser_v2.pdf / Teaser figure</div>
-      <small>Replace with actual teaser image</small>
-    </div>
-    <p class="fig-caption">
-      <strong>(A) Visual fidelity comparison across four approaches:</strong> REPLICA, an open-source VLM (Qwen3-VL-30B), a commercial VLM (GPT-5), and a pipeline-based method (Marker). REPLICA faithfully preserves fine-grained layout cues — text color, paragraph indentation, font attributes, font size, and column structure.
-      <strong>(B) Radar plot of quantitative performance</strong> showing REPLICA's gains over baselines across Text Extraction (TE), Physical Structure (PS), Logical Structure (LS), and Visual Fidelity (VF).
-    </p>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════
-     ABSTRACT
-══════════════════════════════════════════════ -->
-<section class="section" id="abstract">
-  <div class="container">
-    <h2 class="section-title">Abstract</h2>
-    <div class="divider"></div>
-    <br>
-    <div class="abstract-box">
-      <p>
-        PDF documents integrate poorly with the web. To improve accessibility, they are frequently converted into HTML. Existing approaches for document-to-HTML conversion largely focus on retaining text and logical structure. However, the document's physical structure is not preserved — visual cues such as color and font style are overlooked, and design aspects such as content positioning are ignored.
-      </p>
-      <p>
-        To address these shortcomings, we introduce <strong>REPLICA</strong>, an agentic document-to-HTML framework that generates visually faithful, layout-aware, and semantically enriched HTML, which we refer to as <em>Fid-HTML</em>. Our approach generalises across diverse document types and multiple languages. For systematic evaluation, we introduce <strong>VFDR-Bench</strong>, spanning <span class="stat-inline">15 languages</span> and <span class="stat-inline">15+ document types</span>.
-      </p>
-      <p>
-        REPLICA achieves <span class="stat-inline">93% visual fidelity</span>, outperforming strong baselines including GPT-5 and Gemini 3 Pro. Notably, REPLICA with Qwen3-VL-8B achieves a <span class="stat-inline">39% gain overall</span> compared to Qwen3-VL-30B — despite being 3.75× smaller and operating at comparable inference time — highlighting the effectiveness of structured agentic design over brute-force scale. By preserving visual integrity and semantics in multilingual documents, REPLICA unlocks new possibilities for design-preserving translation, scalable access, and structured search.
-      </p>
-    </div>
-
-    <!-- Key contributions -->
-    <div class="contribs-grid">
-      <div class="contrib-card">
-        <div class="card-icon">📄</div>
-        <h4>Fid-HTML Format</h4>
-        <p>A new web-native format representing documents in high-fidelity HTML — semantically enriched and visually faithful.</p>
+  <nav class="navbar is-light" role="navigation" aria-label="main navigation">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item has-text-weight-semibold" href="#">REPLICA</a>
+        <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu">
+          <span></span><span></span><span></span>
+        </a>
       </div>
-      <div class="contrib-card">
-        <div class="card-icon">🤖</div>
-        <h4>REPLICA Framework</h4>
-        <p>An agentic pipeline for end-to-end page reconstruction: Segment, Localize, Assemble, and Refine.</p>
-      </div>
-      <div class="contrib-card">
-        <div class="card-icon">📊</div>
-        <h4>VFDR-Bench</h4>
-        <p>A benchmark spanning 15 languages and 15+ document types for evaluating fidelity in document-to-web conversion.</p>
-      </div>
-      <div class="contrib-card">
-        <div class="card-icon">📐</div>
-        <h4>New Metrics</h4>
-        <p>GPS, LPS, and VFS — new metrics for evaluating physical structure and visual fidelity in document reconstruction.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════
-     FID-HTML
-══════════════════════════════════════════════ -->
-<section class="section section-alt">
-  <div class="container">
-    <h2 class="section-title">Fid-HTML: A High-Fidelity Document Representation</h2>
-    <div class="divider"></div>
-    <p class="section-sub">A six-dimensional representation jointly preserving semantics and visual fidelity</p>
-
-    <div class="fig-wrap">
-      <div class="fig-placeholder">
-        <i class="fas fa-image"></i>
-        <div class="fig-label">fidhtml_diag_horizontal.pdf</div>
-        <small>Replace with Fid-HTML diagram</small>
-      </div>
-      <p class="fig-caption">
-        <strong>Fid-HTML: High-Fidelity Document Representation.</strong>
-        REPLICA encodes documents across six complementary dimensions to jointly preserve semantics and visual fidelity.
-      </p>
-    </div>
-
-    <div class="dims-grid">
-      <div class="dim-card">
-        <div class="dim-num">1</div>
-        <h4>Textual Content</h4>
-        <p>Complete text retained at both word and block level.</p>
-      </div>
-      <div class="dim-card">
-        <div class="dim-num">2</div>
-        <h4>Hierarchical Structure</h4>
-        <p>Nested <code>&lt;div&gt;</code> containers reflecting sections, subsections, and logical groupings.</p>
-      </div>
-      <div class="dim-card">
-        <div class="dim-num">3</div>
-        <h4>Semantic Tags</h4>
-        <p>Structured elements such as <code>&lt;li&gt;</code>, <code>&lt;table&gt;</code>, <code>&lt;tr&gt;</code>, <code>&lt;td&gt;</code> with meaningful class names.</p>
-      </div>
-      <div class="dim-card">
-        <div class="dim-num">4</div>
-        <h4>Positional Information</h4>
-        <p>Global placement via absolute positioning; local alignment via relative containers.</p>
-      </div>
-      <div class="dim-card">
-        <div class="dim-num">5</div>
-        <h4>Styling Metadata</h4>
-        <p>Font size, color, bold, italics, underline, and strikethrough preserved through inline CSS.</p>
-      </div>
-      <div class="dim-card">
-        <div class="dim-num">6</div>
-        <h4>Figures &amp; Backgrounds</h4>
-        <p>Images and page-level backgrounds layered into the DOM with VLM-generated alt-text for accessibility.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════
-     METHOD
-══════════════════════════════════════════════ -->
-<section class="section" id="method">
-  <div class="container-wide">
-    <h2 class="section-title">Method</h2>
-    <div class="divider"></div>
-    <p class="section-sub">REPLICA employs a divide-and-conquer strategy across four coordinated stages</p>
-
-    <div class="fig-wrap">
-      <div class="fig-placeholder" style="min-height: 380px;">
-        <i class="fas fa-image"></i>
-        <div class="fig-label">replica-agents-maindiag-final.pdf</div>
-        <small>Replace with pipeline diagram</small>
-      </div>
-      <p class="fig-caption">
-        <strong>Overview of REPLICA.</strong> The agentic framework constructs a hierarchical semantic layout
-        <strong>(1 Segment)</strong>, generates sub-HTML fragments via routed specialist agents
-        <strong>(2 Localize)</strong>, composes them with position- and reading-aware assembly
-        <strong>(3 Assemble)</strong>, and iteratively refines visual fidelity through font optimisation, background restoration, and VLM-based reflection <strong>(4 Refine)</strong>.
-      </p>
-    </div>
-
-    <!-- Four stage cards -->
-    <div class="pipeline-stages">
-      <div class="stage stage-1">
-        <div class="stage-num">1</div>
-        <div class="stage-name">Segment</div>
-        <p>Builds a semantically grounded layout tree using an ensemble of flat, hierarchical, and text-segmentation models. A Labeling Agent uses Set-of-Mark prompting; a Grouping Agent constructs the layout graph.</p>
-      </div>
-      <div class="stage stage-2">
-        <div class="stage-num">2</div>
-        <div class="stage-name">Localize</div>
-        <p>A Router Agent validates each region and dispatches it to specialist agents (text, table, image, form, list, equation). Conditional tool invocation — OCR, table structure recognition — is used only when needed.</p>
-      </div>
-      <div class="stage stage-3">
-        <div class="stage-num">3</div>
-        <div class="stage-name">Assemble</div>
-        <p>A Position-Aware Merge tool performs bottom-up merging over the layout tree. A Reading-Order Agent evaluates textual continuity to compute a semantically grounded ordering relation.</p>
-      </div>
-      <div class="stage stage-4">
-        <div class="stage-num">4</div>
-        <div class="stage-name">Refine</div>
-        <p>Font-size optimisation, background restoration, and a closed-loop Reflection Agent that compares rendered HTML against the source document and injects targeted CSS corrections until convergence.</p>
-      </div>
-    </div>
-
-    <!-- Agents detail -->
-    <h3 style="font-size: 1.1rem; font-weight: 700; margin: 2.5rem 0 0.5rem; text-align: center; color: var(--ink-mid);">
-      Agent &amp; Tool Breakdown
-    </h3>
-    <div class="agent-row">
-      <div class="agent-card blue">
-        <h4>🔵 Labeling Agent &amp; Grouping Agent (Segment)</h4>
-        <p>Assign semantic labels and construct nested layout trees from geometric proposals via Set-of-Mark prompting. Implemented with Qwen3-VL-8B-Instruct.</p>
-      </div>
-      <div class="agent-card green">
-        <h4>🟢 Router Agent &amp; Specialist Agents (Localize)</h4>
-        <p>The Router detects modality mismatches and overrides upstream labels. Six specialist agents handle text, tables, images, forms, lists, and equations — all Qwen3-VL-8B backbone.</p>
-      </div>
-      <div class="agent-card gold">
-        <h4>🟡 Reading-Order Agent (Assemble)</h4>
-        <p>Evaluates grammatical continuity and contextual coherence across block boundaries to autonomously correct spatial misalignments in complex multi-column layouts.</p>
-      </div>
-      <div class="agent-card red">
-        <h4>🔴 Reflection Agent (Refine)</h4>
-        <p>Iteratively compares rendered HTML R(H) against the source document image, detecting perceptual artifacts such as overlap or wrapping inconsistencies. Runs up to 5 correction iterations.</p>
-      </div>
-    </div>
-
-    <!-- Implementation details box -->
-    <div style="margin-top: 2rem; background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius); padding: 1.5rem 1.75rem;">
-      <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 1rem; color: var(--ink);">Implementation Details</h3>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-        <div>
-          <p style="font-size: 0.83rem; color: var(--ink-mid); line-height: 1.7;"><strong>Segment:</strong> Doclayout-YOLO-v10 (flat), IndicDLP-YOLO-v10 (hierarchical), Hi-SAM (text segmentation). IoU-based ensemble fusion.</p>
-          <p style="font-size: 0.83rem; color: var(--ink-mid); line-height: 1.7; margin-top: 0.6rem;"><strong>Localize:</strong> OCR via Gemma-3-4B-it · Word localisation via DocTR · Style extraction via TexTAR · Table grids via Surya TSR.</p>
-        </div>
-        <div>
-          <p style="font-size: 0.83rem; color: var(--ink-mid); line-height: 1.7;"><strong>Assemble:</strong> Coordinate-based reading order with top-to-bottom, left-to-right column handling.</p>
-          <p style="font-size: 0.83rem; color: var(--ink-mid); line-height: 1.7; margin-top: 0.6rem;"><strong>Refine:</strong> Font optimisation via textFit.js · Background inpainting via OpenCV · Reflection agent: Qwen3-VL-8B, max 5 iterations.</p>
+      <div id="navMenu" class="navbar-menu">
+        <div class="navbar-start" style="flex-grow:1; justify-content:center;">
+          <a class="navbar-item" href="#abstract">Abstract</a>
+          <a class="navbar-item" href="#fidhtml">Fid-HTML</a>
+          <a class="navbar-item" href="#method">Method</a>
+          <a class="navbar-item" href="#results">Results</a>
+          <a class="navbar-item" href="#applications">Applications</a>
+          <a class="navbar-item" href="#bibtex">BibTeX</a>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </nav>
 
-<!-- ══════════════════════════════════════════════
-     RESULTS
-══════════════════════════════════════════════ -->
-<section class="section section-alt" id="results">
-  <div class="container-wide">
-    <h2 class="section-title">Results</h2>
-    <div class="divider"></div>
-    <p class="section-sub">REPLICA sets a new state of the art across all four evaluation axes simultaneously</p>
+  <section class="hero publication-header">
+    <div class="hero-body">
+      <div class="container is-max-widescreen">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
 
-    <!-- Headline stats -->
-    <div class="stats-row">
-      <div class="stat-box">
-        <div class="stat-num">93%</div>
-        <div class="stat-lbl">Visual Fidelity (VFS)<br>vs. 86% for GPT-5</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num">0.86</div>
-        <div class="stat-lbl">Overall Score (all langs)<br>best among all baselines</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num">39%</div>
-        <div class="stat-lbl">Gain over Qwen3-VL-30B<br>at 3.75× smaller model</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num">15+</div>
-        <div class="stat-lbl">Languages evaluated<br>on VFDR-Bench</div>
-      </div>
-    </div>
+            <p class="publication-venue">ICDAR 2026</p>
 
-    <!-- VFDR-Bench description -->
-    <div class="bench-info">
-      <div class="bench-card">
-        <h3>📊 VFDR-Bench</h3>
-        <p>A benchmark for visually faithful document-to-web conversion, filling a gap not addressed by existing OCR or document-to-Markdown benchmarks. All ground-truth annotations are fully human-expert annotated.</p>
-        <div class="bench-stats">
-          <div class="bench-stat"><div class="bnum">5,000</div><div class="blbl">Documents</div></div>
-          <div class="bench-stat"><div class="bnum">15+</div><div class="blbl">Languages</div></div>
-          <div class="bench-stat"><div class="bnum">20+</div><div class="blbl">Document types</div></div>
-          <div class="bench-stat"><div class="bnum">4</div><div class="blbl">Evaluation axes</div></div>
+            <h1 class="title is-2 publication-title">
+              REPLICA: An Agentic Framework for<br>Visually Faithful Document Reconstruction
+            </h1>
+
+            <div class="is-size-5 publication-authors" style="margin-top:1.25rem; line-height:2;">
+              <span class="author-block">
+                <a href="#">Raghuveer R.</a><sup>1,*</sup>,&ensp;
+              </span>
+              <span class="author-block">
+                <a href="#">Hrithik Sagar</a><sup>1,*</sup>,&ensp;
+              </span>
+              <span class="author-block">
+                <a href="#">Anirudh Srinivasan</a><sup>1,†</sup>
+              </span>
+            </div>
+
+            <div style="margin-top:0.75rem; font-size:1rem; line-height:1.6;">
+              <div style="font-weight:600;">
+                <sup>1</sup> Centre for Visual Information Technology (CVIT), IIIT-H<br>
+                <sup>2</sup> BharatGen, TIH Foundation
+              </div>
+              <div style="font-size:0.9rem; color:#666;">
+                <sup>*</sup> Equal contribution &nbsp;&nbsp;&nbsp;
+                <sup>†</sup> Equal contribution
+              </div>
+            </div>
+
+            <div style="margin-top:1.75rem;">
+              <a href="#" class="button is-dark is-rounded" style="margin:0.2rem;">
+                <span class="icon"><i class="fab fa-github"></i></span><span>Code</span>
+              </a>
+              <a href="https://huggingface.co/spaces/REPLICA1895/REPLICA" target="_blank"
+                 class="button is-dark is-rounded" style="margin:0.2rem;">
+                <span class="icon">🤗</span><span>HF Space</span>
+              </a>
+              <span class="button is-dark is-rounded is-outlined"
+                    style="margin:0.2rem; opacity:0.65; cursor:default;" title="Coming soon">
+                <span class="icon"><i class="fas fa-database"></i></span>
+                <span>Dataset <span class="coming-soon">Soon</span></span>
+              </span>
+              <span class="button is-dark is-rounded is-outlined"
+                    style="margin:0.2rem; opacity:0.65; cursor:default;" title="Coming soon">
+                <span class="icon">🤗</span>
+                <span>Models <span class="coming-soon">Soon</span></span>
+              </span>
+              <span class="button is-dark is-rounded is-outlined"
+                    style="margin:0.2rem; opacity:0.65; cursor:default;" title="Coming soon">
+                <span class="icon"><i class="fas fa-newspaper"></i></span>
+                <span>arXiv <span class="coming-soon">Soon</span></span>
+              </span>
+            </div>
+
+            <div class="institution-logos">
+              <a href="https://icdar2026.org" target="_blank" rel="noopener" title="ICDAR 2026">
+                <img src="icdar2026_logo.png" alt="ICDAR 2026 logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';" />
+                <span class="logo-placeholder" style="display:none;">ICDAR 2026</span>
+              </a>
+              <a href="https://www.iiit.ac.in/" target="_blank" rel="noopener" title="IIIT Hyderabad">
+                <img src="iiith_logo.png" alt="IIIT-H logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';" />
+                <span class="logo-placeholder" style="display:none;">IIIT-H</span>
+              </a>
+              <a href="https://bharatgen.ai/" target="_blank" rel="noopener" title="BharatGen">
+                <img src="bharatgen_logo.png" alt="BharatGen logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';" />
+                <span class="logo-placeholder" style="display:none;">BharatGen</span>
+              </a>
+            </div>
+
+          </div>
         </div>
       </div>
-      <div class="bench-card">
-        <h3>📐 Evaluation Metrics</h3>
-        <p><strong>TE:</strong> Character Recognition Rate (CRR) and Word Recognition Rate (WRR).</p>
-        <p><strong>LS:</strong> Normalized Tree Edit Distance (NTED); TEDS for tables; CDM for formulas.</p>
-        <p><strong>PS:</strong> Global Position Score (GPS) and Local Position Score (LPS) — new F1-based spatial metrics.</p>
-        <p><strong>VF:</strong> Visual Fidelity Score (VFS) via VLM-as-a-judge on rendered HTML vs. ground truth.</p>
-      </div>
     </div>
+  </section>
 
-    <!-- Main results table -->
-    <h3 style="font-size: 1rem; font-weight: 700; margin: 2.25rem 0 0.75rem; color: var(--ink);">
-      Quantitative comparison on VFDR-Bench
-    </h3>
-
-    <div class="legend-row">
-      <span class="legend-pill"><span class="legend-dot" style="background:#a8d5a2;"></span> Pipeline Tools</span>
-      <span class="legend-pill"><span class="legend-dot" style="background:#f4c874;"></span> Expert VLMs</span>
-      <span class="legend-pill"><span class="legend-dot" style="background:#8ab4d8;"></span> General VLMs</span>
-      <span class="legend-pill"><span class="legend-dot" style="background:#c8a4d4;"></span> Screenshot2HTML</span>
-      <span class="legend-pill"><span class="legend-dot" style="background:var(--accent);"></span> REPLICA (Ours)</span>
-    </div>
-
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th rowspan="2" style="text-align:left; vertical-align:middle;">Method</th>
-            <th colspan="2">T.E.</th>
-            <th>L.S.</th>
-            <th colspan="2">P.S.</th>
-            <th>V.F.</th>
-            <th colspan="3">Overall</th>
-          </tr>
-          <tr>
-            <th>WRR ↑</th><th>CRR ↑</th>
-            <th>NTED ↓</th>
-            <th>LPS ↑</th><th>GPS ↑</th>
-            <th>VFS ↑</th>
-            <th>OS<sub>all</sub> ↑</th><th>OS<sub>en</sub> ↑</th><th>OS<sub>zh</sub> ↑</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="row-pipeline">
-            <td>Marker</td>
-            <td class="underline-val">0.68</td><td class="underline-val">0.82</td>
-            <td>0.61</td>
-            <td>0.19</td><td>0.34</td>
-            <td>0.74</td>
-            <td>0.53</td><td>0.60</td><td>0.45</td>
-          </tr>
-          <tr class="row-pipeline">
-            <td>Docling</td>
-            <td>0.40</td><td>0.49</td>
-            <td>0.62</td>
-            <td>0.17</td><td>0.26</td>
-            <td>0.55</td>
-            <td>0.38</td><td>0.45</td><td>0.12</td>
-          </tr>
-          <tr class="row-expert">
-            <td>rolmOCR</td>
-            <td>0.54</td><td>0.67</td>
-            <td>0.95</td>
-            <td>0.15</td><td>0.07</td>
-            <td>0.56</td>
-            <td>0.34</td><td>0.42</td><td>0.35</td>
-          </tr>
-          <tr class="row-expert">
-            <td>smolDocling</td>
-            <td>0.37</td><td>0.54</td>
-            <td>0.89</td>
-            <td>0.16</td><td>0.23</td>
-            <td>0.54</td>
-            <td>0.28</td><td>0.35</td><td>0.02</td>
-          </tr>
-          <tr class="row-expert">
-            <td>olmOCR</td>
-            <td>0.49</td><td>0.64</td>
-            <td>0.93</td>
-            <td>0.21</td><td>0.09</td>
-            <td>0.33</td>
-            <td>0.31</td><td>0.38</td><td>0.34</td>
-          </tr>
-          <tr class="row-expert">
-            <td>Nanonets-OCR-s</td>
-            <td>0.25</td><td>0.42</td>
-            <td>0.94</td>
-            <td>0.18</td><td>0.10</td>
-            <td>0.56</td>
-            <td>0.26</td><td>0.34</td><td>0.31</td>
-          </tr>
-          <tr class="row-expert">
-            <td>GOT-OCR-2.0</td>
-            <td>0.36</td><td>0.39</td>
-            <td>0.93</td>
-            <td>0.15</td><td>0.25</td>
-            <td>0.70</td>
-            <td>0.32</td><td>0.49</td><td>0.10</td>
-          </tr>
-          <tr class="row-expert">
-            <td>ChatDoc-OCRFlux</td>
-            <td>0.30</td><td>0.38</td>
-            <td>0.88</td>
-            <td>0.15</td><td>0.24</td>
-            <td>0.44</td>
-            <td>0.27</td><td>0.39</td><td>0.34</td>
-          </tr>
-          <tr class="row-gen">
-            <td>Qwen3-VL-30B</td>
-            <td>0.66</td><td>0.79</td>
-            <td>0.59</td>
-            <td class="underline-val">0.22</td><td>0.30</td>
-            <td>0.43</td>
-            <td>0.47</td><td>0.48</td><td>0.31</td>
-          </tr>
-          <tr class="row-gen">
-            <td>Gemma3</td>
-            <td>0.58</td><td>0.59</td>
-            <td>0.85</td>
-            <td>0.19</td><td>0.25</td>
-            <td>0.38</td>
-            <td>0.36</td><td>0.42</td><td>0.37</td>
-          </tr>
-          <tr class="row-gen">
-            <td>InternVL3</td>
-            <td>0.06</td><td>0.30</td>
-            <td>0.82</td>
-            <td>0.19</td><td>0.29</td>
-            <td>0.31</td>
-            <td>0.22</td><td>0.29</td><td>0.27</td>
-          </tr>
-          <tr class="row-gen">
-            <td>Gemini-2.5-Pro</td>
-            <td>0.67</td><td>0.42</td>
-            <td>0.56</td>
-            <td>0.14</td><td>0.31</td>
-            <td>0.82</td>
-            <td>0.47</td><td>0.47</td><td>0.30</td>
-          </tr>
-          <tr class="row-gen">
-            <td>GPT-5</td>
-            <td>0.65</td><td>0.79</td>
-            <td class="underline-val">0.49</td>
-            <td>0.21</td><td class="underline-val">0.43</td>
-            <td class="underline-val">0.86</td>
-            <td class="underline-val">0.58</td><td class="underline-val">0.62</td><td class="underline-val">0.50</td>
-          </tr>
-          <tr class="row-s2html">
-            <td>Webcode2m</td>
-            <td>0.33</td><td>0.45</td>
-            <td>0.82</td>
-            <td>0.15</td><td>0.29</td>
-            <td>0.39</td>
-            <td>0.30</td><td>0.42</td><td>0.13</td>
-          </tr>
-          <tr class="row-s2html">
-            <td>Waffle VLM Websight</td>
-            <td>0.14</td><td>0.42</td>
-            <td>0.84</td>
-            <td>0.11</td><td>0.29</td>
-            <td>0.19</td>
-            <td>0.22</td><td>0.27</td><td>0.11</td>
-          </tr>
-          <tr class="row-ours">
-            <td>REPLICA (Ours)</td>
-            <td>0.88</td><td>0.93</td>
-            <td>0.20</td>
-            <td>0.73</td><td>0.86</td>
-            <td>0.93</td>
-            <td>0.86</td><td>0.93</td><td>0.89</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Ablation table -->
-    <h3 style="font-size: 1rem; font-weight: 700; margin: 2.5rem 0 0.5rem; color: var(--ink);">
-      Framework Ablations
-    </h3>
-    <p style="font-size: 0.85rem; color: var(--ink-soft); margin-bottom: 0.75rem;">
-      Each row incrementally adds a component, demonstrating that high-quality reconstruction emerges from coordinated modular reasoning rather than any single stage.
-    </p>
-    <div class="ablation-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th style="text-align:left;">Configuration</th>
-            <th>OS ↑</th>
-            <th>VFS ↑</th>
-            <th>GPS ↑</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>Flat Layout (DLN only)</td><td>0.53</td><td>0.74</td><td>0.34</td></tr>
-          <tr><td>+ Hierarchical Layout (IDLP-DLN)</td><td>0.60</td><td>0.79</td><td>0.48</td></tr>
-          <tr><td>+ Hi-SAM (Full Segment)</td><td>0.67</td><td>0.82</td><td>0.63</td></tr>
-          <tr><td>+ SoM in Segment</td><td>0.71</td><td>0.85</td><td>0.69</td></tr>
-          <tr><td>+ Monolithic Localize (no Router &amp; Specialists)</td><td>0.76</td><td>0.88</td><td>0.72</td></tr>
-          <tr><td>+ Agentic Localize (Router + Specialists)</td><td>0.86</td><td>0.90</td><td>0.77</td></tr>
-          <tr><td>+ Font-Size Fix</td><td>0.89</td><td>0.92</td><td>0.79</td></tr>
-          <tr><td>+ Background Restore</td><td>0.90</td><td>0.93</td><td>0.80</td></tr>
-          <tr class="row-ours"><td>+ Reflection (Full REPLICA)</td><td>0.93</td><td>0.97</td><td>0.83</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Agentic reliability table -->
-    <h3 style="font-size: 1rem; font-weight: 700; margin: 2.5rem 0 0.5rem; color: var(--ink);">
-      Agentic &amp; Tool Reliability
-    </h3>
-    <div class="ablation-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th style="text-align:left;">Category</th>
-            <th style="text-align:left;">Metric</th>
-            <th>Score</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td colspan="3" style="background: var(--paper-alt); font-size:0.75rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color: var(--ink-soft); padding: 0.45rem 0.8rem;">Segment Agent</td></tr>
-          <tr><td></td><td style="text-align:left;">Agnostic Text F1 (AT-F1)</td><td>0.98</td></tr>
-          <tr><td></td><td style="text-align:left;">Agnostic Visual F1 (AV-F1)</td><td>0.99</td></tr>
-          <tr><td></td><td style="text-align:left;">Hierarchy Consistency (HC)</td><td>0.98</td></tr>
-          <tr><td colspan="3" style="background: var(--paper-alt); font-size:0.75rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color: var(--ink-soft); padding: 0.45rem 0.8rem;">Localize &amp; Reflection</td></tr>
-          <tr><td></td><td style="text-align:left;">Routing Accuracy (RA)</td><td>0.97</td></tr>
-          <tr><td></td><td style="text-align:left;">Sub-HTML Validity Rate (SVR)</td><td>0.96</td></tr>
-          <tr><td></td><td style="text-align:left;">Reflection Gain (RG)</td><td>+0.06</td></tr>
-          <tr><td colspan="3" style="background: var(--paper-alt); font-size:0.75rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color: var(--ink-soft); padding: 0.45rem 0.8rem;">Tools</td></tr>
-          <tr><td></td><td style="text-align:left;">Tool Call Success Rate (TCSR)</td><td>0.995</td></tr>
-          <tr><td></td><td style="text-align:left;">Reading Order Accuracy (ROA)</td><td>0.98</td></tr>
-          <tr><td></td><td style="text-align:left;">Font Fit Success (FFS)</td><td>0.97</td></tr>
-          <tr><td></td><td style="text-align:left;">Background Stitch Success (BSS)</td><td>0.96</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════
-     APPLICATIONS
-══════════════════════════════════════════════ -->
-<section class="section" id="applications">
-  <div class="container-wide">
-    <h2 class="section-title">Downstream Applications</h2>
-    <div class="divider"></div>
-    <p class="section-sub">Fid-HTML's semantic richness and spatial fidelity unlock applications previously out of reach</p>
-
-    <div class="fig-wrap">
-      <div class="fig-placeholder">
-        <i class="fas fa-image"></i>
-        <div class="fig-label">Teaser-Appl-new.drawio.png</div>
-        <small>Replace with applications figure</small>
-      </div>
+  <div class="teaser">
+    <div class="container is-max-desktop">
+      <img src="Teaser_v2.png" alt="REPLICA teaser" class="fig-img" onerror="this.outerHTML='<div class=\'fig-placeholder\' style=\'min-height:340px;\'><i class=\'fas fa-image\'></i><p>Teaser_v2.png Not Found</p><code>Teaser_v2.png</code><small>Please export your PDF to PNG</small></div>'">
+      
       <p class="fig-caption">
-        <strong>Downstream Applications of REPLICA enabled by Fid-HTML.</strong>
-        (A) Layout-Preserving Document Translation · (B) Document Preservation · (C) Indexing &amp; Searchability ·
-        (D) Grounded Document Intelligence · (E) Semantic Document Chunking for RAG · (F) Position-Aware Document Retrieval
+        <strong>(A) Comparison of visual fidelity across four approaches:</strong> REPLICA, an open-source VLM
+        (Qwen3-VL-30B), a commercial VLM (GPT-5), and a pipeline-based method (Marker). REPLICA faithfully
+        preserves fine-grained layout cues — text color, paragraph indentation, font attributes (bold, italics),
+        font size, and global structural properties such as the correct number of columns.
+        <strong>(B) Radar plot of quantitative performance</strong> showing REPLICA relative to baselines across
+        Text Extraction (TE), Physical Structure (PS), Logical Structure (LS), and Visual Fidelity (VF).
       </p>
     </div>
+  </div>
 
-    <div class="apps-grid">
-      <div class="app-card">
-        <div class="app-icon">🌐</div>
-        <h4>Layout-Preserving Translation</h4>
-        <p>Translated text flows naturally within the original visual boundaries, preserving paragraph continuity and column structure across languages.</p>
+  <section class="section" id="abstract">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Abstract</h2>
+          <div id="abstract" class="content has-text-justified">
+            <p>
+              PDF documents integrate poorly with the web. To improve accessibility, they are frequently converted
+              into HTML. Existing approaches for document-to-HTML conversion largely focus on retaining text and
+              logical structure. However, the document's physical structure is not preserved — visual cues such as
+              color and font style are overlooked, and design aspects such as content positioning are ignored.
+            </p>
+            <p>
+              To address these shortcomings, we introduce <strong>REPLICA</strong>, an agentic document-to-HTML
+              framework that generates visually faithful, layout-aware, and semantically enriched HTML, which we
+              refer to as <em>Fid-HTML</em>. Our approach generalises across diverse document types and multiple
+              languages. For systematic evaluation, we introduce <strong>VFDR-Bench</strong>, spanning
+              <strong>15 languages</strong> and <strong>15+ document types</strong>.
+            </p>
+            <p>
+              REPLICA achieves <strong>93% visual fidelity</strong>, outperforming strong baselines including
+              GPT-5 and Gemini 3 Pro. Notably, REPLICA with Qwen3-VL-8B achieves a <strong>39% gain overall</strong>
+              compared to Qwen3-VL-30B — despite being 3.75× smaller and operating at comparable inference time —
+              highlighting the effectiveness of structured agentic design over brute-force scale. By preserving
+              visual integrity and semantics in multilingual documents, REPLICA unlocks new possibilities for
+              design-preserving translation, scalable access, and structured search.
+            </p>
+          </div>
+        </div>
       </div>
-      <div class="app-card">
-        <div class="app-icon">🗄️</div>
-        <h4>Document Preservation</h4>
-        <p>Historic newspapers, magazines, and archival documents are digitised into accessible, searchable web-native formats without losing design intent.</p>
-      </div>
-      <div class="app-card">
-        <div class="app-icon">🔍</div>
-        <h4>Indexing &amp; Searchability</h4>
-        <p>Semantic tags and preserved reading order make content fully searchable and indexable by standard web infrastructure.</p>
-      </div>
-      <div class="app-card">
-        <div class="app-icon">🧠</div>
-        <h4>Grounded Document Intelligence</h4>
-        <p>Spatial and semantic metadata enable LLMs and VLMs to ground responses to precise document regions.</p>
-      </div>
-      <div class="app-card">
-        <div class="app-icon">📦</div>
-        <h4>Semantic Chunking for RAG</h4>
-        <p>Logical hierarchy and positional information produce high-quality semantic chunks for Retrieval Augmented Generation pipelines.</p>
-      </div>
-      <div class="app-card">
-        <div class="app-icon">📌</div>
-        <h4>Position-Aware Retrieval</h4>
-        <p>Absolute bounding boxes and reading order enable retrieval systems to locate and cite evidence at the exact position in a document.</p>
+
+      <div class="columns is-centered" style="margin-top:2rem;">
+        <div class="column is-2"><div class="stat-box"><div class="stat-num">93%</div><div class="stat-lbl">Visual Fidelity (VFS)</div></div></div>
+        <div class="column is-2"><div class="stat-box"><div class="stat-num">0.86</div><div class="stat-lbl">Overall Score (all languages)</div></div></div>
+        <div class="column is-2"><div class="stat-box"><div class="stat-num">39%</div><div class="stat-lbl">Gain over Qwen3-VL-30B at 3.75× smaller size</div></div></div>
+        <div class="column is-2"><div class="stat-box"><div class="stat-num">15+</div><div class="stat-lbl">Languages on VFDR-Bench</div></div></div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ══════════════════════════════════════════════
-     BIBTEX
-══════════════════════════════════════════════ -->
-<section class="section section-alt" id="bibtex">
-  <div class="container">
-    <h2 class="section-title">BibTeX</h2>
-    <div class="divider"></div>
-    <p class="section-sub">If you find REPLICA useful in your research, please cite:</p>
+  <section class="section section-alt" id="fidhtml">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Fid-HTML: A High-Fidelity Document Representation</h2>
 
-    <div class="bibtex-wrap">
-      <div class="bibtex-bar">
-        <span>replica_wacv2026.bib</span>
-        <button onclick="copyBibtex(this)"><i class="far fa-copy"></i>&nbsp; Copy</button>
+      <div style="margin:1.5rem 0;">
+        <img src="fidhtml_diag_horizontal.png" alt="Fid-HTML diagram" class="fig-img" onerror="this.outerHTML='<div class=\'fig-placeholder\' style=\'min-height:260px;\'><i class=\'fas fa-image\'></i><p>fidhtml_diag_horizontal.png Not Found</p><code>fidhtml_diag_horizontal.png</code><small>Please export your PDF to PNG</small></div>'">
+        <p class="fig-caption">
+          <strong>Fid-HTML: High-Fidelity Document Representation.</strong>
+          REPLICA encodes documents across six complementary dimensions to jointly preserve semantics and visual fidelity.
+        </p>
       </div>
-      <pre class="bibtex-code" id="bibtex-text"><span class="kw">@inproceedings</span>{<span class="str">replica2026</span>,
-  <span class="key">title</span>     = {REPLICA: An Agentic Framework for Visually Faithful
+
+      <div class="columns is-multiline" style="margin-top:1.5rem;">
+        <div class="column is-one-third"><div class="dim-card"><div class="dim-num">1</div><h4>Textual Content</h4><p>Complete text retained at both word and block level.</p></div></div>
+        <div class="column is-one-third"><div class="dim-card"><div class="dim-num">2</div><h4>Hierarchical Structure</h4><p>Nested <code>&lt;div&gt;</code> containers reflecting sections, subsections, and logical groupings.</p></div></div>
+        <div class="column is-one-third"><div class="dim-card"><div class="dim-num">3</div><h4>Semantic Tags</h4><p>Structured elements such as <code>&lt;li&gt;</code>, <code>&lt;table&gt;</code>, <code>&lt;tr&gt;</code>, <code>&lt;td&gt;</code> with meaningful class names.</p></div></div>
+        <div class="column is-one-third"><div class="dim-card"><div class="dim-num">4</div><h4>Positional Information</h4><p>Global placement via absolute positioning; local alignment via relative containers and <code>&lt;p&gt;</code> wrappers.</p></div></div>
+        <div class="column is-one-third"><div class="dim-card"><div class="dim-num">5</div><h4>Styling Metadata</h4><p>Font size, color, bold, italics, underline, and strikethrough preserved as inline CSS.</p></div></div>
+        <div class="column is-one-third"><div class="dim-card"><div class="dim-num">6</div><h4>Figures &amp; Backgrounds</h4><p>Images and page-level backgrounds layered into the DOM with VLM-generated alt-text for accessibility.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="method">
+    <div class="container is-max-widescreen">
+      <h2 class="title is-3 has-text-centered">Method</h2>
+
+      <div style="margin:1.5rem 0 2rem;">
+        <img src="replica-agents-maindiag-final.png" alt="Pipeline diagram" class="fig-img" onerror="this.outerHTML='<div class=\'fig-placeholder\' style=\'min-height:360px;\'><i class=\'fas fa-image\'></i><p>replica-agents-maindiag-final.png Not Found</p><code>replica-agents-maindiag-final.png</code><small>Please export your PDF to PNG</small></div>'">
+        <p class="fig-caption">
+          <strong>Overview of REPLICA.</strong>
+          The agentic framework constructs a hierarchical semantic layout
+          <strong>(1 Segment)</strong>, generates sub-HTML fragments via routed specialist agents
+          <strong>(2 Localize)</strong>, composes them with position- and reading-aware assembly
+          <strong>(3 Assemble)</strong>, and iteratively refines visual fidelity through font optimisation,
+          background restoration, and VLM-based reflection <strong>(4 Refine)</strong>, producing a
+          high-fidelity final HTML document.
+        </p>
+      </div>
+
+      <div class="columns">
+        <div class="column">
+          <div class="stage-card stage-1">
+            <div class="stage-num">1</div>
+            <h4>Segment</h4>
+            <p>Builds a semantically grounded layout tree using an ensemble of flat, hierarchical, and text-segmentation detectors. A <em>Labeling Agent</em> uses Set-of-Mark prompting to assign semantic attributes; a <em>Grouping Agent</em> constructs the nested layout graph. For digitally-born PDFs, a structured parser extracts bounding boxes, text, and font metadata directly.</p>
+          </div>
+        </div>
+        <div class="column">
+          <div class="stage-card stage-2">
+            <div class="stage-num">2</div>
+            <h4>Localize</h4>
+            <p>A <em>Router Agent</em> validates each region's semantic type and dispatches it to one of six specialist agents (text, table, image, form, list, equation). Agents invoke auxiliary tools — OCR, table structure recognition, style extraction — only when needed, enabling parallel sub-HTML generation.</p>
+          </div>
+        </div>
+        <div class="column">
+          <div class="stage-card stage-3">
+            <div class="stage-num">3</div>
+            <h4>Assemble</h4>
+            <p>A <em>Position-Aware Merge</em> tool performs bottom-up merging over the layout tree. A <em>Reading-Order Agent</em> evaluates textual continuity across block boundaries to compute a semantically grounded ordering relation, ensuring coherent flow even in multi-column layouts.</p>
+          </div>
+        </div>
+        <div class="column">
+          <div class="stage-card stage-4">
+            <div class="stage-num">4</div>
+            <h4>Refine</h4>
+            <p>Font-size optimisation and background restoration are handled by deterministic tools. A <em>Reflection Agent</em> then compares rendered HTML against the source document in a closed loop, injecting targeted CSS corrections (e.g. <code>shape-outside</code>, padding) until visual alignment converges (max 5 iterations).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="notification is-light" style="margin-top:2rem;">
+        <h3 class="title is-5" style="margin-bottom:0.75rem;">Implementation Details</h3>
+        <div class="columns">
+          <div class="column">
+            <p style="font-size:0.88rem; line-height:1.75;">
+              <strong>Segment:</strong> Doclayout-YOLO-v10 (flat layouts) · IndicDLP-YOLO-v10 (hierarchical) · Hi-SAM (text segmentation) · IoU-based ensemble fusion · Qwen3-VL-8B-Instruct for labeling and grouping.
+            </p>
+            <p style="font-size:0.88rem; line-height:1.75; margin-top:0.5rem;">
+              <strong>Localize:</strong> All specialist agents use Qwen3-VL-8B · OCR via Gemma-3-4B-it · Word localisation via DocTR · Style extraction via TexTAR · Table grids via Surya TSR.
+            </p>
+          </div>
+          <div class="column">
+            <p style="font-size:0.88rem; line-height:1.75;">
+              <strong>Assemble:</strong> Coordinate-based reading order with top-to-bottom, left-to-right column handling.
+            </p>
+            <p style="font-size:0.88rem; line-height:1.75; margin-top:0.5rem;">
+              <strong>Refine:</strong> Font sizes optimised via textFit.js with Hi-SAM bounding box constraints · Backgrounds reconstructed via OpenCV inpainting · Reflection agent: Qwen3-VL-8B, <code>max_iterations=5</code>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="results">
+    <div class="container is-max-widescreen">
+      <h2 class="title is-3 has-text-centered">Results</h2>
+
+      <div class="columns is-centered" style="margin-bottom:1.5rem;">
+        <div class="column is-four-fifths">
+          <div class="notification is-info is-light">
+            <strong>VFDR-Bench</strong> — a benchmark for visually faithful document-to-web conversion spanning
+            5,000 documents, 15+ languages, 20+ document categories, with fully human-expert-annotated ground truth
+            covering all four evaluation axes: Text Extraction (TE), Logical Structure (LS), Physical Structure (PS),
+            and Visual Fidelity (VF).
+          </div>
+        </div>
+      </div>
+
+      <div class="legend-row">
+        <span class="legend-pill"><span class="legend-dot" style="background:#a8d5a2;"></span> Pipeline Tools</span>
+        <span class="legend-pill"><span class="legend-dot" style="background:#f4c874;"></span> Expert VLMs</span>
+        <span class="legend-pill"><span class="legend-dot" style="background:#8ab4d8;"></span> General VLMs</span>
+        <span class="legend-pill"><span class="legend-dot" style="background:#c8a4d4;"></span> Screenshot2HTML</span>
+        <span class="legend-pill"><span class="legend-dot" style="background:#3273dc;"></span> REPLICA (Ours)</span>
+      </div>
+
+      <div class="table-container">
+        <table class="table is-bordered is-hoverable is-fullwidth result-table">
+          <thead>
+            <tr>
+              <th rowspan="2" style="text-align:left; vertical-align:middle; color:white;">Method</th>
+              <th colspan="2" style="color:white;">T.E.</th>
+              <th rowspan="2" style="color:white; vertical-align:middle;">L.S.<br><small>NTED ↓</small></th>
+              <th colspan="2" style="color:white;">P.S.</th>
+              <th rowspan="2" style="color:white; vertical-align:middle;">V.F.<br><small>VFS ↑</small></th>
+              <th colspan="3" style="color:white;">Overall Score</th>
+            </tr>
+            <tr>
+              <th style="color:white;">WRR ↑</th><th style="color:white;">CRR ↑</th>
+              <th style="color:white;">LPS ↑</th><th style="color:white;">GPS ↑</th>
+              <th style="color:white;">OS<sub>all</sub> ↑</th>
+              <th style="color:white;">OS<sub>en</sub> ↑</th>
+              <th style="color:white;">OS<sub>zh</sub> ↑</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="row-pipeline"><td>Marker</td><td class="underline-val">0.68</td><td class="underline-val">0.82</td><td>0.61</td><td>0.19</td><td>0.34</td><td>0.74</td><td>0.53</td><td>0.60</td><td>0.45</td></tr>
+            <tr class="row-pipeline"><td>Docling</td><td>0.40</td><td>0.49</td><td>0.62</td><td>0.17</td><td>0.26</td><td>0.55</td><td>0.38</td><td>0.45</td><td>0.12</td></tr>
+            <tr class="row-expert"><td>rolmOCR</td><td>0.54</td><td>0.67</td><td>0.95</td><td>0.15</td><td>0.07</td><td>0.56</td><td>0.34</td><td>0.42</td><td>0.35</td></tr>
+            <tr class="row-expert"><td>smolDocling</td><td>0.37</td><td>0.54</td><td>0.89</td><td>0.16</td><td>0.23</td><td>0.54</td><td>0.28</td><td>0.35</td><td>0.02</td></tr>
+            <tr class="row-expert"><td>olmOCR</td><td>0.49</td><td>0.64</td><td>0.93</td><td>0.21</td><td>0.09</td><td>0.33</td><td>0.31</td><td>0.38</td><td>0.34</td></tr>
+            <tr class="row-expert"><td>Nanonets-OCR-s</td><td>0.25</td><td>0.42</td><td>0.94</td><td>0.18</td><td>0.10</td><td>0.56</td><td>0.26</td><td>0.34</td><td>0.31</td></tr>
+            <tr class="row-expert"><td>GOT-OCR-2.0</td><td>0.36</td><td>0.39</td><td>0.93</td><td>0.15</td><td>0.25</td><td>0.70</td><td>0.32</td><td>0.49</td><td>0.10</td></tr>
+            <tr class="row-expert"><td>ChatDoc-OCRFlux</td><td>0.30</td><td>0.38</td><td>0.88</td><td>0.15</td><td>0.24</td><td>0.44</td><td>0.27</td><td>0.39</td><td>0.34</td></tr>
+            <tr class="row-gen"><td>Qwen3-VL-30B</td><td>0.66</td><td>0.79</td><td>0.59</td><td class="underline-val">0.22</td><td>0.30</td><td>0.43</td><td>0.47</td><td>0.48</td><td>0.31</td></tr>
+            <tr class="row-gen"><td>Gemma3</td><td>0.58</td><td>0.59</td><td>0.85</td><td>0.19</td><td>0.25</td><td>0.38</td><td>0.36</td><td>0.42</td><td>0.37</td></tr>
+            <tr class="row-gen"><td>InternVL3</td><td>0.06</td><td>0.30</td><td>0.82</td><td>0.19</td><td>0.29</td><td>0.31</td><td>0.22</td><td>0.29</td><td>0.27</td></tr>
+            <tr class="row-gen"><td>Gemini-2.5-Pro</td><td>0.67</td><td>0.42</td><td>0.56</td><td>0.14</td><td>0.31</td><td>0.82</td><td>0.47</td><td>0.47</td><td>0.30</td></tr>
+            <tr class="row-gen"><td>GPT-5</td><td>0.65</td><td>0.79</td><td class="underline-val">0.49</td><td>0.21</td><td class="underline-val">0.43</td><td class="underline-val">0.86</td><td class="underline-val">0.58</td><td class="underline-val">0.62</td><td class="underline-val">0.50</td></tr>
+            <tr class="row-s2html"><td>Webcode2m</td><td>0.33</td><td>0.45</td><td>0.82</td><td>0.15</td><td>0.29</td><td>0.39</td><td>0.30</td><td>0.42</td><td>0.13</td></tr>
+            <tr class="row-s2html"><td>Waffle VLM Websight</td><td>0.14</td><td>0.42</td><td>0.84</td><td>0.11</td><td>0.29</td><td>0.19</td><td>0.22</td><td>0.27</td><td>0.11</td></tr>
+            <tr class="ours row-ours">
+              <td><strong>REPLICA (Ours)</strong> <span class="sota">SOTA</span></td>
+              <td><strong>0.88</strong></td><td><strong>0.93</strong></td>
+              <td><strong>0.20</strong></td>
+              <td><strong>0.73</strong></td><td><strong>0.86</strong></td>
+              <td><strong>0.93</strong></td>
+              <td><strong>0.86</strong></td><td><strong>0.93</strong></td><td><strong>0.89</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="title is-4 has-text-centered" style="margin-top:3rem;">Framework Ablations</h3>
+      <p class="has-text-centered" style="color:#666; margin-bottom:1rem; font-size:0.9rem;">
+        Performance improves consistently with each modular component, validating the agentic decomposition.
+      </p>
+      <div class="table-container">
+        <table class="table is-bordered is-hoverable is-fullwidth result-table">
+          <thead>
+            <tr>
+              <th style="text-align:left; color:white;">Configuration</th>
+              <th style="color:white;">OS ↑</th>
+              <th style="color:white;">VFS ↑</th>
+              <th style="color:white;">GPS ↑</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Flat Layout (DLN only)</td><td>0.53</td><td>0.74</td><td>0.34</td></tr>
+            <tr><td>+ Hierarchical Layout (IDLP-DLN)</td><td>0.60</td><td>0.79</td><td>0.48</td></tr>
+            <tr><td>+ Hi-SAM (Full Segment)</td><td>0.67</td><td>0.82</td><td>0.63</td></tr>
+            <tr><td>+ SoM in Segment</td><td>0.71</td><td>0.85</td><td>0.69</td></tr>
+            <tr><td>+ Monolithic Localize (no Router &amp; Specialists)</td><td>0.76</td><td>0.88</td><td>0.72</td></tr>
+            <tr><td>+ Agentic Localize (Router + Specialists)</td><td>0.86</td><td>0.90</td><td>0.77</td></tr>
+            <tr><td>+ Font-Size Fix</td><td>0.89</td><td>0.92</td><td>0.79</td></tr>
+            <tr><td>+ Background Restore</td><td>0.90</td><td>0.93</td><td>0.80</td></tr>
+            <tr class="ours"><td><strong>+ Reflection (Full REPLICA)</strong></td><td><strong>0.93</strong></td><td><strong>0.97</strong></td><td><strong>0.83</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="title is-4 has-text-centered" style="margin-top:3rem;">Agentic &amp; Tool Reliability</h3>
+      <div class="table-container">
+        <table class="table is-bordered is-hoverable is-fullwidth result-table">
+          <thead>
+            <tr>
+              <th style="text-align:left; color:white;">Category</th>
+              <th style="text-align:left; color:white;">Metric</th>
+              <th style="color:white;">Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="metric-group-header"><td colspan="3">Segment Agent</td></tr>
+            <tr><td></td><td style="text-align:left;">Agnostic Text F1 (AT-F1)</td><td>0.98</td></tr>
+            <tr><td></td><td style="text-align:left;">Agnostic Visual F1 (AV-F1)</td><td>0.99</td></tr>
+            <tr><td></td><td style="text-align:left;">Hierarchy Consistency (HC)</td><td>0.98</td></tr>
+            <tr class="metric-group-header"><td colspan="3">Localize &amp; Reflection Agents</td></tr>
+            <tr><td></td><td style="text-align:left;">Routing Accuracy (RA)</td><td>0.97</td></tr>
+            <tr><td></td><td style="text-align:left;">Sub-HTML Validity Rate (SVR)</td><td>0.96</td></tr>
+            <tr><td></td><td style="text-align:left;">Reflection Gain (RG)</td><td>+0.06</td></tr>
+            <tr class="metric-group-header"><td colspan="3">Tools</td></tr>
+            <tr><td></td><td style="text-align:left;">Tool Call Success Rate (TCSR)</td><td>0.995</td></tr>
+            <tr><td></td><td style="text-align:left;">Reading Order Accuracy (ROA)</td><td>0.98</td></tr>
+            <tr><td></td><td style="text-align:left;">Font Fit Success (FFS)</td><td>0.97</td></tr>
+            <tr><td></td><td style="text-align:left;">Background Stitch Success (BSS)</td><td>0.96</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="applications">
+    <div class="container is-max-widescreen">
+      <h2 class="title is-3 has-text-centered">Downstream Applications</h2>
+      <p class="has-text-centered" style="color:#666; margin-bottom:1.5rem;">
+        Fid-HTML's semantic richness and spatial fidelity unlock applications previously out of reach.
+      </p>
+
+      <div style="margin-bottom:2rem;">
+        <img src="applications.png" alt="Applications figure" class="fig-img" onerror="this.outerHTML='<div class=\'fig-placeholder\' style=\'min-height:280px;\'><i class=\'fas fa-image\'></i><p>applications.png Not Found</p><code>applications.png</code></div>'">
+        <p class="fig-caption">
+          <strong>Downstream Applications of REPLICA enabled by Fid-HTML.</strong>
+          (A) Layout-Preserving Document Translation &nbsp;·&nbsp;
+          (B) Document Preservation &nbsp;·&nbsp;
+          (C) Indexing &amp; Searchability &nbsp;·&nbsp;
+          (D) Grounded Document Intelligence &nbsp;·&nbsp;
+          (E) Semantic Document Chunking for RAG &nbsp;·&nbsp;
+          (F) Position-Aware Document Retrieval
+        </p>
+      </div>
+
+      <div class="columns is-multiline">
+        <div class="column is-one-third"><div class="app-card"><div class="app-icon">🌐</div><h4>Layout-Preserving Translation</h4><p>Translated text flows within the original visual boundaries, preserving paragraph continuity and column structure across languages.</p></div></div>
+        <div class="column is-one-third"><div class="app-card"><div class="app-icon">🗄️</div><h4>Document Preservation</h4><p>Historic newspapers, magazines, and archival documents are digitised into accessible, searchable web-native formats without losing design intent.</p></div></div>
+        <div class="column is-one-third"><div class="app-card"><div class="app-icon">🔍</div><h4>Indexing &amp; Searchability</h4><p>Semantic tags and preserved reading order make content fully searchable and indexable by standard web infrastructure.</p></div></div>
+        <div class="column is-one-third"><div class="app-card"><div class="app-icon">🧠</div><h4>Grounded Document Intelligence</h4><p>Spatial and semantic metadata enable LLMs and VLMs to ground responses to precise document regions.</p></div></div>
+        <div class="column is-one-third"><div class="app-card"><div class="app-icon">📦</div><h4>Semantic Chunking for RAG</h4><p>Logical hierarchy and positional information produce high-quality semantic chunks for Retrieval Augmented Generation pipelines.</p></div></div>
+        <div class="column is-one-third"><div class="app-card"><div class="app-icon">📌</div><h4>Position-Aware Retrieval</h4><p>Absolute bounding boxes and reading order enable retrieval systems to locate and cite evidence at the exact position in a document.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="bibtex">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3 has-text-centered">BibTeX</h2>
+          <p class="has-text-centered" style="color:#666; margin-bottom:1.25rem;">
+            If you find REPLICA useful in your research, please cite:
+          </p>
+          <div class="bibtex-wrap">
+            <div class="bibtex-bar">
+              <span>replica_icdar2026.bib</span>
+              <button onclick="copyBibtex(this)">
+                <i class="far fa-copy"></i>&ensp;Copy
+              </button>
+            </div>
+            <pre class="bibtex-code" id="bibtex-text">@inproceedings{replica2026,
+  title     = {REPLICA: An Agentic Framework for Visually Faithful
                Document Reconstruction},
-  <span class="key">author</span>    = {Author One and Author Two and Author Three and
-               Author Four and Author Five},
-  <span class="key">booktitle</span> = {Proceedings of the IEEE/CVF Winter Conference on
-               Applications of Computer Vision (WACV)},
-  <span class="key">year</span>      = {2026},
+  author    = {R., Raghuveer and Sagar, Hrithik and Srinivasan, Anirudh},
+  booktitle = {Proceedings of the International Conference on Document Analysis and Recognition (ICDAR)},
+  year      = {2026},
 }</pre>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ══════════════════════════════════════════════
-     FOOTER
-══════════════════════════════════════════════ -->
-<footer>
-  <div class="footer-brand">REPLICA</div>
-  <p>An Agentic Framework for Visually Faithful Document Reconstruction &nbsp;·&nbsp; WACV 2026</p>
-  <p style="margin-top: 0.5rem;">
-    Website template adapted from
-    <a href="https://nerfies.github.io" target="_blank">Nerfies</a> and
-    <a href="https://m3grounder.github.io" target="_blank">M3Grounder</a>.
-    Licensed under
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a>.
-  </p>
-</footer>
+  <footer class="footer">
+    <div class="container">
+      <div class="content has-text-centered">
 
-<script>
-  // Navbar burger (mobile — no Bulma needed)
-  function copyBibtex(btn) {
-    const raw = document.getElementById('bibtex-text').innerText;
-    navigator.clipboard.writeText(raw).then(() => {
-      btn.innerHTML = '<i class="fas fa-check"></i>&nbsp; Copied!';
-      setTimeout(() => btn.innerHTML = '<i class="far fa-copy"></i>&nbsp; Copy', 2200);
+        <div class="footer-logos">
+          <a href="https://icdar2026.org" target="_blank" rel="noopener" title="ICDAR 2026">
+            <img src="icdar2026_logo.png" alt="ICDAR 2026 logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';" />
+            <span class="footer-logo-placeholder" style="display:none;">ICDAR 2026</span>
+          </a>
+          <a href="https://www.iiit.ac.in/" target="_blank" rel="noopener" title="IIIT Hyderabad">
+            <img src="iiith_logo.png" alt="IIIT-H logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';" />
+            <span class="footer-logo-placeholder" style="display:none;">IIIT-H</span>
+          </a>
+          <a href="https://bharatgen.ai/" target="_blank" rel="noopener" title="BharatGen">
+            <img src="bharatgen_logo.png" alt="BharatGen logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';" />
+            <span class="footer-logo-placeholder" style="display:none;">BharatGen</span>
+          </a>
+        </div>
+
+        <p>
+          This page was built using the
+          <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project
+            Page Template</a>
+          which was adopted from the <a href="https://nerfies.github.io" target="_blank">Nerfies</a> project page.
+          <br>
+          You are free to borrow the source code of this website; we just ask that you link back to this page in the footer.
+          <br>
+          This website is licensed under a
+          <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">
+            Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+        </p>
+
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Navbar burger toggle
+    document.querySelectorAll('.navbar-burger').forEach(el => {
+      el.addEventListener('click', () => {
+        document.getElementById(el.dataset.target).classList.toggle('is-active');
+        el.classList.toggle('is-active');
+      });
     });
-  }
 
-  // Smooth scroll
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-      const t = document.querySelector(a.getAttribute('href'));
-      if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    // Copy BibTeX
+    function copyBibtex(btn) {
+      const text = document.getElementById('bibtex-text').innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        btn.innerHTML = '<i class="fas fa-check"></i>&ensp;Copied!';
+        setTimeout(() => btn.innerHTML = '<i class="far fa-copy"></i>&ensp;Copy', 2200);
+      });
+    }
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      });
     });
-  });
+  </script>
 
-  // Subtle scroll-in animation
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.style.opacity = '1';
-        e.target.style.transform = 'translateY(0)';
-      }
-    });
-  }, { threshold: 0.08 });
-
-  document.querySelectorAll(
-    '.contrib-card, .dim-card, .app-card, .agent-card, .stat-box, .bench-card'
-  ).forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(18px)';
-    el.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
-    observer.observe(el);
-  });
-</script>
 </body>
 </html>
