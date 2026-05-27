@@ -437,7 +437,7 @@
   <section class="teaser">
     <div class="container is-max-desktop">
       <div class="teaser-card">
-        <img src="https://placehold.co/1200x500/F8F9FA/31343C?text=REPLICA+Teaser:+Comparison+of+Visual+Fidelity+and+Radar+Plot" alt="REPLICA teaser figure">
+        <img src="Teaser_v2.png" alt="REPLICA teaser figure">
         <p class="fig-caption">
           <strong><span class="circnum">A</span> Comparison of visual fidelity across four approaches:</strong> our method REPLICA, an open-source Vision-Language Model (Qwen3-VL-30B), a commercial Vision-Language Model (GPT-5), and a pipeline-based method (Marker). Note that REPLICA faithfully preserves fine-grained layout cues - such as text color, paragraph indentation, font attributes (e.g., bold and italics), font size, and even global structural properties like the correct number of columns.<br><br>
           <strong><span class="circnum">B</span> Radar plot of quantitative performance:</strong> showing the performance of REPLICA relative to baselines. Unlike other baselines, REPLICA reliably preserves all key document aspects after conversion - TE (Text Extraction), PS (Physical Structure), LS (Logical Structure), and VF (Visual Fidelity).
@@ -495,7 +495,7 @@
       </div>
 
       <div class="figure-container">
-        <img src="https://placehold.co/1200x500/F8F9FA/31343C?text=Downstream+Applications+of+REPLICA" alt="Applications of REPLICA">
+        <img src="applications.png" alt="Applications of REPLICA">
         <p class="fig-caption has-text-centered">
           <strong>Downstream Applications of REPLICA enabled by Fid-HTML:</strong> <span class="circnum">A</span> Layout-Preserving Document Translation, <span class="circnum">B</span> Document Preservation, <span class="circnum">C</span> Indexing &amp; Searchability, <span class="circnum">D</span> Grounded Document Intelligence, <span class="circnum">E</span> Semantic Document Chunking for RAG, <span class="circnum">F</span> Position-Aware Document Retrieval.
         </p>
@@ -515,7 +515,7 @@
       </div>
 
       <div class="figure-container">
-        <img src="https://placehold.co/1000x400/F8F9FA/31343C?text=Fid-HTML+Structure+Diagram" alt="Fid-HTML Diagram">
+        <img src="fidhtml_dia_horizontal.png" alt="Fid-HTML Diagram">
         <p class="fig-caption">
           <strong>Fid-HTML</strong> is the enriched output format of REPLICA. The representation encodes:
           <span class="circnum">1</span> <em>Textual content</em>;
@@ -621,7 +621,7 @@
       </div>
 
       <div class="figure-container">
-        <img src="https://placehold.co/1200x500/F8F9FA/31343C?text=REPLICA+Agentic+Framework+Pipeline" alt="REPLICA Pipeline">
+        <img src="replica-agents-maindiag-final.png" alt="REPLICA Pipeline">
         <p class="fig-caption">
           <strong>Overview of REPLICA:</strong> The agentic framework constructs a hierarchical semantic layout (<span class="circnum">1</span> Segment), generates sub-HTML fragments via routed specialist-agents (<span class="circnum">2</span> Localize), composes them with position- and reading-aware assembly (<span class="circnum">3</span> Assemble), and iteratively refines visual fidelity through font optimization, background restoration, and VLM-based reflection (<span class="circnum">4</span> Refine).
         </p>
