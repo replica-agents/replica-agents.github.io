@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>REPLICA: An Agentic Framework for Visually Faithful Document Reconstruction</title>
+  <meta name="description"
+    content="REPLICA: An Agentic Framework for Visually Faithful Document Reconstruction. Converting visually rich documents into high-fidelity, web-native HTML." />
+  <meta property="og:title" content="REPLICA" />
+  <meta property="og:description"
+    content="REPLICA converts visually rich documents into high-fidelity, web-native HTML preserving logic, layout, and styling." />
+  <meta property="og:type" content="website" />
+
+  <link rel="icon" type="image/png" sizes="32x32" href="https://placehold.co/32x32/4f46e5/ffffff?text=R">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://placehold.co/16x16/4f46e5/ffffff?text=R">
+  <link rel="shortcut icon" href="https://placehold.co/32x32/4f46e5/ffffff?text=R">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body);"></script>
+
+  <style>
+    /* ── CSS Custom Variables (Design System) ── */
+    :root {
+      --primary: #4f46e5;         /* Indigo 600 */
+      --primary-dark: #3730a3;    /* Indigo 800 */
+      --primary-light: #e0e7ff;   /* Indigo 100 */
+      --accent: #f59e0b;          /* Saffron Gold */
+      --accent-dark: #d97706;     /* Saffron Dark */
+      --accent-light: #fef3c7;    /* Saffron Light */
+      --bg-dark: #0f172a;         /* Slate 900 */
+      --bg-dark-accent: #1e293b;  /* Slate 800 */
+      --bg-light: #fafafa;        /* Very Light Gray */
+      --text-dark: #1e293b;       /* Slate 800 */
+      --text-light: #f8fafc;      /* Slate 50 */
+      --text-muted: #64748b;      /* Slate 500 */
+      --border-color: #e2e8f0;    /* Slate 200 */
+      --font-title: 'Outfit', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'Fira Code', monospace;
+    }
+
+    /* ── Base Reset ── */
+    body {
+      font-family: var(--font-body);
+      color: var(--text-dark);
+      background-color: #ffffff;
+      line-height: 1.7;
+    }
+
+    .title, .subtitle, h1, h2, h3, h4, h5 {
+      font-family: var(--font-title);
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .has-text-accent {
+      color: var(--accent) !important;
+    }
+
+    /* ── Navbar ── */
+    .navbar {
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      font-weight: 500;
+    }
+    
+    .navbar-item {
+      transition: color 0.2s ease;
+    }
+    
+    .navbar-item:hover {
+      color: var(--primary) !important;
+    }
+
+    /* ── Hero / Header ── */
+    .publication-header {
+      background: linear-gradient(135deg, var(--bg-dark) 0%, #1e1b4b 100%);
+      color: var(--text-light);
+      padding: 5rem 1.5rem 4rem;
+      position: relative;
+    }
+    
+    .publication-header .title {
+      color: var(--text-light);
+      font-size: 2.8rem;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+    
+    .publication-header .subtitle {
+      color: #94a3b8;
+      font-size: 1.3rem;
+      font-weight: 500;
+      margin-top: 1rem !important;
+    }
+
+    .publication-venue {
+      font-family: var(--font-title);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+    }
+
+    .author-block {
+      display: inline-block;
+      margin: 0.3rem 0.6rem;
+      font-size: 1.05rem;
+      font-weight: 500;
+    }
+
+    .author-block a {
+      color: #e2e8f0;
+      border-bottom: 1px dotted #64748b;
+      transition: all 0.2s ease;
+    }
+
+    .author-block a:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .affiliations {
+      margin-top: 1.25rem;
+      font-size: 0.95rem;
+      color: #cbd5e1;
+    }
+
+    .affiliations span {
+      margin: 0 0.75rem;
+    }
+
+    .author-notes {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-top: 0.5rem;
+    }
+
+    .header-buttons {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .header-buttons .button {
+      font-family: var(--font-title);
+      font-weight: 600;
+      border-radius: 9999px;
+      padding: 0.6rem 1.5rem;
+      height: auto;
+      transition: all 0.2s ease;
+    }
+
+    .button.is-primary-accent {
+      background-color: var(--accent);
+      color: var(--bg-dark);
+      border: none;
+    }
+
+    .button.is-outline-white {
+      background-color: transparent;
+      color: var(--text-light);
+      border: 2px solid #475569;
+    }
+
+    /* ── Sections ── */
+    .section {
+      padding: 5rem 1.5rem;
+    }
+    
+    .section-alt {
+      background-color: var(--bg-light);
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .section-title {
+      font-size: 2.2rem;
+      margin-bottom: 3rem;
+      position: relative;
+      padding-bottom: 0.75rem;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 4px;
+      background-color: var(--accent);
+      border-radius: 2px;
+    }
+
+    /* ── Teaser ── */
+    .teaser {
+      padding: 3rem 1.5rem;
+      background-color: #ffffff;
+    }
+
+    .teaser-card {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border-color);
+      padding: 1.5rem;
+      transition: transform 0.3s ease;
+    }
+
+    .teaser-card img {
+      width: 100%;
+      border-radius: 8px;
+      display: block;
+    }
+
+    .fig-caption {
+      margin-top: 1.5rem;
+      font-size: 0.95rem;
+      color: #475569;
+      line-height: 1.6;
+      text-align: justify;
+    }
+
+    /* ── Content Formatting ── */
+    .content-box {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);
+      margin-bottom: 2rem;
+    }
+
+    .figure-container {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+      margin-bottom: 2.5rem;
+    }
+
+    .figure-container img {
+      border-radius: 8px;
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* ── Tables ── */
+    .table-container {
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow-x: auto;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+      background: #ffffff;
+      margin-bottom: 2rem;
+    }
+
+    .table {
+      font-size: 0.9rem;
+      margin-bottom: 0 !important;
+    }
+
+    .table th {
+      background-color: var(--bg-dark);
+      color: var(--text-light) !important;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      vertical-align: middle !important;
+      text-align: center !important;
+    }
+
+    .table tr.ours-row td {
+      font-weight: 700;
+      background-color: #fef3c7 !important;
+      color: #92400e !important;
+    }
+
+    /* ── BibTeX ── */
+    .bibtex-wrap {
+      background: #0f172a;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      border: 1px solid #1e293b;
+    }
+
+    .bibtex-bar {
+      background: #1e293b;
+      color: #94a3b8;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+    }
+
+    pre.bibtex-code {
+      padding: 1.5rem;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      background: #0f172a;
+      color: #e2e8f0;
+      margin: 0;
+      font-family: var(--font-mono);
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    /* ── Utilities ── */
+    .circnum {
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      width: 1.5rem;
+      height: 1.5rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: bold;
+      margin-right: 0.3rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar is-white is-fixed-top" role="navigation" aria-label="main navigation">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item has-text-weight-bold" href="#" style="font-family: var(--font-title); font-size: 1.25rem;">
+          <img src="https://placehold.co/32x32/4f46e5/ffffff?text=R" alt="Logo" style="margin-right: 0.5rem; max-height: 2rem;">
+          REPLICA
+        </a>
+        <a role="button" class="navbar-burger" data-target="navMenu" aria-label="menu" aria-expanded="false">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
+      <div id="navMenu" class="navbar-menu">
+        <div class="navbar-end">
+          <a class="navbar-item" href="#abstract">Abstract</a>
+          <a class="navbar-item" href="#representation">Fid-HTML</a>
+          <a class="navbar-item" href="#methodology">Approach</a>
+          <a class="navbar-item" href="#results">Results</a>
+          <a class="navbar-item" href="#bibtex">BibTeX</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero publication-header" style="margin-top: 3.25rem;">
+    <div class="hero-body">
+      <div class="container has-text-centered">
+        <h1 class="title">
+          REPLICA: An Agentic Framework for Visually Faithful Document Reconstruction
+        </h1>
+        
+        <div class="publication-authors" style="margin-top: 2rem;">
+          <span class="author-block">
+            <a href="#">R Raghuveer</a><sup>1,*</sup>,
+          </span>
+          <span class="author-block">
+            <a href="#">Anirudh Srinivasan</a><sup>1,*</sup>,
+          </span>
+          <span class="author-block">
+            <a href="#">Venkata Kesav Venna</a><sup>1,*</sup>,
+          </span>
+          <span class="author-block">
+            <a href="#">Tallapragada Shanmukha Sreevatsa</a><sup>2</sup>,
+          </span><br>
+          <span class="author-block">
+            <a href="#">Aryan Jain</a><sup>2</sup>,
+          </span>
+          <span class="author-block">
+            <a href="#">Sahithi Kukkala</a><sup>2</sup>,
+          </span>
+          <span class="author-block">
+            <a href="#">Ravi Kiran Sarvadevabhatla</a><sup>2</sup>
+          </span>
+        </div>
+
+        <div class="affiliations">
+          <span><sup>1</sup> BharatGen</span>
+          <span><sup>2</sup> IIIT Hyderabad</span>
+        </div>
+
+        <div class="author-notes">
+          <sup>*</sup> Equal Contribution
+        </div>
+
+        <div class="header-buttons">
+          <a href="#" target="_blank" class="button is-outline-white">
+            <span class="icon"><i class="fab fa-github"></i></span>
+            <span>Code</span>
+          </a>
+          <a href="#" target="_blank" class="button is-outline-white">
+            <span class="icon">🤗</span>
+            <span>HuggingFace Demo</span>
+          </a>
+          <a href="#" class="button is-outline-white">
+            <span class="icon"><i class="fas fa-file-pdf"></i></span>
+            <span>Paper</span>
+          </a>
+        </div>
+        <div class="header-buttons" style="margin-top: 2.5rem; gap: 2rem; align-items: center;">          
+          <a href="https://www.bharatgen.ai/" target="_blank" rel="noopener noreferrer" style="transition: transform 0.2s ease; display: inline-block;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+            <img src="bgen_logo.png" alt="BharatGen logo" style="border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+          </a>
+          
+          <a href="https://www.iiit.ac.in/" target="_blank" rel="noopener noreferrer" style="transition: transform 0.2s ease; display: inline-block;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+            <img src="iiith_logo.jpeg" alt="IIIT Hyderabad logo" style="border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+          </a>
+
+          <a href="https://icdar.org/" target="_blank" rel="noopener noreferrer" style="transition: transform 0.2s ease; display: inline-block;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+            <img src="icdar_logo.png" alt="ICDAR logo" style="border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="teaser">
+    <div class="container is-max-desktop">
+      <div class="teaser-card">
+        <img src="Teaser_v2.png" alt="REPLICA teaser figure">
+        <p class="fig-caption">
+          <strong><span class="circnum">A</span> Comparison of visual fidelity across four approaches:</strong> our method REPLICA, an open-source Vision-Language Model (Qwen3-VL-30B), a commercial Vision-Language Model (GPT-5), and a pipeline-based method (Marker). Note that REPLICA faithfully preserves fine-grained layout cues - such as text color, paragraph indentation, font attributes (e.g., bold and italics), font size, and even global structural properties like the correct number of columns.<br><br>
+          <strong><span class="circnum">B</span> Radar plot of quantitative performance:</strong> showing the performance of REPLICA relative to baselines. Unlike other baselines, REPLICA reliably preserves all key document aspects after conversion - TE (Text Extraction), PS (Physical Structure), LS (Logical Structure), and VF (Visual Fidelity).
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="abstract">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="section-title">Abstract</h2>
+        </div>
+      </div>
+
+      <div class="content-box">
+        <div class="content has-text-justified">
+          <p>
+            PDF documents integrate poorly with the web. To improve accessibility, they are frequently converted into HTML. Existing approaches for document-to-HTML conversion largely focus on retaining text and logical structure. However, the document's physical structure is not preserved. Visual cues such as color, font style are overlooked and design aspects such as content positioning are ignored. 
+          </p>
+          <p>
+            To address these shortcomings, we introduce <strong>REPLICA</strong>, an agentic document-to-HTML framework that generates visually faithful, layout-aware, and semantically enriched HTML which we refer as <strong>Fid-HTML</strong>. Our approach generalizes across diverse document types and multiple languages. For systematic evaluation, we introduce <strong>VFDR-Bench</strong> spanning 15 languages, and 15+ document types. 
+          </p>
+          <p>
+            REPLICA achieves 93% visual fidelity, outperforming strong baselines including GPT-5 and Gemini 3 Pro. Notably, REPLICA with Qwen3-VL-8B achieves a 39% gain overall as compared to Qwen3-VL-30B, despite being 3.75&times; smaller and operating at comparable inference time, highlighting the effectiveness of structured agentic design over brute-force scale. By preserving visual integrity and semantics in multilingual documents, REPLICA unlocks new possibilities for design-preserving translation, scalable access, and structured search.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column">
+          <h2 class="section-title">Introduction</h2>
+        </div>
+      </div>
+
+      <div class="content-box">
+        <p class="has-text-justified">
+          PDFs preserve documents with precise control over layout, typography, and visual styling. Yet this fidelity often vanishes when converted for the web. Traditional OCR engines process page images to recover plain text, discarding layout, typography, and styling. Other workflows convert PDFs to alternate formats such as Markdown. PDF parsers extract text or lightweight markup directly from the PDF’s internal structure but still lose structural hierarchy (e.g., multi-column layouts), fine-grained formatting, and much of the visual and spatial identity.
+        </p>
+        <p class="has-text-justified">
+          To overcome these limitations, we introduce <strong>REPLICA</strong>, an agentic framework that generates <strong>Fid-HTML</strong> - semantically enriched, layout-aware HTML preserving text, logical structure, physical layout, and visual fidelity. Beyond plain rendering, it embeds semantic layout classes and spatial cues, directly addressing the layout, typography, and styling losses of prior methods.
+        </p>
+        <h4 class="title is-5" style="margin-top: 1.5rem;">Key Contributions:</h4>
+        <ul style="list-style-type: disc; padding-left: 2rem;">
+          <li><strong>Fid-HTML</strong>, a new web-native format that represents documents in high-fidelity HTML, which is both semantically enriched and preserves visual and spatial fidelity.</li>
+          <li><strong>REPLICA</strong>, an agentic framework for end-to-end page reconstruction that segments, localizes, assembles, and refines content to produce Fid-HTML.</li>
+          <li><strong>VFDR-Bench</strong>, a benchmark for evaluating fidelity and robustness in document-to-web conversion.</li>
+          <li>A suite of new evaluation metrics: Global Position Score (GPS), Local Position Score (LPS), and Visual Fidelity Score (VFS).</li>
+        </ul>
+      </div>
+
+      <div class="figure-container">
+        <img src="applications.png" alt="Applications of REPLICA">
+        <p class="fig-caption has-text-centered">
+          <strong>Downstream Applications of REPLICA enabled by Fid-HTML:</strong> <span class="circnum">A</span> Layout-Preserving Document Translation, <span class="circnum">B</span> Document Preservation, <span class="circnum">C</span> Indexing &amp; Searchability, <span class="circnum">D</span> Grounded Document Intelligence, <span class="circnum">E</span> Semantic Document Chunking for RAG, <span class="circnum">F</span> Position-Aware Document Retrieval.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="representation">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column">
+          <h2 class="section-title">Fid-HTML: A High-Fidelity Representation</h2>
+          <p class="subtitle" style="margin-bottom: 3rem;">
+            Preserving both the semantic structure and visual presentation of a document.
+          </p>
+        </div>
+      </div>
+
+      <div class="figure-container">
+        <img src="fidhtml_diag_horizontal.png" alt="Fid-HTML Diagram">
+        <p class="fig-caption">
+          <strong>Fid-HTML</strong> is the enriched output format of REPLICA. The representation encodes:
+          <span class="circnum">1</span> <em>Textual content</em>;
+          <span class="circnum">2</span> <em>Hierarchical structure</em>;
+          <span class="circnum">3</span> <em>Semantic tags</em>;
+          <span class="circnum">4</span> <em>Positional information</em>;
+          <span class="circnum">5</span> <em>Styling metadata</em>; and
+          <span class="circnum">6</span> <em>Figures and backgrounds</em>.
+        </p>
+      </div>
+
+      <h3 class="title is-4" style="margin-bottom: 1rem;">Comparison of Document Representation Formats</h3>
+      <div class="table-container">
+        <table class="table is-striped is-hoverable is-fullwidth">
+          <thead>
+            <tr>
+              <th rowspan="2">Format Type</th>
+              <th colspan="2">Text Extraction</th>
+              <th colspan="5">Logical Structure</th>
+              <th colspan="2">Physical Structure</th>
+              <th rowspan="2">Visual Fidelity</th>
+            </tr>
+            <tr>
+              <th>Content</th>
+              <th>Reading Order</th>
+              <th>Hierarchy</th>
+              <th>Tables</th>
+              <th>Lists</th>
+              <th>Figures</th>
+              <th>Formula</th>
+              <th>Hierarchy</th>
+              <th>BBoxes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Markdown</td>
+              <td>&check;</td>
+              <td>Partial</td>
+              <td>&check;</td>
+              <td>&cross;</td>
+              <td>&cross;</td>
+              <td>Partial</td>
+              <td>Partial</td>
+              <td>Partial</td>
+              <td>&cross;</td>
+              <td>&cross;</td>
+            </tr>
+            <tr>
+              <td>LaTeX</td>
+              <td>&check;</td>
+              <td>Partial</td>
+              <td>&check;</td>
+              <td>&check;</td>
+              <td>&check;</td>
+              <td>&check;</td>
+              <td>&check;</td>
+              <td>&check;</td>
+              <td>Partial</td>
+              <td>&check;</td>
+            </tr>
+            <tr>
+              <td>HTML (Vanilla)</td>
+              <td>&check;</td>
+              <td>Partial</td>
+              <td>&check;</td>
+              <td>&check;</td>
+              <td>&check;</td>
+              <td>Partial</td>
+              <td>Partial</td>
+              <td>Partial</td>
+              <td>&cross;</td>
+              <td>&check;</td>
+            </tr>
+            <tr class="ours-row">
+              <td><strong>Fid-HTML (Ours)</strong></td>
+              <td>&check;</td>
+              <td>&check;</td>
+              <td>&check;</td>
+              <td>&check;</td>
+              <td>&check;</td>
+              <td>&check;</td>
+              <td>&check;</td>
+              <td>&check;</td>
+              <td>&check;</td>
+              <td>&check;</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="methodology">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column">
+          <h2 class="section-title">Agentic Framework Approach</h2>
+          <p class="subtitle" style="margin-bottom: 3rem;">
+            A divide-and-conquer strategy centered on four key stages.
+          </p>
+        </div>
+      </div>
+
+      <div class="figure-container">
+        <img src="replica-agents-maindiag-final.png" alt="REPLICA Pipeline">
+        <p class="fig-caption">
+          <strong>Overview of REPLICA:</strong> The agentic framework constructs a hierarchical semantic layout (<span class="circnum">1</span> Segment), generates sub-HTML fragments via routed specialist-agents (<span class="circnum">2</span> Localize), composes them with position- and reading-aware assembly (<span class="circnum">3</span> Assemble), and iteratively refines visual fidelity through font optimization, background restoration, and VLM-based reflection (<span class="circnum">4</span> Refine).
+        </p>
+      </div>
+
+      <div class="columns is-multiline">
+        <div class="column is-6">
+          <div class="content-box" style="height: 100%;">
+            <h4 class="title is-4"><span class="circnum">1</span> Segment</h4>
+            <p><strong>Hierarchical Semantic Layout Detection:</strong> We determine whether the document is digital or scanned. For scanned pages, we utilize layout detection ensembles (e.g., DocLayout-YOLO, Hi-SAM). A <em>Labeling Agent</em> assigns semantics using Set-of-Mark prompting, while a <em>Grouping Agent</em> maps parent-child relations to construct a comprehensive layout graph \( \mathcal{T}_{\text{layout}} \).</p>
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="content-box" style="height: 100%;">
+            <h4 class="title is-4"><span class="circnum">2</span> Localize</h4>
+            <p><strong>Layout-Aware HTML Generation:</strong> The layout tree is parsed, and a <em>Router Agent</em> evaluates modalities. It delegates tasks to <em>Specialist Agents</em> (Text, Table, Image, Form, List, Equation). Tools like OCR and Table Structure Recognition are explicitly invoked to create accurate, isolated sub-HTML elements dynamically.</p>
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="content-box" style="height: 100%;">
+            <h4 class="title is-4"><span class="circnum">3</span> Assemble</h4>
+            <p><strong>Position- and Reading-Aware Merge:</strong> Localized sub-HTMLs are merged bottom-up. Standard spatial heuristics can fail on complex multi-columns, so a <em>Reading-Order Agent</em> evaluates text flow and continuity to enforce an accurate, natural layout structure seamlessly.</p>
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="content-box" style="height: 100%;">
+            <h4 class="title is-4"><span class="circnum">4</span> Refine</h4>
+            <p><strong>Visual Fidelity Enhancements:</strong> A <em>Reflection Agent</em> loops over rendered HTML outputs versus the source. We apply bounded font-size optimization, OpenCV-based background inpainting, and targeted CSS injections to correct perceptual artifacts the standard browser engine misaligns.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="results">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column">
+          <h2 class="section-title">Experimental Results</h2>
+          <p class="subtitle" style="margin-bottom: 3rem;">
+            Setting a new state-of-the-art across Logical, Physical, and Visual Fidelity dimensions.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="title is-4" style="margin-bottom: 1rem;">Main Quantitative Comparison on VFDR-Bench</h3>
+      <div class="table-container">
+        <table class="table is-striped is-fullwidth">
+          <thead>
+            <tr>
+              <th rowspan="2">Method</th>
+              <th colspan="2">Text Extraction</th>
+              <th>Logical Struct.</th>
+              <th colspan="2">Physical Struct.</th>
+              <th>Visual Fidelity</th>
+              <th colspan="3">Overall Score (OS)</th>
+            </tr>
+            <tr>
+              <th>WRR (&uarr;)</th>
+              <th>CRR (&uarr;)</th>
+              <th>NTED (&darr;)</th>
+              <th>LPS (&uarr;)</th>
+              <th>GPS (&uarr;)</th>
+              <th>VFS (&uarr;)</th>
+              <th>OS<sub>all</sub> (&uarr;)</th>
+              <th>OS<sub>en</sub> (&uarr;)</th>
+              <th>OS<sub>zh</sub> (&uarr;)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="10" style="background-color: #f1f5f9; font-weight: bold; text-align: left !important;">Pipeline Tools</td></tr>
+            <tr>
+              <td>Marker</td>
+              <td>0.68</td>
+              <td>0.82</td>
+              <td>0.61</td>
+              <td>0.19</td>
+              <td>0.34</td>
+              <td>0.74</td>
+              <td>0.53</td>
+              <td>0.60</td>
+              <td>0.45</td>
+            </tr>
+            <tr>
+              <td>Docling</td>
+              <td>0.40</td>
+              <td>0.49</td>
+              <td>0.62</td>
+              <td>0.17</td>
+              <td>0.26</td>
+              <td>0.55</td>
+              <td>0.38</td>
+              <td>0.45</td>
+              <td>0.12</td>
+            </tr>
+
+            <tr><td colspan="10" style="background-color: #f1f5f9; font-weight: bold; text-align: left !important;">Expert VLMs</td></tr>
+            <tr>
+              <td>olmOCR</td>
+              <td>0.49</td>
+              <td>0.64</td>
+              <td>0.93</td>
+              <td>0.21</td>
+              <td>0.09</td>
+              <td>0.33</td>
+              <td>0.31</td>
+              <td>0.38</td>
+              <td>0.34</td>
+            </tr>
+            <tr>
+              <td>GOT-OCR-2.0</td>
+              <td>0.36</td>
+              <td>0.39</td>
+              <td>0.93</td>
+              <td>0.15</td>
+              <td>0.25</td>
+              <td>0.70</td>
+              <td>0.32</td>
+              <td>0.49</td>
+              <td>0.10</td>
+            </tr>
+
+            <tr><td colspan="10" style="background-color: #f1f5f9; font-weight: bold; text-align: left !important;">General VLMs</td></tr>
+            <tr>
+              <td>GPT-5</td>
+              <td>0.65</td>
+              <td>0.79</td>
+              <td>0.49</td>
+              <td>0.21</td>
+              <td>0.43</td>
+              <td>0.86</td>
+              <td>0.58</td>
+              <td>0.62</td>
+              <td>0.50</td>
+            </tr>
+            <tr>
+              <td>Gemini-2.5-Pro</td>
+              <td>0.67</td>
+              <td>0.42</td>
+              <td>0.56</td>
+              <td>0.14</td>
+              <td>0.31</td>
+              <td>0.82</td>
+              <td>0.47</td>
+              <td>0.47</td>
+              <td>0.30</td>
+            </tr>
+            <tr>
+              <td>Qwen3-VL</td>
+              <td>0.66</td>
+              <td>0.79</td>
+              <td>0.59</td>
+              <td>0.22</td>
+              <td>0.30</td>
+              <td>0.43</td>
+              <td>0.47</td>
+              <td>0.48</td>
+              <td>0.31</td>
+            </tr>
+
+            <tr class="ours-row">
+              <td><strong>REPLICA (Ours)</strong></td>
+              <td><strong>0.88</strong></td>
+              <td><strong>0.93</strong></td>
+              <td><strong>0.20</strong></td>
+              <td><strong>0.73</strong></td>
+              <td><strong>0.86</strong></td>
+              <td><strong>0.93</strong></td>
+              <td><strong>0.86</strong></td>
+              <td><strong>0.93</strong></td>
+              <td><strong>0.89</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="columns" style="margin-top: 3rem;">
+        <div class="column is-6">
+          <div class="content-box" style="height: 100%;">
+            <h4 class="title is-4">Framework Ablations</h4>
+            <p style="font-size: 0.9rem; margin-bottom: 1rem;">Incremental impact of modules on Overall Score (OS), Visual Fidelity (VFS), and Global Position (GPS).</p>
+            <div class="table-container">
+              <table class="table is-striped is-fullwidth">
+                <thead>
+                  <tr>
+                    <th>Configuration</th>
+                    <th>OS (&uarr;)</th>
+                    <th>VFS (&uarr;)</th>
+                    <th>GPS (&uarr;)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Flat Layout (DLN)</td><td>0.53</td><td>0.74</td><td>0.34</td></tr>
+                  <tr><td>+ Hierarchical Layout</td><td>0.60</td><td>0.79</td><td>0.48</td></tr>
+                  <tr><td>+ Hi-SAM (Full Segment)</td><td>0.67</td><td>0.82</td><td>0.63</td></tr>
+                  <tr><td>+ Agentic Localize</td><td>0.86</td><td>0.90</td><td>0.77</td></tr>
+                  <tr class="ours-row"><td><strong>+ Reflection (Final)</strong></td><td><strong>0.93</strong></td><td><strong>0.97</strong></td><td><strong>0.83</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="column is-6">
+          <div class="content-box" style="height: 100%;">
+            <h4 class="title is-4">Agentic &amp; Tool Reliability</h4>
+            <p style="font-size: 0.9rem; margin-bottom: 1rem;">Trace-based evaluation of intermediate agents and tool calls.</p>
+            <div class="table-container">
+              <table class="table is-striped is-fullwidth">
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Metric</th>
+                    <th>Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td rowspan="2">Segment Agent</td><td>Agnostic Text F1</td><td>0.98</td></tr>
+                  <tr><td>Hierarchy Consistency</td><td>0.98</td></tr>
+                  <tr><td>Router Agent</td><td>Routing Accuracy</td><td>0.97</td></tr>
+                  <tr><td>Localize Agent</td><td>Sub-HTML Validity</td><td>0.96</td></tr>
+                  <tr><td rowspan="2">Tools</td><td>Tool Call Success</td><td>0.995</td></tr>
+                  <tr><td>Reading Order Acc.</td><td>0.98</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="bibtex">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+          <h2 class="section-title has-text-centered">BibTeX</h2>
+          <p class="has-text-centered" style="color: var(--text-muted); margin-bottom: 2rem;">
+            If you find our work or dataset useful in your research, please consider citing:
+          </p>
+          
+          <div class="bibtex-wrap">
+            <div class="bibtex-bar">
+              <span>replica_2026.bib</span>
+            </div>
+            <pre class="bibtex-code" id="bibtex-text">@inproceedings{raghuveer2026replica,
+  title     = {REPLICA: An Agentic Framework for Visually Faithful Document Reconstruction},
+  author    = {Raghuveer, R and Srinivasan, Anirudh and Venna, Venkata Kesav and Sreevatsa, Tallapragada Shanmukha and Jain, Aryan and Kukkala, Sahithi and Sarvadevabhatla, Ravi Kiran},
+  year      = {2026},
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="content has-text-centered footer-bottom">
+        <p>
+          This website is licensed under a <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Navbar Burger Trigger
+    document.addEventListener('DOMContentLoaded', () => {
+      const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+      if ($navbarBurgers.length > 0) {
+        $navbarBurgers.forEach( el => {
+          el.addEventListener('click', () => {
+            const target = el.dataset.target;
+            const $target = document.getElementById(target);
+            el.classList.toggle('is-active');
+            $target.classList.toggle('is-active');
+          });
+        });
+      }
+    });
+
+    // Smooth Scrolling for Nav Links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+        const targetEl = document.querySelector(targetId);
+        if (targetEl) {
+          e.preventDefault();
+          targetEl.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  </script>
+
+</body>
+
+</html>
