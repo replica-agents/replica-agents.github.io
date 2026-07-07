@@ -301,6 +301,10 @@
     .pdemo-body { position: relative; }
     .pdemo-canvas { position: relative; width: 100%; aspect-ratio: 16 / 7; }
     @media (max-width: 700px) { .pdemo-canvas { aspect-ratio: 16 / 11; } }
+    .pdemo-arrows { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+    .pdemo-arrow { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; opacity: 0; transition: opacity .45s ease; }
+    .pdemo-arrow.show { opacity: .55; }
+    #pdemoArrowhead path { fill: var(--accent); }
     .pdemo-slot { position: absolute; overflow: hidden; border-radius: 6px; opacity: 0; transform: translateY(8px); transition: opacity .5s ease, transform .5s ease; background: var(--bg-elev); box-shadow: var(--shadow-sm); }
     .pdemo-slot.show { opacity: 1; transform: none; }
     .pdemo-slot img { width: 100%; height: 100%; object-fit: contain; display: block; }
@@ -1394,7 +1398,76 @@
   let cycleTimer = null, cycleIdx = 0, specSlots = [];
 
   function CV() { return $("#pdemoCanvas"); }
-  function clearCanvas() { CV().innerHTML = ""; stopCycle(); closeViewer(); }
+
+  /* ---- arrow-connector layer: SVG lines linking slot boxes each stage.
+     Geometry is computed in live pixel space (not raw %) so lines stay
+     correct regardless of the canvas's aspect ratio; a resize listener
+     (see initDemo) redraws them when the canvas is resized. ---- */
+  let arrowSvgEl = null;
+  let arrowRectsByKey = {};   // key -> {x,y,w,h} in percent, current stage
+  let arrowPairs = [];        // [fromKey, toKey]
+  let arrowElsByTarget = {};  // targetKey -> [<line> el, ...]
+
+  function svgEl(tag, attrs) {
+    const e = document.createElementNS("http://www.w3.org/2000/svg", tag);
+    for (const k in attrs || {}) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function ensureArrowLayer() {
+    arrowSvgEl = svgEl("svg", { class: "pdemo-arrows" });
+    const defs = svgEl("defs");
+    const marker = svgEl("marker", {
+      id: "pdemoArrowhead", viewBox: "0 0 10 10", refX: "8.5", refY: "5",
+      markerWidth: "6.5", markerHeight: "6.5", orient: "auto-start-reverse",
+    });
+    marker.appendChild(svgEl("path", { d: "M0,0 L10,5 L0,10 Z" }));
+    defs.appendChild(marker);
+    arrowSvgEl.appendChild(defs);
+    CV().appendChild(arrowSvgEl); // inserted first -> paints behind slots
+  }
+  // Point where a ray from rect's center toward (tx,ty) exits rect's edge.
+  function rectExit(rect, tx, ty) {
+    const cx = rect.x + rect.w / 2, cy = rect.y + rect.h / 2;
+    const hw = rect.w / 2, hh = rect.h / 2;
+    const dx = tx - cx, dy = ty - cy;
+    if (!dx && !dy) return { x: cx, y: cy };
+    const t = Math.min(dx ? hw / Math.abs(dx) : Infinity, dy ? hh / Math.abs(dy) : Infinity);
+    return { x: cx + dx * t, y: cy + dy * t };
+  }
+  function connect(fromKey, toKey) { arrowPairs.push([fromKey, toKey]); }
+  function drawArrows() {
+    if (!arrowSvgEl) return;
+    const box = CV().getBoundingClientRect();
+    const W = box.width || 1, H = box.height || 1;
+    arrowSvgEl.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    const shownTargets = new Set(Object.keys(arrowElsByTarget)
+      .filter(k => arrowElsByTarget[k][0] && arrowElsByTarget[k][0].classList.contains("show")));
+    $$("line", arrowSvgEl).forEach(l => l.remove());
+    arrowElsByTarget = {};
+    const toPx = r => ({ x: r.x / 100 * W, y: r.y / 100 * H, w: r.w / 100 * W, h: r.h / 100 * H });
+    arrowPairs.forEach(([fromKey, toKey]) => {
+      const rf = arrowRectsByKey[fromKey], rt = arrowRectsByKey[toKey];
+      if (!rf || !rt) return;
+      const pf = toPx(rf), pt = toPx(rt);
+      const cf = { x: pf.x + pf.w / 2, y: pf.y + pf.h / 2 };
+      const ct = { x: pt.x + pt.w / 2, y: pt.y + pt.h / 2 };
+      const p1 = rectExit(pf, ct.x, ct.y);
+      const p2 = rectExit(pt, cf.x, cf.y);
+      const line = svgEl("line", {
+        x1: p1.x.toFixed(1), y1: p1.y.toFixed(1), x2: p2.x.toFixed(1), y2: p2.y.toFixed(1),
+        class: "pdemo-arrow" + (shownTargets.has(toKey) ? " show" : ""),
+        "marker-end": "url(#pdemoArrowhead)",
+      });
+      arrowSvgEl.appendChild(line);
+      (arrowElsByTarget[toKey] = arrowElsByTarget[toKey] || []).push(line);
+    });
+  }
+
+  function clearCanvas() {
+    CV().innerHTML = "";
+    arrowSvgEl = null; arrowRectsByKey = {}; arrowPairs = []; arrowElsByTarget = {};
+    stopCycle(); closeViewer();
+  }
 
   function slotEl(key, x, y, w, h, label, cls) {
     const s = el("div", "pdemo-slot" + (cls ? " " + cls : ""));
@@ -1402,9 +1475,14 @@
     s.dataset.key = key;
     CV().appendChild(s);
     loadImage(s, demoSrc(PIPELINE_PRESETS[currentDoc].id, key), label);
+    arrowRectsByKey[key] = { x, y, w, h };
     return s;
   }
-  function reveal(s) { if (s) s.classList.add("show"); }
+  function reveal(s) {
+    if (!s) return;
+    s.classList.add("show");
+    (arrowElsByTarget[s.dataset && s.dataset.key] || []).forEach(a => a.classList.add("show"));
+  }
   function cap(text, kind) {
     const c = $("#pdemoCaption");
     c.className = "pdemo-caption show" + (kind ? " " + kind : "");
@@ -1441,7 +1519,7 @@
   }
 
   function buildSegment() {
-    clearCanvas(); const bts = [];
+    clearCanvas(); ensureArrowLayer(); const bts = [];
     const raw      = slotEl("S1_raw",        1, 20, 15, 60, "Raw document (image or PDF)");
     const analyzer = slotEl("S1_analyzer",  19, 38, 13, 22, "Document-Type Analyzer");
     const digital  = slotEl("S1_digital",   36,  4, 14, 20, "Digital-PDF Parser");
@@ -1450,6 +1528,15 @@
     const labeling = slotEl("S1_labeling",  58, 52, 12, 22, "Labeling Agent");
     const grouping = slotEl("S1_grouping",  71, 52, 12, 22, "Grouping Agent");
     const tree     = slotEl("S1_tree",      85, 26, 14, 50, "Nested Hierarchical Layout Tree");
+    connect("S1_raw", "S1_analyzer");
+    connect("S1_analyzer", "S1_digital");
+    connect("S1_analyzer", "S1_detect");
+    connect("S1_digital", "S1_pdfobjects");
+    connect("S1_detect", "S1_labeling");
+    connect("S1_labeling", "S1_grouping");
+    connect("S1_pdfobjects", "S1_tree");
+    connect("S1_grouping", "S1_tree");
+    drawArrows();
     bts.push(() => { reveal(raw); cap("A document enters — a <b>scanned image</b> or a <b>born-digital PDF</b>."); });
     bts.push(() => { reveal(analyzer); cap("The <b>Document-Type Analyzer</b> decides which path to take."); });
     bts.push(() => { reveal(digital); reveal(pdfobj); cap("<b>Digital path:</b> a born-digital PDF already carries text &amp; coordinates → it extracts <b>Structured PDF Objects</b> and <b>skips detection entirely</b>."); });
@@ -1460,7 +1547,7 @@
   }
 
   function buildLocalize() {
-    clearCanvas(); const bts = [];
+    clearCanvas(); ensureArrowLayer(); const bts = [];
     const tree = slotEl("S2_tree", 1, 14, 20, 70, "Nested Hierarchical Layout Tree (from Segment)");
     const L = PIPELINE_PRESETS[currentDoc].lift, tx = 1, ty = 14, tw = 20, th = 70;
     const lb = el("div", "pdemo-liftbox");
@@ -1485,6 +1572,11 @@
       specSlots.push(hs);
     }
     const collection = slotEl("S2_collection", 52, 84, 44, 12, "Collection of all sub-HTML fragments");
+    connect("S2_tree", "S2_crop");
+    connect("S2_crop", "S2_router");
+    connect("S2_router", "S2_specialists");
+    connect("S2_specialists", "S2_collection");
+    drawArrows();
     bts.push(() => { reveal(tree); cap("From Segment we have the <b>Nested Hierarchical Layout Tree</b> — every region, organized."); });
     bts.push(() => { lb.classList.add("show"); cap("Each <b>region is lifted out of the tree</b> — this is where the crops come from."); });
     bts.push(() => { reveal(crop); cap("The lifted region becomes a <b>crop with Set-of-Mark boxes</b> overlaid."); });
@@ -1495,7 +1587,7 @@
   }
 
   function buildAssemble() {
-    clearCanvas(); const bts = [];
+    clearCanvas(); ensureArrowLayer(); const bts = [];
     const frags     = slotEl("S3_fragments",   1,  16, 22, 68, "Collection of sub-HTML fragments (from Localize)");
     const roNaive   = slotEl("S3_ro_naive",   26,   6, 44, 88, "Reading order — naive/arrival order (WRONG)");
     const roThink   = slotEl("S3_ro_thinking",26,   6, 44, 88, "Reading order — candidate orderings being evaluated");
@@ -1503,6 +1595,10 @@
     const agent     = slotEl("S3_agent",      72,  20, 12, 24, "Reading-Order Agent");
     const merge     = slotEl("S3_merge",      85,  20, 13, 24, "Position-Aware Merge");
     const final     = slotEl("S3_final",      72,  50, 26, 44, "Initial HTML document (output → Refine)");
+    connect("S3_fragments", "S3_agent");
+    connect("S3_agent", "S3_merge");
+    connect("S3_merge", "S3_final");
+    drawArrows();
     bts.push(() => { reveal(frags); cap("The parallel specialists produced fragments <b>out of order</b> — we can't just concatenate them."); });
     bts.push(() => { reveal(roNaive); cap("Read in <b>arrival order</b>, the page is gibberish — the reader jumps across columns and sections. <b>This is the problem reading order solves.</b>", "warn"); });
     bts.push(() => { roNaive.classList.remove("show"); reveal(roThink); reveal(agent); cap("The <b>Reading-Order Agent</b> evaluates many possible sequences using spatial &amp; textual coherence…"); });
@@ -1512,12 +1608,18 @@
   }
 
   function buildRefine() {
-    clearCanvas(); const bts = [];
+    clearCanvas(); ensureArrowLayer(); const bts = [];
     const init  = slotEl("S4_initial",   1, 12, 20, 72, "Initial HTML rendered in browser (from Assemble)");
     const font  = slotEl("S4_font",     25, 26, 15, 44, "Font-Size Optimization");
     const bg    = slotEl("S4_bg",       42, 26, 15, 44, "Background Restoration");
     const refl  = slotEl("S4_reflection",59,20, 18, 56, "Reflection Agent (VLM) — iterative verification");
     const final = slotEl("S4_final",    79, 12, 20, 72, "High-fidelity final HTML (output)");
+    connect("S4_initial", "S4_font");
+    connect("S4_initial", "S4_bg");
+    connect("S4_font", "S4_reflection");
+    connect("S4_bg", "S4_reflection");
+    connect("S4_reflection", "S4_final");
+    drawArrows();
     bts.push(() => { reveal(init); cap("The merged HTML renders — but fonts, spacing, and background may not yet match the source exactly."); });
     bts.push(() => { reveal(font); reveal(bg); cap("<b>Tools</b> make deterministic fixes: Font-Size Optimization and Background Restoration."); });
     bts.push(() => { reveal(refl); cap("The <b>Reflection Agent</b> (a VLM) compares render to source and <b>loops</b>: render → compare → repair — until they match."); });
@@ -1642,6 +1744,12 @@
       if (e.key === " ") { e.preventDefault(); playing ? stop() : play(); }
       else if (e.key === "ArrowRight") { stop(); stepForward(); }
       else if (e.key === "ArrowLeft") { stop(); stepBack(); }
+    });
+    // redraw arrow geometry (in live pixel space) when the canvas resizes
+    let arrowResizeTimer = null;
+    window.addEventListener("resize", () => {
+      clearTimeout(arrowResizeTimer);
+      arrowResizeTimer = setTimeout(drawArrows, 120);
     });
   }
 
