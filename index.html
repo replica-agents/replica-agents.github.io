@@ -241,31 +241,30 @@
     .abstract-body .fid { font-family: 'JetBrains Mono', monospace; color: var(--accent); font-weight: 600; }
 
     /* ====================== PIPELINE DEMO ====================== */
-    .demo-wrap {
+    .pdemo-wrap {
       background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
       box-shadow: var(--shadow-md); overflow: hidden;
     }
-    .demo-presets { padding: 20px; border-bottom: 1px solid var(--border); }
-    .demo-presets .lbl { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); margin-bottom: 12px; }
-    .preset-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-    @media (max-width: 720px) { .preset-row { grid-template-columns: repeat(2, 1fr); } }
-    .preset {
-      border: 2px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer;
-      background: var(--bg-elev); transition: all .18s; text-align: center; padding-bottom: 8px;
+    .pdemo-picker { padding: 20px; border-bottom: 1px solid var(--border); }
+    .pdemo-picker .lbl { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); margin-bottom: 12px; }
+    .pdemo-doc-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .pdemo-doc {
+      width: 128px; border: 2px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer;
+      background: var(--bg-elev); transition: all .18s; text-align: center; padding-bottom: 8px; position: relative;
     }
-    .preset:hover { border-color: var(--accent-soft-2); transform: translateY(-2px); }
-    .preset.active { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-    .preset .thumb { width: 100%; aspect-ratio: 4/3; background: var(--bg-alt); }
-    .preset .thumb .img-ph { min-height: 0; height: 100%; border: none; border-radius: 0; padding: 8px; }
-    .preset .thumb .img-ph i { font-size: 18px; }
-    .preset .thumb .img-ph .fn { display: none; }
-    .preset .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .preset .plabel { font-size: 13px; font-weight: 600; margin-top: 7px; color: var(--text); }
+    .pdemo-doc:hover { border-color: var(--accent-soft-2); transform: translateY(-2px); }
+    .pdemo-doc.active { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .pdemo-doc .thumb { width: 100%; aspect-ratio: 4/3; background: var(--bg-alt); }
+    .pdemo-doc .thumb .img-ph { min-height: 0; height: 100%; border: none; border-radius: 0; padding: 8px; }
+    .pdemo-doc .thumb .img-ph i { font-size: 18px; }
+    .pdemo-doc .thumb .img-ph .fn { display: none; }
+    .pdemo-doc .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pdemo-doc .dname { font-size: 13px; font-weight: 600; margin-top: 7px; color: var(--text); }
+    .pdemo-doc .dtag {
+      position: absolute; top: 6px; right: 6px; font-family: 'JetBrains Mono', monospace; font-size: 9px;
+      font-weight: 700; background: var(--accent); color: #fff; padding: 2px 6px; border-radius: 5px;
+    }
 
-    .demo-run-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 20px; flex-wrap: wrap; border-bottom: 1px solid var(--border); }
-    .demo-run-bar .sel-info { font-size: 14px; color: var(--text-2); }
-    .demo-run-bar .sel-info b { color: var(--text); }
-    .demo-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .ctl {
       display: inline-flex; align-items: center; gap: 7px; font-weight: 600; font-size: 14px;
       padding: 9px 15px; border-radius: 10px; border: 1px solid var(--border-strong);
@@ -277,43 +276,94 @@
     .ctl:disabled { opacity: .4; cursor: not-allowed; }
     .ctl:disabled:hover { border-color: var(--border-strong); color: var(--text); }
 
-    /* stage progress strip */
-    .stage-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; padding: 22px 20px 4px; }
-    .stage-node { text-align: center; position: relative; }
-    .stage-node::after {
-      content: ""; position: absolute; top: 19px; left: 50%; width: 100%; height: 3px;
-      background: var(--border); z-index: 0;
-    }
-    .stage-node:last-child::after { display: none; }
-    .stage-node .dot {
-      width: 40px; height: 40px; border-radius: 50%; margin: 0 auto 10px; position: relative; z-index: 1;
+    /* stage progress bar */
+    .pdemo-stagebar { display: flex; align-items: flex-start; padding: 22px 20px 4px; user-select: none; }
+    .pdemo-snode { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; position: relative; }
+    .pdemo-snode .num {
+      width: 40px; height: 40px; border-radius: 50%; position: relative; z-index: 1;
       display: grid; place-items: center; background: var(--bg-elev); border: 2px solid var(--border);
       color: var(--text-3); font-weight: 800; transition: all .3s;
     }
-    .stage-node .sname { font-size: 13.5px; font-weight: 700; color: var(--text-3); transition: color .3s; }
-    .stage-node .ssub { font-size: 11.5px; color: var(--text-3); margin-top: 2px; }
-    .stage-node.done .dot { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
-    .stage-node.done::after { background: var(--accent); }
-    .stage-node.active .dot { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-color: var(--accent); color: #fff; transform: scale(1.12); box-shadow: 0 0 0 6px var(--accent-soft); }
-    .stage-node.active .sname { color: var(--text); }
+    .pdemo-snode .nm { font-size: 13.5px; font-weight: 700; color: var(--text-3); transition: color .3s; white-space: nowrap; }
+    .pdemo-snode.on .num { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-color: var(--accent); color: #fff; transform: scale(1.12); box-shadow: 0 0 0 6px var(--accent-soft); }
+    .pdemo-snode.on .nm { color: var(--text); }
+    .pdemo-snode.done .num { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+    .pdemo-sline { flex: 1; height: 3px; background: var(--border); margin: 19px 0 0; position: relative; overflow: hidden; }
+    .pdemo-sline .fill { position: absolute; inset: 0; width: 0; background: var(--accent); transition: width .5s; }
 
     /* stage viewer */
-    .stage-view { padding: 18px 20px 24px; }
-    .stage-panel { animation: fadeSlide .45s ease; }
-    @keyframes fadeSlide { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-    .stage-panel .sv-head { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; flex-wrap: wrap; }
-    .stage-panel .sv-badge { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: #fff; background: var(--accent); padding: 3px 9px; border-radius: 6px; }
-    .stage-panel h3 { font-size: 20px; }
-    .stage-panel .sv-cap { color: var(--text-2); font-size: 15px; margin: 4px 0 14px; max-width: 760px; }
-    .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
+    .pdemo-stage-wrap { padding: 18px 20px 24px; }
+    .pdemo-stage-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+    .pdemo-badge { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: #fff; background: var(--accent); padding: 3px 9px; border-radius: 6px; }
+    .pdemo-stage-head h3 { font-size: 20px; }
+    .pdemo-sub { color: var(--text-2); font-size: 13.5px; }
+
+    .pdemo-body { position: relative; }
+    .pdemo-canvas { position: relative; width: 100%; aspect-ratio: 16 / 7; }
+    @media (max-width: 700px) { .pdemo-canvas { aspect-ratio: 16 / 11; } }
+    .pdemo-slot { position: absolute; overflow: hidden; border-radius: 6px; opacity: 0; transform: translateY(8px); transition: opacity .5s ease, transform .5s ease; background: var(--bg-elev); box-shadow: var(--shadow-sm); }
+    .pdemo-slot.show { opacity: 1; transform: none; }
+    .pdemo-slot img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .pdemo-slot .img-ph { min-height: 0; height: 100%; padding: 4px; border-width: 1px; }
+    .pdemo-slot .img-ph i { font-size: 14px; }
+    .pdemo-slot .img-ph .lbl { font-size: 8.5px; }
+    .pdemo-slot .img-ph .fn { display: none; }
+    .pdemo-slot.clickable { cursor: pointer; background: transparent; box-shadow: none; }
+    .pdemo-slot.clickable:hover { outline: 2px solid var(--accent-2); outline-offset: 2px; border-radius: 8px; }
+    .pdemo-slot.pinned { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+    .pdemo-slot.cycling { outline: 2px solid var(--accent-soft-2); outline-offset: 2px; border-radius: 8px; }
+
+    .pdemo-liftbox {
+      position: absolute; border: 2.5px solid var(--accent-2); border-radius: 4px; opacity: 0;
+      transition: opacity .4s; box-shadow: 0 0 0 3px var(--accent-soft); pointer-events: none;
+    }
+    .pdemo-liftbox.show { opacity: 1; }
+
+    .pdemo-outviewer {
+      position: absolute; right: 0; top: 0; width: 0; height: 100%; background: var(--bg-elev);
+      border-left: 1px solid var(--border); overflow: hidden; transition: width .35s; z-index: 5;
+    }
+    .pdemo-outviewer.open { width: min(320px, 82%); box-shadow: var(--shadow-lg); }
+    .pdemo-outviewer .ov-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+    .pdemo-outviewer .ov-head .t { font-size: 13px; font-weight: 700; color: var(--text); }
+    .pdemo-outviewer .ov-head .x { cursor: pointer; color: var(--text-3); font-size: 18px; border: none; background: none; line-height: 1; }
+    .pdemo-outviewer .ov-body { padding: 12px; height: calc(100% - 46px); overflow: auto; }
+    .pdemo-outviewer .ov-body img { width: 100%; border: 1px solid var(--border); border-radius: 6px; }
+    .pdemo-outviewer .ov-hint { font-size: 11px; color: var(--text-3); margin-top: 10px; font-family: 'JetBrains Mono', monospace; }
+
+    .pdemo-caption {
+      margin: 16px 20px 0; font-size: 13.5px; color: var(--text-2); background: var(--bg-alt);
+      border-left: 4px solid var(--accent); border-radius: 5px; padding: 11px 15px; line-height: 1.5;
+      opacity: 0; transform: translateY(6px); transition: .4s; min-height: 20px;
+    }
+    .pdemo-caption.show { opacity: 1; transform: none; }
+    .pdemo-caption b { color: var(--text); }
+    .pdemo-caption.warn { border-left-color: #e0574a; }
+    .pdemo-caption.warn b { color: #e0574a; }
+    .pdemo-caption.good { border-left-color: #1f9d7c; }
+    .pdemo-caption.good b { color: #1f9d7c; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 14px 20px 0; }
     .chip {
       font-size: 12px; font-weight: 600; color: var(--accent); background: var(--accent-soft);
       border: 1px solid var(--accent-soft-2); padding: 4px 10px; border-radius: 999px;
     }
     .chip i { margin-right: 5px; opacity: .8; }
-    .stage-img-slot { max-width: 760px; margin: 0 auto; }
-    .stage-empty { text-align: center; color: var(--text-3); padding: 40px 20px; }
-    .stage-empty i { font-size: 34px; color: var(--accent); opacity: .5; margin-bottom: 12px; }
+    .chip.tool { color: var(--text-2); background: var(--bg-alt); border-color: var(--border); }
+
+    .pdemo-transport { display: flex; align-items: center; gap: 14px; margin: 18px 20px 20px; padding: 14px 18px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius-sm); box-shadow: var(--shadow-sm); flex-wrap: wrap; }
+    .pdemo-scrub { flex: 1; min-width: 180px; display: flex; align-items: center; gap: 10px; }
+    .pdemo-track { flex: 1; height: 6px; background: var(--bg-alt); border-radius: 20px; position: relative; cursor: pointer; }
+    .pdemo-track .prog { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent); border-radius: 20px; width: 0; transition: width .3s; }
+    .pdemo-stepcount { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-3); white-space: nowrap; }
+    .pdemo-speed { display: flex; gap: 4px; align-items: center; font-size: 12px; color: var(--text-2); }
+    .pdemo-speed button { border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 4px 8px; font-size: 11.5px; cursor: pointer; font-family: 'JetBrains Mono', monospace; color: var(--text); }
+    .pdemo-speed button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+    .pdemo-hint { margin: 0 20px 20px; font-size: 12px; color: var(--text-3); font-family: 'JetBrains Mono', monospace; }
+    .pdemo-hint b { color: var(--text-2); }
+
+    @media (prefers-reduced-motion: reduce) { .pdemo-slot, .pdemo-caption, .pdemo-liftbox { transition: none; } }
 
     /* ==================== QUALITATIVE ==================== */
     .qual-wrap { }
@@ -526,19 +576,6 @@
     .philo .pe { font-size: 30px; margin-bottom: 10px; }
     .philo .pt { font-weight: 700; font-size: 14px; }
 
-    /* ==================== DEMO STAGE SLOTS ==================== */
-    .stage-stage { position: relative; width: 100%; aspect-ratio: 16 / 6; background: var(--bg-alt); border-radius: var(--radius-sm); border: 1px solid var(--border); overflow: hidden; }
-    @media (max-width: 700px) { .stage-stage { aspect-ratio: 16 / 10; } }
-    .stage-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: .9; }
-    .slot { position: absolute; overflow: hidden; border-radius: 6px; opacity: 0; transform: translateY(10px); transition: opacity .5s ease, transform .5s ease; background: var(--bg-elev); box-shadow: var(--shadow-sm); }
-    .slot.in { opacity: 1; transform: none; }
-    .slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .slot .img-ph { min-height: 0; height: 100%; padding: 4px; border-width: 1px; }
-    .slot .img-ph i { font-size: 13px; }
-    .slot .img-ph .lbl { font-size: 8.5px; }
-    .slot .img-ph .fn { display: none; }
-    .slot .slot-cap { position: absolute; bottom: 0; left: 0; right: 0; font-size: 8.5px; font-weight: 700; text-align: center; background: rgba(var(--accent-rgb), .85); color: #fff; padding: 1px 2px; }
-
     /* ==================== INTERACTIVE DOWNSTREAM ==================== */
     .down-i { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; align-items: start; }
     @media (max-width: 900px) { .down-i { grid-template-columns: 1fr; } }
@@ -630,7 +667,7 @@
           <div class="tp-label"><i class="fa-solid fa-file-lines"></i> Input Document</div>
           <div class="frame" data-img data-src="static/images/teaser/base_doc.png" data-label="Input document"></div>
           <div class="tp-label" style="margin-top: 18px;"><i class="fa-solid fa-chart-pie"></i> Fidelity Radar — REPLICA vs. baselines</div>
-          <div class="frame" data-img data-src="static/images/teaser/radar_plot.png" data-label="Radar plot (TE / LS / PS / VF)"></div>
+          <div class="frame" data-img data-src="static/images/teaser/image-2.png" data-label="Radar plot (TE / LS / PS / VF)"></div>
         </div>
         <div class="teaser-panel">
           <div class="tp-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Reconstruction — pick a method</div>
@@ -753,40 +790,58 @@
       <div class="section-head reveal">
         <span class="eyebrow">Interactive</span>
         <h2>Pipeline Demo</h2>
-        <p>Pick a document, then run it through REPLICA's four stages. Intermediate outputs are pre-computed — no live inference.</p>
+        <p>Pick a document, then step or play through REPLICA's four stages. Intermediate outputs are pre-computed — no live inference.</p>
       </div>
 
-      <div class="demo-wrap reveal">
-        <!-- presets -->
-        <div class="demo-presets">
-          <div class="lbl"><i class="fa-solid fa-layer-group"></i> &nbsp;1 · Choose an input document</div>
-          <div class="preset-row" id="presetRow"><!-- injected --></div>
-        </div>
-
-        <!-- run bar -->
-        <div class="demo-run-bar">
-          <div class="sel-info" id="selInfo">Selected: <b>—</b></div>
-          <div class="demo-controls">
-            <button class="ctl" id="btnPrev" title="Previous stage"><i class="fa-solid fa-chevron-left"></i></button>
-            <button class="ctl primary" id="btnRun"><i class="fa-solid fa-play"></i> Run Pipeline</button>
-            <button class="ctl" id="btnPlay" title="Play / Pause"><i class="fa-solid fa-pause"></i> Pause</button>
-            <button class="ctl" id="btnNext" title="Next stage"><i class="fa-solid fa-chevron-right"></i></button>
-            <button class="ctl" id="btnReset" title="Reset"><i class="fa-solid fa-rotate-left"></i> Reset</button>
-          </div>
+      <div class="pdemo-wrap reveal">
+        <!-- document picker -->
+        <div class="pdemo-picker">
+          <div class="lbl"><i class="fa-solid fa-layer-group"></i> &nbsp;Choose an input document</div>
+          <div class="pdemo-doc-row" id="pdemoDocRow"><!-- injected --></div>
         </div>
 
         <!-- stage progress -->
-        <div class="stage-strip" id="stageStrip"><!-- injected --></div>
+        <div class="pdemo-stagebar" id="pdemoStagebar"><!-- injected --></div>
 
         <!-- stage viewer -->
-        <div class="stage-view">
-          <div id="stagePanel">
-            <div class="stage-empty">
-              <div><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-              <p>Select a document above and press <b>Run Pipeline</b> to watch REPLICA reconstruct it stage by stage.</p>
+        <div class="pdemo-stage-wrap">
+          <div class="pdemo-stage-head">
+            <span class="pdemo-badge" id="pdemoBadge">1</span>
+            <h3 id="pdemoTitle">Segment</h3>
+            <span class="pdemo-sub" id="pdemoSub">Hierarchical semantic layout detection</span>
+          </div>
+          <div class="pdemo-body">
+            <div class="pdemo-canvas" id="pdemoCanvas"></div>
+            <div class="pdemo-outviewer" id="pdemoOutviewer">
+              <div class="ov-head">
+                <span class="t" id="pdemoOvTitle">Sub-HTML output</span>
+                <button class="x" id="pdemoOvClose" aria-label="Close">×</button>
+              </div>
+              <div class="ov-body" id="pdemoOvBody"></div>
             </div>
           </div>
+          <div class="pdemo-caption" id="pdemoCaption"></div>
+          <div class="chips" id="pdemoChips"><!-- agent/tool chips --></div>
         </div>
+
+        <!-- transport controls -->
+        <div class="pdemo-transport">
+          <button class="ctl primary" id="pdemoPlay"><i class="fa-solid fa-play"></i> Play</button>
+          <button class="ctl" id="pdemoBack" title="Previous beat"><i class="fa-solid fa-backward-step"></i> Back</button>
+          <button class="ctl" id="pdemoFwd" title="Next beat">Step <i class="fa-solid fa-forward-step"></i></button>
+          <button class="ctl" id="pdemoReset" title="Reset"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+          <div class="pdemo-scrub">
+            <span class="pdemo-stepcount" id="pdemoStepCount">Stage 1 · 0</span>
+            <div class="pdemo-track" id="pdemoTrack"><div class="prog" id="pdemoProg"></div></div>
+          </div>
+          <div class="pdemo-speed" id="pdemoSpeed">
+            Speed
+            <button data-s="1900">0.5×</button>
+            <button data-s="1150" class="on">1×</button>
+            <button data-s="700">2×</button>
+          </div>
+        </div>
+        <div class="pdemo-hint">Use <b>Step</b> to advance one beat, or <b>Play</b> to run a stage. In <b>Localize</b>, agent outputs auto-cycle — click one to pin it. Keyboard (while hovering the demo): space = play/pause, arrows = step.</div>
       </div>
     </div>
   </section>
@@ -956,9 +1011,9 @@
 
   // ---- Logos (drop real PNGs at these paths) --------------------------
   const LOGOS = [
-    { alt: "BharatGen",       src: "static/images/logos/bharatgen.png" },
-    { alt: "IIIT Hyderabad",  src: "static/images/logos/iiith.png" },
-    { alt: "ICDAR 2026",      src: "static/images/logos/icdar.png" },
+    { alt: "BharatGen",       src: "static/images/logos/bgen_logo.png" },
+    { alt: "IIIT Hyderabad",  src: "static/images/logos/iiith_logo.jpeg" },
+    { alt: "ICDAR 2026",      src: "static/images/logos/icdar_logo.png" },
   ];
 
   // ---- Three contribution cards --------------------------------------
@@ -971,10 +1026,10 @@
   // ---- Interactive teaser: methods + fidelity axes -------------------
   // Each expects an output image under static/images/teaser/{id}_output.png
   const TEASER_METHODS = [
-    { id: "replica", name: "REPLICA (Ours)", ours: true, img: "static/images/teaser/replica_output.png", axes: { TE: true, LS: true, PS: true,  VF: true  } },
-    { id: "qwen",    name: "Qwen3-VL-30B",             img: "static/images/teaser/qwen_output.png",    axes: { TE: true, LS: true, PS: false, VF: false } },
-    { id: "gpt5",    name: "GPT-5",                    img: "static/images/teaser/gpt5_output.png",    axes: { TE: true, LS: true, PS: false, VF: false } },
-    { id: "marker",  name: "Marker",                   img: "static/images/teaser/marker_output.png",  axes: { TE: true, LS: true, PS: false, VF: false } },
+    { id: "replica", name: "REPLICA (Ours)", ours: true, img: "static/images/teaser/13031_rendered.png", axes: { TE: true, LS: true, PS: true,  VF: true  } },
+    { id: "qwen",    name: "Qwen3-VL-30B",             img: "static/images/teaser/13031_rendered_qwen.png",    axes: { TE: true, LS: true, PS: false, VF: false } },
+    { id: "gpt5",    name: "GPT-5",                    img: "static/images/teaser/13031_rendered_gpt5.png",    axes: { TE: true, LS: true, PS: false, VF: false } },
+    { id: "marker",  name: "Marker",                   img: "static/images/teaser/13031_rendered_marker.png",  axes: { TE: true, LS: true, PS: false, VF: false } },
   ];
 
   // ---- FID-HTML interactive callouts (6 dimensions) ------------------
@@ -1037,73 +1092,47 @@
     { val: "FID-HTML", lbl: "Annotation Format" },
   ];
 
-  // ---- Pipeline stage definitions (bg + variable image slots) --------
-  // Fixed backgrounds: static/images/demo/stages/stage{N}_bg.png
-  // Variable slots per input: static/images/demo/{inputId}/{slotKey}.png
+  // ---- Pipeline stage definitions -----------------------------------
+  // Metadata only — each stage's beat-by-beat animation lives in the
+  // buildSegment/buildLocalize/buildAssemble/buildRefine functions below
+  // (search "PIPELINE DEMO"). agents/tools populate the chip row.
   const PIPELINE_STAGES = [
-    {
-      id: 1, name: "Segment", tag: "Detect", subtitle: "Hierarchical Semantic Layout Detection",
-      bg: "static/images/demo/stages/stage1_bg.png",
-      caption: "The input document is partitioned into semantic regions. A Document-Type Analyzer routes digital PDFs to direct extraction and scanned documents through detection ensembles. A Labeling Agent assigns semantic types, and a Grouping Agent constructs the hierarchical layout tree.",
+    { id: 1, name: "Segment",  tag: "Detect",   subtitle: "Hierarchical Semantic Layout Detection",
       agents: ["Document-Type Analyzer", "Labeling Agent", "Grouping Agent"],
-      tools:  ["Detection Ensemble", "Hi-SAM", "PDF Parser"],
-      slots: [
-        { key: "s1_input",     label: "Input",       position: { left: "2%",   top: "18%", w: "17%", h: "64%" } },
-        { key: "s1_detection", label: "Detection",   position: { left: "21.5%",top: "18%", w: "17%", h: "64%" } },
-        { key: "s1_labeled",   label: "Labeled",     position: { left: "41%",  top: "18%", w: "17%", h: "64%" } },
-        { key: "s1_grouped",   label: "Grouped",     position: { left: "60.5%",top: "18%", w: "17%", h: "64%" } },
-        { key: "s1_output",    label: "PDF Objects", position: { left: "80%",  top: "18%", w: "17%", h: "64%" } },
-      ],
-    },
-    {
-      id: 2, name: "Localize", tag: "Generate", subtitle: "Layout-Aware Sub-HTML Generation",
-      bg: "static/images/demo/stages/stage2_bg.png",
-      caption: "Each layout node is converted into structured sub-HTML. A Router Agent selects the correct specialist, overriding upstream labels on modality mismatch. Color-coded Set-of-Mark prompting prevents index leakage. Since nodes are conditionally independent, generation is parallelizable.",
-      agents: ["Router Agent", "Text Agent", "Table Agent", "Image Agent", "Form Agent", "List Agent", "Equation Agent"],
-      tools:  ["OCR", "Table Structure Recognition", "TexTAR", "Color-coded SoM"],
-      slots: [
-        { key: "s2_som_crop",   label: "SoM Crop",   position: { left: "2%",  top: "15%", w: "20%", h: "70%" } },
-        { key: "s2_router",     label: "Router",     position: { left: "25%", top: "15%", w: "18%", h: "70%" } },
-        { key: "s2_text_frag",  label: "Text HTML",  position: { left: "46%", top: "12%", w: "22%", h: "36%" } },
-        { key: "s2_table_frag", label: "Table HTML", position: { left: "46%", top: "52%", w: "22%", h: "36%" } },
-        { key: "s2_fragments",  label: "Fragments",  position: { left: "71%", top: "15%", w: "26%", h: "70%" } },
-      ],
-    },
-    {
-      id: 3, name: "Assemble", tag: "Merge", subtitle: "Position- & Reading-Aware Merge",
-      bg: "static/images/demo/stages/stage3_bg.png",
-      caption: "Independently generated fragments are merged into a globally consistent DOM tree. A Position-Aware Merge tool performs bottom-up composition preserving containment and alignment; a Reading-Order Agent computes semantically grounded ordering — critical for multi-column layouts.",
+      tools:  ["Detection Ensemble", "Hi-SAM", "PDF Parser"] },
+    { id: 2, name: "Localize", tag: "Generate", subtitle: "Layout-Aware Sub-HTML Generation",
+      agents: ["Router Agent", "Text Agent", "Table Agent", "Image Agent", "Form Agent", "List Agent"],
+      tools:  ["OCR", "Table Structure Recognition", "Color-coded SoM"] },
+    { id: 3, name: "Assemble", tag: "Merge",    subtitle: "Position- & Reading-Aware Merge",
       agents: ["Reading-Order Agent"],
-      tools:  ["Position-Aware Merge", "DOM Renderer"],
-      slots: [
-        { key: "s3_fragments",     label: "Fragments",     position: { left: "2%",  top: "15%", w: "28%", h: "70%" } },
-        { key: "s3_reading_order", label: "Reading Order", position: { left: "36%", top: "15%", w: "26%", h: "70%" } },
-        { key: "s3_merged",        label: "Merged HTML",   position: { left: "68%", top: "15%", w: "30%", h: "70%" } },
-      ],
-    },
-    {
-      id: 4, name: "Refine", tag: "Enhance", subtitle: "Rendering-Aware Visual Fidelity",
-      bg: "static/images/demo/stages/stage4_bg.png",
-      caption: "Operating on the rendered output, Font-Size Optimization selects maximal non-overflow scales via bounded binary search, Background Restoration inpaints page-level cues (Telea's Fast Marching), and a Reflection Agent performs closed-loop visual comparison, injecting CSS corrections until alignment stabilizes (up to 5 iterations).",
+      tools:  ["Position-Aware Merge", "DOM Renderer"] },
+    { id: 4, name: "Refine",   tag: "Enhance",  subtitle: "Rendering-Aware Visual Fidelity",
       agents: ["Reflection Agent"],
-      tools:  ["Font-Size Optimization", "Background Restoration", "OpenCV Inpainting"],
-      slots: [
-        { key: "s4_before",     label: "Pre-Refine", position: { left: "2%",  top: "15%", w: "22%", h: "70%" } },
-        { key: "s4_font_fix",   label: "Font Fix",   position: { left: "27%", top: "15%", w: "22%", h: "70%" } },
-        { key: "s4_bg_restore", label: "BG Restore", position: { left: "52%", top: "15%", w: "22%", h: "70%" } },
-        { key: "s4_final",      label: "Final",      position: { left: "76%", top: "15%", w: "22%", h: "70%" } },
-      ],
-    },
+      tools:  ["Font-Size Optimization", "Background Restoration", "OpenCV Inpainting"] },
   ];
 
-  // ---- Pipeline preset inputs (add/edit freely) ----------------------
-  // Each preset expects a thumb + one image per slot key above, all under
-  // static/images/demo/{id}/  (e.g. static/images/demo/govt/s1_input.png)
+  // ---- Pipeline preset input documents (add/edit freely) --------------
+  // Each preset needs a `thumb` plus the full S1_*..S4_* image set under
+  // static/images/demo/{id}/ — see README for the full export checklist.
+  // `lift` (% of the Segment tree image) controls where the Localize
+  // stage's region-lift highlight box is drawn for that document.
   const PIPELINE_PRESETS = [
-    { id: "govt",      label: "Government Doc",   thumb: "static/images/demo/govt/thumb.png" },
-    { id: "magazine",  label: "Magazine",         thumb: "static/images/demo/magazine/thumb.png" },
-    { id: "financial", label: "Financial Doc",    thumb: "static/images/demo/financial/thumb.png" },
-    { id: "idcard",    label: "ID / Certificate", thumb: "static/images/demo/idcard/thumb.png" },
+    { id: "gov",       label: "Government Notice",  tag: "scanned", thumb: "static/images/demo/gov/thumb.png",       lift: { x: 8,  y: 14, w: 80, h: 16 } },
+    { id: "magazine",  label: "Magazine",           tag: "scanned", thumb: "static/images/demo/magazine/thumb.png",  lift: { x: 6,  y: 20, w: 44, h: 18 } },
+    { id: "financial", label: "Financial Document", tag: "digital", thumb: "static/images/demo/financial/thumb.png", lift: { x: 8,  y: 10, w: 80, h: 14 } },
+    { id: "idcert",    label: "ID / Certificate",   tag: "scanned", thumb: "static/images/demo/idcert/thumb.png",    lift: { x: 10, y: 12, w: 70, h: 20 } },
+    { id: "form",      label: "Form",               tag: "digital", thumb: "static/images/demo/form/thumb.png",     lift: { x: 8,  y: 8,  w: 84, h: 30 } },
+  ];
+  const demoSrc = (presetId, key) => `static/images/demo/${presetId}/${key}.png`;
+
+  // ---- Localize stage: specialist agents whose sub-HTML output cycles
+  // through the click-to-inspect panel -------------------------------
+  const LOCALIZE_SPECIALISTS = [
+    { key: "S2_out_text",  name: "Text Agent" },
+    { key: "S2_out_form",  name: "Form Agent" },
+    { key: "S2_out_table", name: "Table Agent" },
+    { key: "S2_out_image", name: "Image Agent" },
+    { key: "S2_out_list",  name: "List Agent" },
   ];
 
   // ---- Qualitative examples (original vs replica) --------------------
@@ -1356,177 +1385,264 @@
   }
 
   /* ===================== PIPELINE DEMO ===================== */
-  const demo = { presetId: null, stage: -1, playing: false, timer: null, running: false };
+  // Beat-driven walkthrough: each stage builds a set of absolutely
+  // positioned image slots on #pdemoCanvas, then reveals them (and swaps
+  // captions) one "beat" at a time via Play/Step. Ported from the
+  // InteractiveDemov2 prototype and re-skinned to the site's design tokens.
+  let currentDoc = 0;
+  let stageIdx = 0, beatIdx = 0, beats = [], playing = false, timer = null, speed = 1150, doneStages = new Set();
+  let cycleTimer = null, cycleIdx = 0, specSlots = [];
 
-  function renderPresets() {
-    $("#presetRow").innerHTML = PIPELINE_PRESETS.map(p => `
-      <div class="preset" data-id="${p.id}">
-        <div class="thumb" data-thumb="${p.id}"></div>
-        <div class="plabel">${p.label}</div>
-      </div>`).join("");
-    PIPELINE_PRESETS.forEach(p => {
-      const t = $(`[data-thumb="${p.id}"]`);
-      loadImage(t, p.thumb, p.label);
-    });
-    $$(".preset").forEach(pe => pe.addEventListener("click", () => selectPreset(pe.dataset.id)));
+  function CV() { return $("#pdemoCanvas"); }
+  function clearCanvas() { CV().innerHTML = ""; stopCycle(); closeViewer(); }
+
+  function slotEl(key, x, y, w, h, label, cls) {
+    const s = el("div", "pdemo-slot" + (cls ? " " + cls : ""));
+    s.style.left = x + "%"; s.style.top = y + "%"; s.style.width = w + "%"; s.style.height = h + "%";
+    s.dataset.key = key;
+    CV().appendChild(s);
+    loadImage(s, demoSrc(PIPELINE_PRESETS[currentDoc].id, key), label);
+    return s;
+  }
+  function reveal(s) { if (s) s.classList.add("show"); }
+  function cap(text, kind) {
+    const c = $("#pdemoCaption");
+    c.className = "pdemo-caption show" + (kind ? " " + kind : "");
+    c.innerHTML = text;
   }
 
-  function renderStageStrip() {
-    $("#stageStrip").innerHTML = PIPELINE_STAGES.map((s, i) => `
-      <div class="stage-node" data-stage="${i}">
-        <div class="dot">${s.id}</div>
-        <div class="sname">${s.name}</div>
-        <div class="ssub">${s.tag}</div>
-      </div>`).join("");
-    $$(".stage-node").forEach(n => n.addEventListener("click", () => {
-      if (!demo.running) return;
-      gotoStage(parseInt(n.dataset.stage, 10));
-    }));
+  function openViewer(agent) {
+    $("#pdemoOutviewer").classList.add("open");
+    $("#pdemoOvTitle").textContent = agent.name + " → sub-HTML";
+    const body = $("#pdemoOvBody");
+    body.innerHTML = "";
+    const frame = el("div");
+    body.appendChild(frame);
+    loadImage(frame, demoSrc(PIPELINE_PRESETS[currentDoc].id, agent.key), agent.name + " output");
+    body.appendChild(el("div", "ov-hint", `Output of ${agent.name} (${agent.key})`));
+  }
+  function closeViewer() { $("#pdemoOutviewer").classList.remove("open"); }
+
+  function startCycle() {
+    stopCycle(); cycleIdx = 0;
+    const tick = () => {
+      specSlots.forEach(s => s.classList.remove("cycling"));
+      const s = specSlots[cycleIdx % specSlots.length];
+      if (s) s.classList.add("cycling");
+      openViewer(LOCALIZE_SPECIALISTS[cycleIdx % LOCALIZE_SPECIALISTS.length]);
+      cycleIdx++;
+      cycleTimer = setTimeout(tick, 1600);
+    };
+    tick();
+  }
+  function stopCycle() {
+    clearTimeout(cycleTimer); cycleTimer = null;
+    specSlots.forEach(s => s.classList.remove("cycling"));
   }
 
-  function selectPreset(id) {
-    demo.presetId = id;
-    const p = PIPELINE_PRESETS.find(x => x.id === id);
-    $$(".preset").forEach(pe => pe.classList.toggle("active", pe.dataset.id === id));
-    $("#selInfo").innerHTML = `Selected: <b>${p.label}</b>`;
-    // reset run state but keep selection
-    stopPlay();
-    demo.running = false; demo.stage = -1;
-    updateStageStrip();
-    $("#stagePanel").innerHTML = `
-      <div class="stage-empty">
-        <div><i class="fa-solid fa-circle-play"></i></div>
-        <p><b>${p.label}</b> selected. Press <b>Run Pipeline</b> to reconstruct it stage by stage.</p>
-      </div>`;
+  function buildSegment() {
+    clearCanvas(); const bts = [];
+    const raw      = slotEl("S1_raw",        1, 20, 15, 60, "Raw document (image or PDF)");
+    const analyzer = slotEl("S1_analyzer",  19, 38, 13, 22, "Document-Type Analyzer");
+    const digital  = slotEl("S1_digital",   36,  4, 14, 20, "Digital-PDF Parser");
+    const pdfobj   = slotEl("S1_pdfobjects",53,  4, 17, 22, "Structured PDF Objects");
+    const detect   = slotEl("S1_detect",    36, 34, 20, 46, "Detection Ensembles");
+    const labeling = slotEl("S1_labeling",  58, 52, 12, 22, "Labeling Agent");
+    const grouping = slotEl("S1_grouping",  71, 52, 12, 22, "Grouping Agent");
+    const tree     = slotEl("S1_tree",      85, 26, 14, 50, "Nested Hierarchical Layout Tree");
+    bts.push(() => { reveal(raw); cap("A document enters — a <b>scanned image</b> or a <b>born-digital PDF</b>."); });
+    bts.push(() => { reveal(analyzer); cap("The <b>Document-Type Analyzer</b> decides which path to take."); });
+    bts.push(() => { reveal(digital); reveal(pdfobj); cap("<b>Digital path:</b> a born-digital PDF already carries text &amp; coordinates → it extracts <b>Structured PDF Objects</b> and <b>skips detection entirely</b>."); });
+    bts.push(() => { reveal(detect); cap("<b>Scanned path:</b> detection ensembles propose low- and high-level layout regions from the pixels."); });
+    bts.push(() => { reveal(labeling); reveal(grouping); cap("Two <b>agents</b> take over: the <b>Labeling Agent</b> names regions, and the <b>Grouping Agent</b> organizes them into a hierarchy."); });
+    bts.push(() => { reveal(tree); cap("Both paths converge on the <b>Nested Hierarchical Layout Tree</b> — the document, now segmented. → Localize."); });
+    return bts;
   }
 
-  function updateStageStrip() {
-    $$(".stage-node").forEach((n, i) => {
-      n.classList.toggle("active", i === demo.stage);
-      n.classList.toggle("done", i < demo.stage);
-    });
+  function buildLocalize() {
+    clearCanvas(); const bts = [];
+    const tree = slotEl("S2_tree", 1, 14, 20, 70, "Nested Hierarchical Layout Tree (from Segment)");
+    const L = PIPELINE_PRESETS[currentDoc].lift, tx = 1, ty = 14, tw = 20, th = 70;
+    const lb = el("div", "pdemo-liftbox");
+    lb.style.left = (tx + tw * L.x / 100) + "%"; lb.style.top = (ty + th * L.y / 100) + "%";
+    lb.style.width = (tw * L.w / 100) + "%"; lb.style.height = (th * L.h / 100) + "%";
+    CV().appendChild(lb);
+    const crop = slotEl("S2_crop", 26, 26, 22, 32, "Layout crop with Set-of-Mark boxes");
+    const router = slotEl("S2_router", 56, 4, 16, 22, "Router Agent");
+    const specialists = slotEl("S2_specialists", 52, 30, 44, 26, "5 specialist agents: Text · Form · Table · Image · List");
+    specSlots = [];
+    for (let i = 0; i < 5; i++) {
+      const hs = el("div", "pdemo-slot show clickable");
+      hs.style.left = (52 + i * (44 / 5)) + "%"; hs.style.top = "30%"; hs.style.width = (44 / 5) + "%"; hs.style.height = "26%";
+      hs.title = "Click to inspect " + LOCALIZE_SPECIALISTS[i].name + " output";
+      hs.addEventListener("click", () => {
+        stopCycle();
+        specSlots.forEach(s => s.classList.remove("pinned"));
+        hs.classList.add("pinned");
+        openViewer(LOCALIZE_SPECIALISTS[i]);
+      });
+      CV().appendChild(hs);
+      specSlots.push(hs);
+    }
+    const collection = slotEl("S2_collection", 52, 84, 44, 12, "Collection of all sub-HTML fragments");
+    bts.push(() => { reveal(tree); cap("From Segment we have the <b>Nested Hierarchical Layout Tree</b> — every region, organized."); });
+    bts.push(() => { lb.classList.add("show"); cap("Each <b>region is lifted out of the tree</b> — this is where the crops come from."); });
+    bts.push(() => { reveal(crop); cap("The lifted region becomes a <b>crop with Set-of-Mark boxes</b> overlaid."); });
+    bts.push(() => { reveal(router); cap("The <b>Router Agent</b> reads the crop and decides which specialist should handle it. <i>Auxiliary context — OCR &amp; attributes — feeds this decision.</i>"); });
+    bts.push(() => { reveal(specialists); specSlots.forEach(s => s.classList.add("show")); cap("It <b>fans out to five specialist agents</b>. Their outputs auto-cycle on the right — <b>click any agent to pin its sub-HTML</b>."); startCycle(); });
+    bts.push(() => { reveal(collection); cap("Every specialist emits a styled fragment; these gather into the <b>Collection of sub-HTML fragments</b>. → Assemble."); });
+    return bts;
   }
 
-  function showStage(i) {
-    const p = PIPELINE_PRESETS.find(x => x.id === demo.presetId);
-    if (!p) return;
+  function buildAssemble() {
+    clearCanvas(); const bts = [];
+    const frags     = slotEl("S3_fragments",   1,  16, 22, 68, "Collection of sub-HTML fragments (from Localize)");
+    const roNaive   = slotEl("S3_ro_naive",   26,   6, 44, 88, "Reading order — naive/arrival order (WRONG)");
+    const roThink   = slotEl("S3_ro_thinking",26,   6, 44, 88, "Reading order — candidate orderings being evaluated");
+    const roCorrect = slotEl("S3_ro_correct", 26,   6, 44, 88, "Reading order — correct order (RIGHT)");
+    const agent     = slotEl("S3_agent",      72,  20, 12, 24, "Reading-Order Agent");
+    const merge     = slotEl("S3_merge",      85,  20, 13, 24, "Position-Aware Merge");
+    const final     = slotEl("S3_final",      72,  50, 26, 44, "Initial HTML document (output → Refine)");
+    bts.push(() => { reveal(frags); cap("The parallel specialists produced fragments <b>out of order</b> — we can't just concatenate them."); });
+    bts.push(() => { reveal(roNaive); cap("Read in <b>arrival order</b>, the page is gibberish — the reader jumps across columns and sections. <b>This is the problem reading order solves.</b>", "warn"); });
+    bts.push(() => { roNaive.classList.remove("show"); reveal(roThink); reveal(agent); cap("The <b>Reading-Order Agent</b> evaluates many possible sequences using spatial &amp; textual coherence…"); });
+    bts.push(() => { roThink.classList.remove("show"); reveal(roCorrect); cap("…and <b>locks onto the correct reading order</b> — top-to-bottom, column-by-column, captions with their figures.", "good"); });
+    bts.push(() => { reveal(merge); reveal(final); cap("<b>Ordering first, then merging:</b> the Position-Aware Merge tool composes fragments by coordinates in that order → one <b>Initial HTML document</b>. → Refine."); });
+    return bts;
+  }
+
+  function buildRefine() {
+    clearCanvas(); const bts = [];
+    const init  = slotEl("S4_initial",   1, 12, 20, 72, "Initial HTML rendered in browser (from Assemble)");
+    const font  = slotEl("S4_font",     25, 26, 15, 44, "Font-Size Optimization");
+    const bg    = slotEl("S4_bg",       42, 26, 15, 44, "Background Restoration");
+    const refl  = slotEl("S4_reflection",59,20, 18, 56, "Reflection Agent (VLM) — iterative verification");
+    const final = slotEl("S4_final",    79, 12, 20, 72, "High-fidelity final HTML (output)");
+    bts.push(() => { reveal(init); cap("The merged HTML renders — but fonts, spacing, and background may not yet match the source exactly."); });
+    bts.push(() => { reveal(font); reveal(bg); cap("<b>Tools</b> make deterministic fixes: Font-Size Optimization and Background Restoration."); });
+    bts.push(() => { reveal(refl); cap("The <b>Reflection Agent</b> (a VLM) compares render to source and <b>loops</b>: render → compare → repair — until they match."); });
+    bts.push(() => { reveal(final); cap("The output: <b>visually faithful HTML</b> that matches the original. Pipeline complete.", "good"); });
+    return bts;
+  }
+
+  const PDEMO_BUILDERS = [buildSegment, buildLocalize, buildAssemble, buildRefine];
+
+  function renderChips(stage) {
+    const agentChips = (stage.agents || []).map(a => `<span class="chip"><i class="fa-solid fa-robot"></i>${a}</span>`).join("");
+    const toolChips  = (stage.tools  || []).map(t => `<span class="chip tool"><i class="fa-solid fa-wrench"></i>${t}</span>`).join("");
+    $("#pdemoChips").innerHTML = agentChips + toolChips;
+  }
+
+  function loadStage(i) {
+    stageIdx = i; beatIdx = 0;
     const s = PIPELINE_STAGES[i];
-    const panel = $("#stagePanel");
-    const agentChips = (s.agents || []).map(a =>
-      `<span class="chip"><i class="fa-solid fa-robot"></i>${a}</span>`).join("");
-    const toolChips = (s.tools || []).map(t =>
-      `<span class="chip" style="color:var(--text-2);background:var(--bg-alt);border-color:var(--border);"><i class="fa-solid fa-wrench"></i>${t}</span>`).join("");
-    const slots = s.slots.map(sl => {
-      const q = sl.position;
-      return `<div class="slot" data-slot="${sl.key}" style="left:${q.left};top:${q.top};width:${q.w};height:${q.h};"></div>`;
-    }).join("");
-    panel.innerHTML = `
-      <div class="stage-panel">
-        <div class="sv-head">
-          <span class="sv-badge">STAGE ${s.id}</span>
-          <h3>${circled(s.id)} ${s.name}: ${s.subtitle}</h3>
-        </div>
-        <div class="stage-stage">
-          <img class="stage-bg" alt="${s.name} flow diagram" src="${s.bg}" onerror="this.style.display='none';">
-          ${slots}
-        </div>
-        <p class="sv-cap" style="margin-top:14px;">${s.caption}</p>
-        <div class="chips">${agentChips}${toolChips}</div>
-      </div>`;
-    // load + reveal each variable slot left-to-right
-    s.slots.forEach((sl, idx) => {
-      const slotEl = $(`[data-slot="${sl.key}"]`, panel);
-      loadImage(slotEl, `static/images/demo/${p.id}/${sl.key}.png`, sl.label);
-      const cap = el("div", "slot-cap", sl.label);
-      slotEl.appendChild(cap);
-      setTimeout(() => slotEl.classList.add("in"), 120 + idx * 420);
-    });
-    updateStageStrip();
-    updateDemoButtons();
+    $("#pdemoBadge").textContent = s.id;
+    $("#pdemoTitle").textContent = `${circled(s.id)} ${s.name}`;
+    $("#pdemoSub").textContent = s.subtitle;
+    $("#pdemoCaption").className = "pdemo-caption";
+    renderChips(s);
+    beats = PDEMO_BUILDERS[i]();
+    updateStagebar();
+    updateScrub();
   }
-
-  function gotoStage(i) {
-    i = Math.max(0, Math.min(PIPELINE_STAGES.length - 1, i));
-    demo.stage = i;
-    demo.running = true;
-    showStage(i);
-    if (i === PIPELINE_STAGES.length - 1) stopPlay();
+  function doBeat() { if (beatIdx < beats.length) { beats[beatIdx](); beatIdx++; updateScrub(); return true; } return false; }
+  function stepForward() {
+    if (beatIdx < beats.length) doBeat();
+    else if (stageIdx < PIPELINE_STAGES.length - 1) { doneStages.add(stageIdx); loadStage(stageIdx + 1); doBeat(); }
+    updateScrub();
   }
-
-  function runPipeline() {
-    if (!demo.presetId) {
-      // auto-pick first preset for convenience
-      selectPreset(PIPELINE_PRESETS[0].id);
-    }
-    demo.running = true;
-    demo.stage = 0;
-    showStage(0);
-    startPlay();
+  function replayTo(target) { loadStage(stageIdx); for (let k = 0; k < target; k++) doBeat(); }
+  function stepBack() {
+    if (beatIdx > 1) replayTo(beatIdx - 1);
+    else if (beatIdx === 1) loadStage(stageIdx);
+    else if (stageIdx > 0) { doneStages.delete(stageIdx - 1); loadStage(stageIdx - 1); for (let k = 0; k < beats.length; k++) doBeat(); }
+    updateScrub();
   }
-
-  function startPlay() {
-    stopPlay();
-    demo.playing = true;
-    setPlayBtn();
-    demo.timer = setInterval(() => {
-      if (demo.stage < PIPELINE_STAGES.length - 1) {
-        gotoStage(demo.stage + 1);
-      } else {
-        stopPlay();
-      }
-    }, 2600);
+  function play() {
+    playing = true; setPlayBtn();
+    const tick = () => {
+      if (!playing) return;
+      if (beatIdx < beats.length) { doBeat(); timer = setTimeout(tick, speed); }
+      else if (stageIdx < PIPELINE_STAGES.length - 1) { doneStages.add(stageIdx); loadStage(stageIdx + 1); timer = setTimeout(tick, speed * 0.6); }
+      else stop();
+    };
+    tick();
   }
-  function stopPlay() {
-    demo.playing = false;
-    if (demo.timer) { clearInterval(demo.timer); demo.timer = null; }
-    setPlayBtn();
-  }
-  function togglePlay() {
-    if (!demo.running) { runPipeline(); return; }
-    if (demo.playing) stopPlay();
-    else {
-      if (demo.stage >= PIPELINE_STAGES.length - 1) demo.stage = -1; // replay from start
-      startPlay();
-      if (demo.stage < 0) gotoStage(0);
-    }
-  }
+  function stop() { playing = false; clearTimeout(timer); setPlayBtn(); }
   function setPlayBtn() {
-    const b = $("#btnPlay");
-    b.innerHTML = demo.playing
+    $("#pdemoPlay").innerHTML = playing
       ? '<i class="fa-solid fa-pause"></i> Pause'
       : '<i class="fa-solid fa-play"></i> Play';
-    b.disabled = !demo.running;
   }
-  function updateDemoButtons() {
-    $("#btnPrev").disabled = !demo.running || demo.stage <= 0;
-    $("#btnNext").disabled = !demo.running || demo.stage >= PIPELINE_STAGES.length - 1;
-    setPlayBtn();
+  function reset() { stop(); doneStages = new Set(); loadStage(0); }
+
+  function buildStagebar() {
+    const bar = $("#pdemoStagebar"); bar.innerHTML = "";
+    PIPELINE_STAGES.forEach((s, i) => {
+      const n = el("div", "pdemo-snode", `<div class="num">${s.id}</div><div class="nm">${s.name}</div>`);
+      n.addEventListener("click", () => { stop(); doneStages = new Set([...Array(i).keys()]); loadStage(i); });
+      bar.appendChild(n);
+      if (i < PIPELINE_STAGES.length - 1) bar.appendChild(el("div", "pdemo-sline", '<div class="fill"></div>'));
+    });
   }
-  function resetDemo() {
-    stopPlay();
-    demo.running = false; demo.stage = -1;
-    if (demo.presetId) selectPreset(demo.presetId);
-    else {
-      $("#stagePanel").innerHTML = `
-        <div class="stage-empty">
-          <div><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-          <p>Select a document above and press <b>Run Pipeline</b> to watch REPLICA reconstruct it stage by stage.</p>
-        </div>`;
-      updateStageStrip();
-    }
-    updateDemoButtons();
+  function updateStagebar() {
+    $$(".pdemo-snode").forEach((n, i) => {
+      n.classList.toggle("on", i === stageIdx);
+      n.classList.toggle("done", doneStages.has(i));
+    });
+    $$(".pdemo-sline .fill").forEach((f, i) => { f.style.width = (doneStages.has(i) || i < stageIdx) ? "100%" : "0"; });
+  }
+  function updateScrub() {
+    $("#pdemoStepCount").textContent = `Stage ${stageIdx + 1} · ${beatIdx}/${beats.length}`;
+    const frac = (stageIdx + beatIdx / (beats.length || 1)) / PIPELINE_STAGES.length;
+    $("#pdemoProg").style.width = (frac * 100) + "%";
+  }
+  function buildPicker() {
+    const p = $("#pdemoDocRow"); p.innerHTML = "";
+    PIPELINE_PRESETS.forEach((d, i) => {
+      const b = el("div", "pdemo-doc" + (i === 0 ? " active" : ""),
+        `<span class="dtag">${d.tag}</span><div class="thumb"></div><div class="dname">${d.label}</div>`);
+      p.appendChild(b);
+      loadImage($(".thumb", b), d.thumb, d.label);
+      b.addEventListener("click", () => {
+        currentDoc = i;
+        $$(".pdemo-doc").forEach(x => x.classList.remove("active"));
+        b.classList.add("active");
+        reset();
+      });
+    });
   }
 
   function initDemo() {
-    renderPresets();
-    renderStageStrip();
-    $("#btnRun").addEventListener("click", runPipeline);
-    $("#btnPlay").addEventListener("click", togglePlay);
-    $("#btnNext").addEventListener("click", () => gotoStage(demo.stage + 1));
-    $("#btnPrev").addEventListener("click", () => { stopPlay(); gotoStage(demo.stage - 1); });
-    $("#btnReset").addEventListener("click", resetDemo);
-    updateDemoButtons();
-    selectPreset(PIPELINE_PRESETS[0].id); // preselect first
+    buildPicker();
+    buildStagebar();
+    loadStage(0);
+    $("#pdemoPlay").addEventListener("click", () => (playing ? stop() : play()));
+    $("#pdemoFwd").addEventListener("click", () => { stop(); stepForward(); });
+    $("#pdemoBack").addEventListener("click", () => { stop(); stepBack(); });
+    $("#pdemoReset").addEventListener("click", reset);
+    $("#pdemoOvClose").addEventListener("click", closeViewer);
+    $$("#pdemoSpeed button").forEach(b => b.addEventListener("click", () => {
+      $$("#pdemoSpeed button").forEach(x => x.classList.remove("on"));
+      b.classList.add("on"); speed = +b.dataset.s;
+    }));
+    $("#pdemoTrack").addEventListener("click", (e) => {
+      const r = e.currentTarget.getBoundingClientRect();
+      const frac = (e.clientX - r.left) / r.width;
+      const t = Math.min(PIPELINE_STAGES.length - 1, Math.max(0, Math.floor(frac * PIPELINE_STAGES.length)));
+      stop(); doneStages = new Set([...Array(t).keys()]); loadStage(t);
+    });
+    // keyboard shortcuts only fire while the pointer is over the demo,
+    // so space/arrow keys don't hijack page scrolling elsewhere
+    let pdemoHover = false;
+    $(".pdemo-wrap").addEventListener("mouseenter", () => pdemoHover = true);
+    $(".pdemo-wrap").addEventListener("mouseleave", () => pdemoHover = false);
+    window.addEventListener("keydown", (e) => {
+      if (!pdemoHover) return;
+      if (e.key === " ") { e.preventDefault(); playing ? stop() : play(); }
+      else if (e.key === "ArrowRight") { stop(); stepForward(); }
+      else if (e.key === "ArrowLeft") { stop(); stepBack(); }
+    });
   }
 
   /* ===================== QUALITATIVE ===================== */
