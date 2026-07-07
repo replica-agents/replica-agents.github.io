@@ -367,6 +367,49 @@
     .pdemo-hint { margin: 0 20px 20px; font-size: 12px; color: var(--text-3); font-family: 'JetBrains Mono', monospace; }
     .pdemo-hint b { color: var(--text-2); }
 
+    /* ---- Reading-Order figure (Assemble stage) ---- */
+    .ro-fig { background: var(--bg-elev); }
+    .ro-svg { width: 100%; height: 100%; display: block; overflow: visible; }
+    .ro-svg .ro-boxrect { fill: color-mix(in srgb, var(--rc) 9%, transparent); stroke: var(--rc); stroke-opacity: .55; stroke-width: .5; }
+    .ro-svg .ro-path { fill: none; stroke: var(--vc); stroke-width: .8; stroke-linejoin: round; stroke-linecap: round; }
+    .ro-svg .ro-path.ghost { stroke-dasharray: 2 2; stroke-opacity: .45; stroke-width: .6; }
+    .ro-svg .ro-node { fill: var(--vc); stroke: #fff; stroke-width: .5; }
+    .ro-svg .ro-num { fill: #fff; font: 700 2.6px 'JetBrains Mono', ui-monospace, monospace; text-anchor: middle; dominant-baseline: central; }
+    .ro-fig .ro-imgfallback { position: absolute; inset: 0; }
+
+    .ro-ribbon {
+      background: var(--bg-elev); border: 1.5px solid var(--border); border-radius: var(--radius-sm, 8px);
+      display: flex; flex-direction: column; padding: 8px 8px; overflow: hidden;
+    }
+    .ro-ribbon.is-naive { border-color: #e0574a; }
+    .ro-ribbon.is-correct { border-color: #1f9d7c; }
+    .ro-ribbon.is-think { border-style: dashed; }
+    .ro-ribbon-head {
+      display: flex; align-items: center; gap: 6px; font: 700 9px/1.2 'JetBrains Mono', monospace;
+      letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); margin-bottom: 7px; flex: none;
+    }
+    .ro-ribbon.is-naive .ro-ribbon-head { color: #e0574a; }
+    .ro-ribbon.is-correct .ro-ribbon-head { color: #1f9d7c; }
+    .ro-stream { display: flex; flex-direction: column; gap: 4px; overflow-y: auto; min-height: 0; padding-right: 2px; }
+    .ro-chip {
+      display: flex; gap: 6px; align-items: baseline; padding: 4px 6px; border-radius: 5px;
+      border-left: 3px solid var(--rc); background: color-mix(in srgb, var(--rc) 11%, var(--bg-elev));
+    }
+    .ro-chip .ro-chip-n { font: 700 9px/1 'JetBrains Mono', monospace; color: var(--rc); flex: none; min-width: 12px; }
+    .ro-chip .ro-chip-b { min-width: 0; }
+    .ro-chip .ro-chip-tag { display: block; font: 700 7.5px/1 'JetBrains Mono', monospace; letter-spacing: .06em; color: var(--rc); margin-bottom: 2px; }
+    .ro-chip .ro-chip-t { display: block; font-size: 10px; line-height: 1.25; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ro-cands { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; min-height: 0; }
+    .ro-cand-tag { font: 700 8px/1 'JetBrains Mono', monospace; color: var(--text-3); margin-bottom: 3px; display: block; }
+    .ro-cand .ro-dots { display: flex; flex-wrap: wrap; gap: 3px; }
+    .ro-dot { width: 12px; height: 12px; border-radius: 3px; background: color-mix(in srgb, var(--rc) 45%, transparent); border: 1px solid var(--rc); }
+    .ro-cand { opacity: .7; }
+
+    @media (max-width: 700px) {
+      .ro-chip .ro-chip-t { font-size: 8.5px; }
+      .ro-ribbon-head { font-size: 8px; }
+    }
+
     @media (prefers-reduced-motion: reduce) { .pdemo-slot, .pdemo-caption, .pdemo-liftbox { transition: none; } }
 
     /* ==================== QUALITATIVE ==================== */
@@ -1124,10 +1167,114 @@
     { id: "gov",       label: "Government Notice",  tag: "scanned", thumb: "static/images/demo/gov/thumb.png",       lift: { x: 8,  y: 14, w: 80, h: 16 } },
     { id: "magazine",  label: "Magazine",           tag: "scanned", thumb: "static/images/demo/magazine/thumb.png",  lift: { x: 6,  y: 20, w: 44, h: 18 } },
     { id: "financial", label: "Financial Document", tag: "digital", thumb: "static/images/demo/financial/thumb.png", lift: { x: 8,  y: 10, w: 80, h: 14 } },
-    { id: "idcert",    label: "ID / Certificate",   tag: "scanned", thumb: "static/images/demo/idcert/thumb.png",    lift: { x: 10, y: 12, w: 70, h: 20 } },
-    { id: "form",      label: "Form",               tag: "digital", thumb: "static/images/demo/form/thumb.png",     lift: { x: 8,  y: 8,  w: 84, h: 30 } },
+    { id: "newspaper", label: "Newspaper",          tag: "scanned", thumb: "static/images/demo/newspaper/thumb.png", lift: { x: 4,  y: 12, w: 44, h: 20 } },
   ];
   const demoSrc = (presetId, key) => `static/images/demo/${presetId}/${key}.png`;
+
+  // ---- Reading-Order data (drives the Assemble stage figure) ----------
+  // Each entry is a document whose regions get a live trajectory + a
+  // linearized ribbon — NO hand-drawn images needed. Drop one clean
+  // screenshot of the document at static/images/demo/{id}/S3_reading.png;
+  // the demo draws the numbered path and the ribbon from `blocks`.
+  //
+  //   blocks[]  each region:  id, c(olor key), tag, text snippet, and a
+  //             bbox as FRACTIONS of the image: x,y = top-left, w,h = size.
+  //             Tune these against your real screenshot — they're estimates.
+  //   naive[]   arrival / raster reading order (the WRONG stream)
+  //   correct[] semantically correct reading order (the RIGHT stream)
+  //   ar        fallback height/width ratio (auto-corrected once img loads)
+  const RO_RC = { hdr:"#64748b", a:"#35688f", b:"#b4690e", c:"#7c6f9c", tbl:"#4f8a73", ftr:"#8a8d93" };
+  const RO_DATA = {
+    magazine: {
+      id:"magazine", img:"S3_reading", ar:1.30,
+      blocks:[
+        { id:"title", c:"hdr", tag:"TITLE",  text:"返老还童 (Benjamin Button)",              x:.28, y:.05, w:.44, h:.05 },
+        { id:"byl",   c:"hdr", tag:"BYLINE",  text:"F.S. 菲茨杰拉德 · 陈欣 译",                x:.24, y:.11, w:.48, h:.03 },
+        { id:"L1",    c:"a",   tag:"COL 1",   text:"早在 1860 年，在家生孩子还是件合情合理的事…",  x:.06, y:.16, w:.26, h:.35 },
+        { id:"L2",    c:"a",   tag:"COL 1",   text:"在这家专为名媛绅士服务的私人医院的 2 楼大厅里…", x:.06, y:.53, w:.26, h:.34 },
+        { id:"M1",    c:"b",   tag:"COL 2",   text:"房间——时兴的叫法是“啼哭室”。他们走了进去…",      x:.37, y:.15, w:.26, h:.36 },
+        { id:"M2",    c:"b",   tag:"COL 2",   text:"巴顿先生的额头上冒着冷汗。他闭上双眼，又睁开…",  x:.37, y:.53, w:.26, h:.34 },
+        { id:"R1",    c:"c",   tag:"COL 3",   text:"巴顿先生一屁股跌坐在儿子近旁的椅子上…",        x:.68, y:.15, w:.26, h:.34 },
+        { id:"R2",    c:"c",   tag:"COL 3",   text:"但巴顿先生还是坚持认为，本杰明既是个婴儿…",      x:.68, y:.51, w:.26, h:.34 },
+        { id:"pg",    c:"ftr", tag:"FOLIO",   text:"4 · 读者 2018·1",                         x:.05, y:.93, w:.16, h:.04 },
+      ],
+      naive:  ["title","byl","L1","M1","R1","L2","M2","R2","pg"],
+      correct:["title","byl","L1","L2","M1","M2","R1","R2","pg"],
+      cap:{
+        naive:"Read in <b>arrival / raster order</b>, the three columns interleave — the story jumps mid-sentence from column&nbsp;1 to&nbsp;2 to&nbsp;3. <b>This is what reading order fixes.</b>",
+        think:"The <b>Reading-Order Agent</b> scores candidate sequences on spatial layout &amp; textual continuity — a left-to-right raster scan vs. a column-major scan…",
+        correct:"…and locks onto <b>column-major order</b>: finish column&nbsp;1 top-to-bottom, then&nbsp;2, then&nbsp;3. The prose now reads as one continuous story.",
+      },
+    },
+    newspaper: {
+      id:"newspaper", img:"S3_reading", ar:1.64,
+      blocks:[
+        { id:"mast", c:"hdr", tag:"MASTHEAD", text:"మన తెలంగాణ · హైదరాబాద్ · పేజీ 12",                  x:.02, y:.02, w:.96, h:.035 },
+        { id:"ban",  c:"hdr", tag:"HEADLINE", text:"మీ ఆడబిడ్డగా ఆశీర్వదించండి",                        x:.22, y:.06, w:.56, h:.045 },
+        { id:"L1",   c:"a",   tag:"COL 1",    text:"పోస్టల్ బ్యాలెట్ ద్వారా ఓటు హక్కు వినియోగించుకోవాలి",  x:.03, y:.14, w:.16, h:.18 },
+        { id:"L2",   c:"a",   tag:"COL 1",    text:"సైబర్ నేరాలపట్ల జాగ్రత్తగా ఉండాలి",                   x:.03, y:.34, w:.16, h:.30 },
+        { id:"C1",   c:"b",   tag:"COL 2",    text:"మెడక్ ఎమ్మెల్యే అభ్యర్థి పద్మా దేవేందర్‌రెడ్డి…",       x:.21, y:.12, w:.36, h:.20 },
+        { id:"C2",   c:"b",   tag:"COL 2",    text:"మంత్రి హరీశ్‌రావుకే మా మద్దతు",                       x:.21, y:.34, w:.36, h:.24 },
+        { id:"C3",   c:"b",   tag:"COL 2",    text:"వంద శాతం ఓటింగే లక్ష్యం",                            x:.21, y:.60, w:.36, h:.30 },
+        { id:"R1",   c:"c",   tag:"COL 3",    text:"నేడు బీఆర్ఎస్ ఎమ్మెల్యే అభ్యర్థి భూపాల్‌రెడ్డి నామినేషన్", x:.60, y:.12, w:.37, h:.22 },
+        { id:"R2",   c:"c",   tag:"COL 3",    text:"ఖేడ్ ఆర్‌వో కార్యాలయాన్ని సందర్శించిన ఎన్నికల అధికారి",  x:.60, y:.36, w:.37, h:.22 },
+        { id:"R3",   c:"c",   tag:"COL 3",    text:"నేడు రెండు నామినేషన్లు దాఖలు",                       x:.60, y:.60, w:.37, h:.30 },
+      ],
+      naive:  ["mast","ban","L1","C1","R1","L2","C2","R2","C3","R3"],
+      correct:["mast","ban","L1","L2","C1","C2","C3","R1","R2","R3"],
+      cap:{
+        naive:"A dense multi-column page read in <b>raster order</b> ping-pongs across every column — headlines, bodies and unrelated stories collide. <b>Worst-case for naive order.</b>",
+        think:"The <b>Reading-Order Agent</b> tests band-scan vs. column-major routes, scoring each on coherence between adjacent regions…",
+        correct:"…and commits to <b>column-by-column</b> flow — each story stays whole and in sequence before the next column begins.",
+      },
+    },
+    gov: {
+      id:"gov", img:"S3_reading", ar:1.34,
+      blocks:[
+        { id:"logo", c:"hdr", tag:"EMBLEM",  text:"CSIR–IMMT emblem",                                              x:.03, y:.03, w:.12, h:.08 },
+        { id:"ttl",  c:"hdr", tag:"HEADER",  text:"CSIR – Institute of Minerals & Materials Technology, Bhubaneswar", x:.17, y:.03, w:.80, h:.08 },
+        { id:"meta", c:"hdr", tag:"META",    text:"Advt. PME/P65/2023 · Post 6502 · Interview 04.08.2023 · 08 applied, 05 interviewed", x:.04, y:.14, w:.92, h:.14 },
+        { id:"in1",  c:"b",   tag:"INTRO",   text:"The following candidate(s) are found suitable for engagement in order of merit.", x:.04, y:.30, w:.92, h:.05 },
+        { id:"hs",   c:"tbl", tag:"HEADING", text:"Select List",                                                    x:.42, y:.37, w:.16, h:.03 },
+        { id:"ts",   c:"tbl", tag:"TABLE",   text:"1 · Bibhu Bhusan Sha · Gen · Project Associate-II · 28000/- · 09.05.2025", x:.04, y:.41, w:.92, h:.08 },
+        { id:"in2",  c:"b",   tag:"INTRO",   text:"The following candidate(s) are found suitable as Wait Listed (WL) in order of merit.", x:.04, y:.51, w:.92, h:.05 },
+        { id:"hw",   c:"tbl", tag:"HEADING", text:"Waiting List",                                                   x:.42, y:.57, w:.16, h:.03 },
+        { id:"tw",   c:"tbl", tag:"TABLE",   text:"1 · Birupakshya Mishra · Gen  ·  2 · Shantanu Kumar Maity · OBC",  x:.04, y:.61, w:.92, h:.10 },
+        { id:"nb",   c:"ftr", tag:"NOTES",   text:"N.B. — selection provisional; published on website; offer subject to funds; WL preferred if selectee declines.", x:.04, y:.73, w:.92, h:.16 },
+        { id:"sig",  c:"ftr", tag:"SIGN",    text:"Sd/- Director",                                                  x:.80, y:.92, w:.17, h:.05 },
+      ],
+      naive:  ["logo","ttl","meta","in1","in2","hs","hw","ts","tw","nb","sig"],
+      correct:["logo","ttl","meta","in1","hs","ts","in2","hw","tw","nb","sig"],
+      cap:{
+        naive:"Even a single-column notice breaks: a raster scan groups the two centred headings and both tables together, <b>detaching each list from the sentence that introduces it.</b>",
+        think:"The <b>Reading-Order Agent</b> re-associates each heading and table with its introducing sentence using vertical adjacency &amp; text cues…",
+        correct:"…restoring the intended flow — <b>intro → Select List → table</b>, then <b>intro → Waiting List → table</b>, notes, signature.",
+      },
+    },
+    financial: {
+      id:"financial", img:"S3_reading", ar:2.90,
+      blocks:[
+        { id:"biz",  c:"hdr", tag:"MERCHANT", text:"VIVOPAC MARKETING SDN BHD · Taman Segar, 56100 KL · Tel 03-91334364", x:.06, y:.03, w:.88, h:.09 },
+        { id:"inv",  c:"hdr", tag:"DOC TYPE", text:"TAX INVOICE",                                x:.06, y:.13, w:.50, h:.03 },
+        { id:"meta", c:"hdr", tag:"META",     text:"Doc CS21532619 · 17/01/2017 · Terminal T02 · Cashier AI", x:.06, y:.20, w:.88, h:.07 },
+        { id:"d1",   c:"a",   tag:"ITEM",     text:"PP-14x20 0.04mm · 1.00 PKT × 14.60",         x:.06, y:.30, w:.52, h:.05 },
+        { id:"a1",   c:"tbl", tag:"AMOUNT",   text:"14.60 SR",                                   x:.62, y:.30, w:.32, h:.05 },
+        { id:"d2",   c:"a",   tag:"ITEM",     text:"PP-16x26 0.04mm · 1.00 PKT × 14.60",         x:.06, y:.36, w:.52, h:.05 },
+        { id:"a2",   c:"tbl", tag:"AMOUNT",   text:"14.60 SR",                                   x:.62, y:.36, w:.32, h:.05 },
+        { id:"d3",   c:"a",   tag:"ITEM",     text:"24x28 (75HT) Red · 1.00 PKT × 6.00",         x:.06, y:.42, w:.52, h:.05 },
+        { id:"a3",   c:"tbl", tag:"AMOUNT",   text:"6.00 SR",                                    x:.62, y:.42, w:.32, h:.05 },
+        { id:"tot",  c:"b",   tag:"TOTALS",   text:"Sub-total 44.00 · GST 6% 2.64 · Rounded Total RM 46.65", x:.06, y:.62, w:.88, h:.12 },
+        { id:"ft",   c:"ftr", tag:"TERMS",    text:"Terms: goods not refundable; exchange within 7 days with receipt.", x:.06, y:.80, w:.88, h:.14 },
+      ],
+      naive:  ["biz","inv","meta","d1","d2","d3","a1","a2","a3","tot","ft"],
+      correct:["biz","inv","meta","d1","a1","d2","a2","d3","a3","tot","ft"],
+      cap:{
+        naive:"Tabular data read <b>column-first</b> pulls every item description, then every price — so <b>amounts detach from the items they belong to.</b>",
+        think:"The <b>Reading-Order Agent</b> detects the row structure and tests row-major vs. column-major traversal of the line items…",
+        correct:"…and reads <b>row-major</b> — each item immediately followed by its amount — keeping every price with its product.",
+      },
+    },
+  };
 
   // ---- Localize stage: specialist agents whose sub-HTML output cycles
   // through the click-to-inspect panel -------------------------------
@@ -1586,24 +1733,165 @@
     return bts;
   }
 
+  // Positioned canvas panel (like slotEl but no image / no arrow anchor).
+  function boxEl(x, y, w, h, cls) {
+    const s = el("div", "pdemo-slot" + (cls ? " " + cls : ""));
+    s.style.left = x + "%"; s.style.top = y + "%"; s.style.width = w + "%"; s.style.height = h + "%";
+    CV().appendChild(s);
+    return s;
+  }
+
+  // Reading-order figure: the document image + a live numbered trajectory
+  // overlay. `.set(variant)` redraws the path for naive/think/correct.
+  function buildROFigure(slot, doc) {
+    slot.classList.add("ro-fig");
+    const byId = {}; doc.blocks.forEach(b => byId[b.id] = b);
+    const svg = svgEl("svg", { class: "ro-svg", preserveAspectRatio: "xMidYMid meet" });
+    let H = Math.round(100 * (doc.ar || 1.3));
+    svg.setAttribute("viewBox", `0 0 100 ${H}`);
+    const src = demoSrc(doc.id, doc.img);
+    const im = svgEl("image", { x: 0, y: 0, width: 100, height: H, preserveAspectRatio: "none", opacity: ".96" });
+    im.setAttribute("href", src);
+    im.setAttributeNS("http://www.w3.org/1999/xlink", "href", src);
+    const gBoxes = svgEl("g", {});
+    const gPath  = svgEl("g", {});
+    svg.appendChild(im); svg.appendChild(gBoxes); svg.appendChild(gPath);
+    slot.appendChild(svg);
+
+    // draw faint region outlines (constant across variants)
+    function drawBoxes() {
+      gBoxes.innerHTML = "";
+      doc.blocks.forEach(b => {
+        const r = svgEl("rect", {
+          x: (b.x * 100).toFixed(2), y: (b.y * H).toFixed(2),
+          width: (b.w * 100).toFixed(2), height: (b.h * H).toFixed(2),
+          rx: 1.2, class: "ro-boxrect", style: "--rc:" + RO_RC[b.c],
+        });
+        gBoxes.appendChild(r);
+      });
+    }
+    const cx = b => (b.x + b.w / 2) * 100, cy = b => (b.y + b.h / 2) * H;
+    function pathD(order) {
+      return order.map((id, i) => (i ? "L" : "M") + cx(byId[id]).toFixed(2) + " " + cy(byId[id]).toFixed(2)).join(" ");
+    }
+    let variant = "naive";
+    function draw() {
+      drawBoxes();
+      gPath.innerHTML = "";
+      const vc = variant === "naive" ? "#e0574a" : variant === "correct" ? "#1f9d7c" : "#8a8d93";
+      slot.style.setProperty("--vc", vc);
+      if (variant === "think") {
+        [doc.naive, doc.correct].forEach(order => {
+          gPath.appendChild(svgEl("path", { d: pathD(order), class: "ro-path ghost" }));
+        });
+        doc.blocks.forEach(b => {
+          gPath.appendChild(svgEl("circle", { cx: cx(b).toFixed(2), cy: cy(b).toFixed(2), r: 2.6, class: "ro-node", style: "--vc:#8a8d93" }));
+          const t = svgEl("text", { x: cx(b).toFixed(2), y: cy(b).toFixed(2), class: "ro-num" }); t.textContent = "?";
+          gPath.appendChild(t);
+        });
+      } else {
+        const order = variant === "correct" ? doc.correct : doc.naive;
+        gPath.appendChild(svgEl("path", { d: pathD(order), class: "ro-path" }));
+        order.forEach((id, i) => {
+          const b = byId[id];
+          gPath.appendChild(svgEl("circle", { cx: cx(b).toFixed(2), cy: cy(b).toFixed(2), r: 2.6, class: "ro-node" }));
+          const t = svgEl("text", { x: cx(b).toFixed(2), y: cy(b).toFixed(2), class: "ro-num" }); t.textContent = String(i + 1);
+          gPath.appendChild(t);
+        });
+      }
+    }
+    // correct viewBox to the true image aspect once it loads, then redraw
+    const probe = new Image();
+    probe.onload = () => {
+      if (probe.naturalWidth) {
+        H = Math.round(100 * probe.naturalHeight / probe.naturalWidth);
+        svg.setAttribute("viewBox", `0 0 100 ${H}`);
+        im.setAttribute("height", H);
+        draw();
+      }
+    };
+    probe.onerror = () => {
+      // no screenshot yet: show a labelled placeholder behind the overlay
+      im.setAttribute("opacity", "0");
+      if (!slot.querySelector(".ro-imgfallback")) {
+        const ph = el("div", "ro-imgfallback");
+        ph.innerHTML = placeholderHTML(src, "Drop document image here → " + src);
+        slot.insertBefore(ph, svg);
+      }
+      draw();
+    };
+    probe.src = src;
+    draw();
+    return { el: slot, set(v) { variant = v; draw(); } };
+  }
+
+  // Linearized ribbon: the document read as one stream, region-tinted.
+  function buildRORibbon(slot, doc) {
+    slot.classList.add("ro-ribbon");
+    const byId = {}; doc.blocks.forEach(b => byId[b.id] = b);
+    function chip(id, n) {
+      const b = byId[id];
+      const c = el("div", "ro-chip"); c.style.setProperty("--rc", RO_RC[b.c]);
+      c.innerHTML = `<span class="ro-chip-n">${n}</span><span class="ro-chip-b"><span class="ro-chip-tag">${b.tag}</span><span class="ro-chip-t">${b.text}</span></span>`;
+      return c;
+    }
+    function set(variant) {
+      slot.classList.remove("is-naive", "is-think", "is-correct");
+      slot.classList.add("is-" + variant);
+      if (variant === "think") {
+        slot.innerHTML = `<div class="ro-ribbon-head"><i class="fa-solid fa-magnifying-glass"></i>Candidate orders — scoring coherence</div>`;
+        const wrap = el("div", "ro-cands");
+        [["Candidate A · raster scan", doc.naive], ["Candidate B · column-major", doc.correct]].forEach(([tag, order]) => {
+          const cd = el("div", "ro-cand");
+          const dots = order.map(id => `<span class="ro-dot" style="--rc:${RO_RC[byId[id].c]}"></span>`).join("");
+          cd.innerHTML = `<span class="ro-cand-tag">${tag}</span><div class="ro-dots">${dots}</div>`;
+          wrap.appendChild(cd);
+        });
+        slot.appendChild(wrap);
+        return;
+      }
+      const label = variant === "naive"
+        ? `<i class="fa-solid fa-xmark"></i>Extraction stream — DOM ≠ reading order`
+        : `<i class="fa-solid fa-check"></i>Extraction stream — DOM = reading order`;
+      slot.innerHTML = `<div class="ro-ribbon-head">${label}</div>`;
+      const stream = el("div", "ro-stream");
+      const order = variant === "correct" ? doc.correct : doc.naive;
+      order.forEach((id, i) => stream.appendChild(chip(id, i + 1)));
+      slot.appendChild(stream);
+    }
+    return { el: slot, set };
+  }
+
   function buildAssemble() {
     clearCanvas(); ensureArrowLayer(); const bts = [];
-    const frags     = slotEl("S3_fragments",   1,  16, 22, 68, "Collection of sub-HTML fragments (from Localize)");
-    const roNaive   = slotEl("S3_ro_naive",   26,   6, 44, 88, "Reading order — naive/arrival order (WRONG)");
-    const roThink   = slotEl("S3_ro_thinking",26,   6, 44, 88, "Reading order — candidate orderings being evaluated");
-    const roCorrect = slotEl("S3_ro_correct", 26,   6, 44, 88, "Reading order — correct order (RIGHT)");
-    const agent     = slotEl("S3_agent",      72,  20, 12, 24, "Reading-Order Agent");
-    const merge     = slotEl("S3_merge",      85,  20, 13, 24, "Position-Aware Merge");
-    const final     = slotEl("S3_final",      72,  50, 26, 44, "Initial HTML document (output → Refine)");
+    const doc = RO_DATA[PIPELINE_PRESETS[currentDoc].id];
+    const frags = slotEl("S3_fragments", 1, 16, 20, 68, "Collection of sub-HTML fragments (from Localize)");
+    const agent = slotEl("S3_agent", 77, 6,  21, 20, "Reading-Order Agent");
+    const merge = slotEl("S3_merge", 77, 34, 21, 18, "Position-Aware Merge");
+    const final = slotEl("S3_final", 77, 56, 21, 40, "Initial HTML document (output → Refine)");
     connect("S3_fragments", "S3_agent");
     connect("S3_agent", "S3_merge");
     connect("S3_merge", "S3_final");
+
+    if (!doc) {
+      // presets without reading-order data fall back to the fragment story
+      const note = slotEl("S3_reading", 26, 6, 44, 88, "Reading-order figure (add S3_reading.png + RO_DATA entry)");
+      drawArrows();
+      bts.push(() => { reveal(frags); cap("The parallel specialists produced fragments <b>out of order</b> — we can't just concatenate them."); });
+      bts.push(() => { reveal(note); reveal(agent); cap("The <b>Reading-Order Agent</b> evaluates candidate sequences using spatial &amp; textual coherence for this document…"); });
+      bts.push(() => { cap("…and <b>locks onto the correct reading order</b> — the stream now reads coherently.", "good"); });
+      bts.push(() => { reveal(merge); reveal(final); cap("<b>Ordering first, then merging:</b> the Position-Aware Merge composes fragments by coordinates in that order → one <b>Initial HTML document</b>. → Refine."); });
+      return bts;
+    }
+
+    const fig = buildROFigure(boxEl(23, 4, 32, 92), doc);
+    const rib = buildRORibbon(boxEl(57, 7, 18, 86), doc);
     drawArrows();
-    bts.push(() => { reveal(frags); cap("The parallel specialists produced fragments <b>out of order</b> — we can't just concatenate them."); });
-    bts.push(() => { reveal(roNaive); cap("Read in <b>arrival order</b>, the page is gibberish — the reader jumps across columns and sections. <b>This is the problem reading order solves.</b>", "warn"); });
-    bts.push(() => { roNaive.classList.remove("show"); reveal(roThink); reveal(agent); cap("The <b>Reading-Order Agent</b> evaluates many possible sequences using spatial &amp; textual coherence…"); });
-    bts.push(() => { roThink.classList.remove("show"); reveal(roCorrect); cap("…and <b>locks onto the correct reading order</b> — top-to-bottom, column-by-column, captions with their figures.", "good"); });
-    bts.push(() => { reveal(merge); reveal(final); cap("<b>Ordering first, then merging:</b> the Position-Aware Merge tool composes fragments by coordinates in that order → one <b>Initial HTML document</b>. → Refine."); });
+    bts.push(() => { reveal(frags); cap("The parallel specialists produced fragments <b>out of order</b> — we can't just concatenate them. The page looks fine either way; the <b>HTML source order</b> is what breaks."); });
+    bts.push(() => { reveal(fig.el); reveal(rib.el); fig.set("naive"); rib.set("naive"); cap(doc.cap.naive, "warn"); });
+    bts.push(() => { reveal(agent); fig.set("think"); rib.set("think"); cap(doc.cap.think); });
+    bts.push(() => { fig.set("correct"); rib.set("correct"); cap(doc.cap.correct, "good"); });
+    bts.push(() => { reveal(merge); reveal(final); cap("<b>Ordering first, then merging:</b> the Position-Aware Merge composes fragments by coordinates in that order → one <b>Initial HTML document</b>. → Refine."); });
     return bts;
   }
 
