@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>REPLICA — Visually Faithful Document Reconstruction</title>
-  <meta name="description" content="REPLICA: An Agentic Framework for Visually Faithful Document Reconstruction. ICDAR 2026." />
+  <meta name="description" content="REPLICA: An Agentic Framework for Visually Faithful Document Reconstruction. ICDAR 2026 (Oral Presentation)." />
 
   <!-- Favicon (placeholder path; drop a real static/images/favicon.png later) -->
   <link rel="icon" type="image/png" href="static/images/favicon.png" />
@@ -88,6 +88,7 @@
     code, .mono { font-family: 'JetBrains Mono', monospace; }
 
     .container { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+    .container.wide { max-width: 1340px; }
     section { padding: 72px 0; }
     section.alt { background: var(--bg-alt); }
     .section-head { text-align: center; margin-bottom: 44px; }
@@ -153,6 +154,11 @@
       display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 700;
       color: var(--accent); background: var(--accent-soft); border: 1px solid var(--accent-soft-2);
       padding: 6px 14px; border-radius: 999px; margin-bottom: 22px;
+    }
+    .venue-badge .oral {
+      color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      font-weight: 800; padding: 2px 9px; border-radius: 999px; letter-spacing: .01em;
+      box-shadow: var(--shadow-sm);
     }
     .hero h1 {
       font-size: clamp(30px, 5.4vw, 54px); font-weight: 900; letter-spacing: -0.035em;
@@ -299,8 +305,8 @@
     .pdemo-sub { color: var(--text-2); font-size: 13.5px; }
 
     .pdemo-body { position: relative; }
-    .pdemo-canvas { position: relative; width: 100%; aspect-ratio: 16 / 7; }
-    @media (max-width: 700px) { .pdemo-canvas { aspect-ratio: 16 / 11; } }
+    .pdemo-canvas { position: relative; width: 100%; aspect-ratio: 16 / 9; }
+    @media (max-width: 700px) { .pdemo-canvas { aspect-ratio: 4 / 5; } }
     .pdemo-arrows { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
     .pdemo-arrow { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; opacity: 0; transition: opacity .45s ease; }
     .pdemo-arrow.show { opacity: .55; }
@@ -327,13 +333,49 @@
       position: absolute; right: 0; top: 0; width: 0; height: 100%; background: var(--bg-elev);
       border-left: 1px solid var(--border); overflow: hidden; transition: width .35s; z-index: 5;
     }
-    .pdemo-outviewer.open { width: min(320px, 82%); box-shadow: var(--shadow-lg); }
+    .pdemo-outviewer.open { width: min(340px, 86%); box-shadow: var(--shadow-lg); }
     .pdemo-outviewer .ov-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--border); }
     .pdemo-outviewer .ov-head .t { font-size: 13px; font-weight: 700; color: var(--text); }
     .pdemo-outviewer .ov-head .x { cursor: pointer; color: var(--text-3); font-size: 18px; border: none; background: none; line-height: 1; }
     .pdemo-outviewer .ov-body { padding: 12px; height: calc(100% - 46px); overflow: auto; }
     .pdemo-outviewer .ov-body img { width: 100%; border: 1px solid var(--border); border-radius: 6px; }
     .pdemo-outviewer .ov-hint { font-size: 11px; color: var(--text-3); margin-top: 10px; font-family: 'JetBrains Mono', monospace; }
+    .pdemo-outviewer .ov-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 8px; }
+    .pdemo-outviewer .ov-tag { font-size: 10.5px; font-weight: 800; color: #fff; padding: 2px 8px; border-radius: 999px; }
+    .pdemo-outviewer .ov-chip { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--text-3); border: 1px solid var(--border); border-radius: 999px; padding: 2px 7px; }
+    .fid-code.ovcode { font-size: 10.5px; line-height: 1.6; padding: 10px 12px; max-height: none; border: 1px solid var(--border); border-radius: 8px; box-shadow: none; }
+
+    /* Localize: context packet (crop + bbox + OCR) */
+    .pdemo-packet { position: absolute; opacity: 0; transform: translateY(8px); transition: opacity .5s ease, transform .5s ease; display: flex; flex-direction: column; gap: 5px; padding: 7px; border: 1px solid var(--border-strong); border-radius: 10px; background: var(--bg-elev); box-shadow: var(--shadow-md); overflow: hidden; }
+    .pdemo-packet.show { opacity: 1; transform: none; }
+    .pdemo-packet.pop { animation: pkpop .4s ease; }
+    @keyframes pkpop { from { transform: scale(.97); } to { transform: none; } }
+    .pdemo-packet .pk-name { font-size: 10px; font-weight: 800; color: var(--text); text-transform: uppercase; letter-spacing: .04em; }
+    .pdemo-packet .pk-crop { position: relative; overflow: hidden; width: 100%; flex: 0 0 auto; height: 48%; align-self: center; border: 2px solid var(--accent); border-radius: 6px; background-color: #fff; }
+    .pdemo-packet .pk-crop img { display: block; max-width: none; }
+    .pdemo-packet .pk-field { display: flex; gap: 6px; align-items: flex-start; font-size: 9.5px; line-height: 1.35; }
+    .pdemo-packet .pk-k { flex: 0 0 auto; font-weight: 700; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+    .pdemo-packet .pk-k i { font-size: 8.5px; }
+    .pdemo-packet .pk-bbox { font-family: 'JetBrains Mono', monospace; color: var(--text-2); }
+    .pdemo-packet .pk-ocr { color: var(--text-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    /* Localize: Router box */
+    .pdemo-router { position: absolute; opacity: 0; transform: translateY(8px); transition: opacity .5s ease, transform .5s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center; border-radius: 12px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; box-shadow: var(--shadow-md); font-weight: 800; font-size: 11px; line-height: 1.15; }
+    .pdemo-router.show { opacity: 1; transform: none; }
+    .pdemo-router i { font-size: 17px; }
+    /* Localize: specialist badges */
+    .pdemo-sbadge { position: absolute; opacity: 0; transform: translateX(6px); transition: opacity .4s ease, transform .4s ease, box-shadow .25s ease, border-color .25s ease, background .25s ease; display: flex; align-items: center; gap: 7px; padding: 0 9px; border: 1px solid var(--border); border-radius: 9px; background: var(--card); cursor: pointer; box-shadow: var(--shadow-sm); font-size: 11px; font-weight: 700; color: var(--text-2); overflow: hidden; }
+    .pdemo-sbadge.show { opacity: 1; transform: none; }
+    .pdemo-sbadge > i:first-child { font-size: 14px; color: var(--agc); flex: 0 0 auto; }
+    .pdemo-sbadge .sp-ic { margin-left: auto; font-size: 10px; color: var(--text-3); flex: 0 0 auto; }
+    .pdemo-sbadge.routed .sp-ic { color: var(--agc); }
+    .pdemo-sbadge span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1 1 auto; }
+    .pdemo-sbadge:hover { border-color: var(--agc); }
+    .pdemo-sbadge.routed { border-color: var(--agc); color: var(--text); box-shadow: 0 0 0 3px color-mix(in srgb, var(--agc) 22%, transparent); background: color-mix(in srgb, var(--agc) 12%, var(--card)); }
+    .pdemo-sbadge.pinned { outline: 2px solid var(--agc); outline-offset: 1px; }
+    /* Localize: collection tray */
+    .pdemo-collect { position: absolute; opacity: 0; transform: translateY(8px); transition: opacity .5s ease, transform .5s ease; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--border-strong); border-radius: 10px; background: var(--bg-alt); color: var(--text-2); font-size: 11px; font-weight: 700; }
+    .pdemo-collect.show { opacity: 1; transform: none; }
+    .pdemo-collect i { color: var(--accent); }
 
     .pdemo-caption {
       margin: 16px 20px 0; font-size: 13.5px; color: var(--text-2); background: var(--bg-alt);
@@ -414,8 +456,8 @@
 
     /* ==================== QUALITATIVE ==================== */
     .qual-wrap { }
-    .qual-stage { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-    @media (max-width: 760px) { .qual-stage { grid-template-columns: 1fr; } }
+    .qual-stage { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+    @media (max-width: 820px) { .qual-stage { grid-template-columns: 1fr; } }
     .qual-col .qc-head {
       display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700;
       text-transform: uppercase; letter-spacing: .05em; margin-bottom: 10px; color: var(--text-2);
@@ -423,6 +465,16 @@
     .qual-col.replica .qc-head { color: var(--accent); }
     .qual-col .qc-head .badge-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--text-3); }
     .qual-col.replica .qc-head .badge-dot { background: var(--accent); }
+    .qual-col .qc-head .live-tag {
+      margin-left: auto; font-size: 10.5px; font-weight: 700; text-transform: none; letter-spacing: 0;
+      color: var(--accent); background: var(--accent-soft); border: 1px solid var(--accent-soft-2);
+      border-radius: 999px; padding: 2px 9px; display: inline-flex; align-items: center; gap: 5px;
+    }
+    /* replica rendered as a live, scaled FID-HTML iframe — real selectable text */
+    .qual-replica { position: relative; overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius); background: #fff; box-shadow: var(--shadow-md); }
+    .qual-replica iframe { position: absolute; top: 0; left: 0; border: 0; transform-origin: top left; background: #fff; }
+    .qual-replica > img { display: block; width: 100%; height: auto; }
+    .qual-replica.loading::after { content: "Rendering FID-HTML…"; position: absolute; inset: 0; display: grid; place-items: center; color: var(--text-3); font-size: 13px; font-family: 'JetBrains Mono', monospace; }
     .qual-caption { text-align: center; margin: 20px auto 18px; max-width: 720px; color: var(--text-2); font-size: 15px; }
     .qual-caption .qtype { display: inline-block; font-size: 12px; font-weight: 700; color: var(--accent); background: var(--accent-soft); padding: 3px 11px; border-radius: 999px; margin-bottom: 8px; }
     .qual-nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 8px; }
@@ -443,6 +495,23 @@
     .thumb-strip .tsi .img-ph { min-height: 0; height: 100%; padding: 4px; border: none; }
     .thumb-strip .tsi .img-ph i { font-size: 13px; }
     .thumb-strip .tsi .img-ph .fn, .thumb-strip .tsi .img-ph .lbl { display: none; }
+
+    /* ==================== FRAGMENT STACK ==================== */
+    .frag-stack { position: relative; width: 100%; height: 100%; padding: 0; overflow-y: auto; background: var(--bg-alt); display: flex; flex-direction: column; }
+    .frag-stack-header { flex: 0 0 auto; padding: 10px 8px; border-bottom: 2px solid var(--border); background: var(--card); display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 800; color: var(--text); text-transform: uppercase; letter-spacing: .05em; }
+    .frag-stack-header i { font-size: 13px; color: var(--accent); }
+    .frag-stack-items { flex: 1 1 auto; padding: 8px; overflow-y: auto; }
+    .frag-card { position: relative; margin-bottom: 14px; border-left: 4px solid var(--ag-color); background: var(--card); border-radius: 8px; padding: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); transition: transform .15s, box-shadow .15s; }
+    .frag-card:hover { transform: translateX(2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+    .frag-card:last-child { margin-bottom: 0; }
+    .frag-head { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-size: 11px; font-weight: 700; color: var(--text); }
+    .frag-head i { font-size: 12px; color: var(--ag-color); }
+    .frag-label { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: #fff; background: var(--ag-color); padding: 2px 7px; border-radius: 999px; }
+    .frag-code { font-size: 9px; font-family: 'JetBrains Mono', monospace; line-height: 1.4; color: var(--text-2); padding: 6px; background: var(--bg-elev); border-radius: 4px; overflow-x: auto; max-height: 90px; }
+    .frag-code .c-tag, .frag-code .c-attr, .frag-code .c-text { display: inline; }
+    .frag-code .c-tag { color: #d4756e; }
+    .frag-code .c-attr { color: #7c9c6e; }
+    .frag-code .c-text { color: var(--text-2); }
 
     /* ==================== STAT CHIPS ==================== */
     .stat-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-bottom: 48px; }
@@ -565,8 +634,11 @@
     footer .credit a { font-weight: 600; }
 
     /* ==================== INTERACTIVE TEASER ==================== */
-    .teaser-i { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
-    @media (max-width: 900px) { .teaser-i { grid-template-columns: 1fr; } }
+    .teaser-i { display: flex; flex-direction: column; gap: 18px; }
+    .teaser-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+    @media (max-width: 900px) { .teaser-compare { grid-template-columns: 1fr; } }
+    .teaser-radar { max-width: 480px; margin: 8px auto 0; text-align: center; }
+    .teaser-radar .tp-label { justify-content: center; }
     .tp-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); margin-bottom: 10px; display: flex; align-items: center; gap: 7px; }
     .method-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
     .mpill { border: 1px solid var(--border); background: var(--bg-elev); border-radius: 12px; padding: 9px 13px; cursor: pointer; transition: all .15s; text-align: left; }
@@ -583,12 +655,8 @@
     @keyframes tfade { from { opacity: 0; transform: scale(.985); } to { opacity: 1; transform: none; } }
 
     /* ==================== FID-HTML ==================== */
-    .fid-figure { display: grid; grid-template-columns: 1.15fr .95fr; gap: 26px; align-items: start; }
+    .fid-figure { display: grid; grid-template-columns: 1.55fr 1fr; gap: 26px; align-items: start; }
     @media (max-width: 900px) { .fid-figure { grid-template-columns: 1fr; } }
-    .fid-canvas { position: relative; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--bg-elev); box-shadow: var(--shadow-md); }
-    .fid-overlay-wrap { position: absolute; inset: 0; opacity: 0; transition: opacity .35s ease; pointer-events: none; }
-    .fid-overlay-wrap.show { opacity: 1; }
-    .fid-overlay-wrap img { width: 100%; height: 100%; object-fit: contain; }
     .fid-chips { display: flex; flex-direction: column; gap: 9px; }
     .fid-chip { display: flex; gap: 12px; align-items: flex-start; border: 1px solid var(--border); background: var(--card); border-radius: 12px; padding: 12px 14px; cursor: pointer; transition: all .15s; text-align: left; width: 100%; font-family: inherit; }
     .fid-chip:hover { border-color: var(--accent); transform: translateX(2px); }
@@ -598,7 +666,47 @@
     .fid-chip .fc-name { font-weight: 700; font-size: 14px; color: var(--text); }
     .fid-chip .fc-desc { font-size: 12.5px; color: var(--text-2); margin-top: 3px; display: none; }
     .fid-chip.active .fc-desc { display: block; }
+
+    /* ---- native Fid-HTML code panel + dimension spotlight ---- */
+    .fid-code-wrap { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-md); background: var(--code-bg); }
+    .fid-code-bar { display: flex; align-items: center; gap: 10px; padding: 9px 14px; background: var(--bg-elev); border-bottom: 1px solid var(--border); }
+    .fid-code-bar .dots { display: inline-flex; gap: 6px; }
+    .fid-code-bar .dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--border-strong); }
+    .fid-code-title { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--text-3); }
+    .fid-code { margin: 0; padding: 16px 18px; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; max-height: 580px; overflow: auto; color: var(--text-2); }
+    .fid-code .c-punc { color: var(--text-3); }
+    .fid-code .c-tag  { color: var(--accent); font-weight: 600; }
+    .fid-code .c-attr { color: #7c3aed; }
+    .fid-code .c-str  { color: #1f9d7c; }
+    .fid-code .c-text { color: var(--text); }
+    /* spotlight: fade everything, then restore + tint the active dimension */
+    .fid-code.has-hl span { opacity: .24; transition: opacity .2s ease, background .2s ease; }
+    .fid-code.hl-1 [data-dim~="1"], .fid-code.hl-2 [data-dim~="2"], .fid-code.hl-3 [data-dim~="3"],
+    .fid-code.hl-4 [data-dim~="4"], .fid-code.hl-5 [data-dim~="5"], .fid-code.hl-6 [data-dim~="6"] { opacity: 1; border-radius: 3px; }
+    .fid-code.hl-1 [data-dim~="1"] { background: rgba(234,88,12,.16);  box-shadow: inset 0 -2px 0 #ea580c; }
+    .fid-code.hl-2 [data-dim~="2"] { background: rgba(202,138,4,.20);  box-shadow: inset 0 -2px 0 #ca8a04; }
+    .fid-code.hl-3 [data-dim~="3"] { background: rgba(124,58,237,.16); box-shadow: inset 0 -2px 0 #7c3aed; }
+    .fid-code.hl-4 [data-dim~="4"] { background: rgba(31,157,124,.20); box-shadow: inset 0 -2px 0 #1f9d7c; }
+    .fid-code.hl-5 [data-dim~="5"] { background: rgba(37,99,235,.16);  box-shadow: inset 0 -2px 0 #2563eb; }
+    .fid-code.hl-6 [data-dim~="6"] { background: rgba(219,39,119,.16); box-shadow: inset 0 -2px 0 #db2777; }
+    /* chip number badges double as the color legend for each dimension */
+    .fid-chip .fc-num.d1 { color:#ea580c; background:rgba(234,88,12,.14); }
+    .fid-chip .fc-num.d2 { color:#b8860b; background:rgba(202,138,4,.18); }
+    .fid-chip .fc-num.d3 { color:#7c3aed; background:rgba(124,58,237,.14); }
+    .fid-chip .fc-num.d4 { color:#1f9d7c; background:rgba(31,157,124,.18); }
+    .fid-chip .fc-num.d5 { color:#2563eb; background:rgba(37,99,235,.14); }
+    .fid-chip .fc-num.d6 { color:#db2777; background:rgba(219,39,119,.14); }
+    .fid-chip.active .fc-num { color:#fff; }
+    .fid-chip.active .fc-num.d1 { background:#ea580c; }
+    .fid-chip.active .fc-num.d2 { background:#b8860b; }
+    .fid-chip.active .fc-num.d3 { background:#7c3aed; }
+    .fid-chip.active .fc-num.d4 { background:#1f9d7c; }
+    .fid-chip.active .fc-num.d5 { background:#2563eb; }
+    .fid-chip.active .fc-num.d6 { background:#db2777; }
     table.data thead tr.grp th { background: var(--bg-elev); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--text-3); }
+    table.data thead tr.cat th { text-align: center; font-weight: 800; color: var(--accent); border-bottom: 1px solid var(--border-strong); border-left: 1px solid var(--border); }
+    table.data thead tr.cat th.blank { background: transparent; border-left: none; }
+    table.data thead tr.cat th:first-child { text-align: center; }
     .pchar { color: #d97706; font-weight: 800; }
 
     /* ==================== METHOD STAGES ==================== */
@@ -686,7 +794,7 @@
   <!-- ============================ HERO ============================ -->
   <header class="hero">
     <div class="container">
-      <div class="venue-badge"><i class="fa-solid fa-award"></i> ICDAR 2026</div>
+      <div class="venue-badge"><i class="fa-solid fa-award"></i> ICDAR 2026 &nbsp;·&nbsp; <span class="oral">Oral Presentation</span></div>
       <h1>REPLICA</h1>
       <p class="subtitle">An Agentic Framework for Visually Faithful Document Reconstruction</p>
 
@@ -710,17 +818,24 @@
       </div>
 
       <div class="teaser-i reveal">
-        <div class="teaser-panel">
-          <div class="tp-label"><i class="fa-solid fa-file-lines"></i> Input Document</div>
-          <div class="frame" data-img data-src="static/images/teaser/base_doc.png" data-label="Input document"></div>
-          <div class="tp-label" style="margin-top: 18px;"><i class="fa-solid fa-chart-pie"></i> Fidelity Radar — REPLICA vs. baselines</div>
-          <div class="frame" data-img data-src="static/images/teaser/image-2.png" data-label="Radar plot (TE / LS / PS / VF)"></div>
+        <div class="tp-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Reconstruction — pick a method to compare against the input</div>
+        <div class="method-pills" id="teaserPills"><!-- injected --></div>
+
+        <div class="teaser-compare">
+          <div class="teaser-panel">
+            <div class="tp-label"><i class="fa-solid fa-file-lines"></i> Input Document</div>
+            <div class="frame" data-img data-src="static/images/teaser/base_doc.png" data-label="Input document"></div>
+          </div>
+          <div class="teaser-panel">
+            <div class="tp-label"><i class="fa-solid fa-file-code"></i> Reconstruction Output</div>
+            <div class="teaser-output"><div class="frame" id="teaserOutput"></div></div>
+          </div>
         </div>
-        <div class="teaser-panel">
-          <div class="tp-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Reconstruction — pick a method</div>
-          <div class="method-pills" id="teaserPills"><!-- injected --></div>
-          <div class="teaser-output"><div class="frame" id="teaserOutput"></div></div>
-          <figcaption class="figcap" style="text-align:left;margin-top:12px;">Green ✓ = axis preserved. <b>TE</b> Text Extraction · <b>LS</b> Logical Structure · <b>PS</b> Physical Structure · <b>VF</b> Visual Fidelity.</figcaption>
+
+        <div class="teaser-radar">
+          <div class="tp-label"><i class="fa-solid fa-chart-pie"></i> Fidelity Radar — REPLICA vs. baselines</div>
+          <div class="frame" data-img data-src="static/images/teaser/image-2.png" data-label="Radar plot (TE / LS / PS / VF)"></div>
+          <figcaption class="figcap" style="margin-top:12px;">Green ✓ = axis preserved. <b>TE</b> Text Extraction · <b>LS</b> Logical Structure · <b>PS</b> Physical Structure · <b>VF</b> Visual Fidelity.</figcaption>
         </div>
       </div>
     </div>
@@ -773,11 +888,14 @@
 
       <div class="fid-figure reveal">
         <div>
-          <div class="fid-canvas" id="fidCanvas">
-            <div class="frame" data-img style="border:none;box-shadow:none;border-radius:0;" data-src="static/images/fidhtml/base.png" data-label="Annotated document"></div>
-            <div class="fid-overlay-wrap" id="fidOverlay"></div>
+          <div class="fid-code-wrap">
+            <div class="fid-code-bar">
+              <span class="dots"><i></i><i></i><i></i></span>
+              <span class="fid-code-title">fid-html · annotated financial report (ground truth)</span>
+            </div>
+            <pre class="fid-code" id="fidCode"><!-- injected --></pre>
           </div>
-          <p class="figcap" style="margin-top: 12px;">Click a dimension to highlight where it appears in the document. Click it again to clear.</p>
+          <p class="figcap" style="margin-top: 12px;">This is the <b>real Fid-HTML source</b>. Click a dimension to spotlight exactly where it lives in the code — click again to clear.</p>
         </div>
         <div class="fid-chips" id="fidChips"><!-- injected --></div>
       </div>
@@ -833,7 +951,7 @@
 
   <!-- ====================== INTERACTIVE DEMO ====================== -->
   <section id="demo" class="alt">
-    <div class="container">
+    <div class="container wide">
       <div class="section-head reveal">
         <span class="eyebrow">Interactive</span>
         <h2>Pipeline Demo</h2>
@@ -941,11 +1059,11 @@
 
   <!-- ====================== QUALITATIVE ====================== -->
   <section id="qualitative" class="alt">
-    <div class="container">
+    <div class="container wide">
       <div class="section-head reveal">
         <span class="eyebrow">Results</span>
         <h2>Qualitative Comparisons</h2>
-        <p>Original document (left) vs. REPLICA's reconstructed render (right), across diverse document types and scripts.</p>
+        <p>Original document (left) vs. REPLICA's reconstruction (right). The right panel is the <b>actual FID-HTML rendered live</b> — try selecting the text: it's real, not an image.</p>
       </div>
 
       <div class="qual-wrap reveal">
@@ -955,8 +1073,8 @@
             <div class="frame" id="qualOriginal"></div>
           </div>
           <div class="qual-col replica">
-            <div class="qc-head"><span class="badge-dot"></span> REPLICA Reconstruction</div>
-            <div class="frame" id="qualReplica"></div>
+            <div class="qc-head"><span class="badge-dot"></span> REPLICA Reconstruction <span class="live-tag" id="qualLiveTag"><i class="fa-solid fa-i-cursor"></i> live FID-HTML · selectable</span></div>
+            <div class="qual-replica" id="qualReplica"></div>
           </div>
         </div>
 
@@ -1020,7 +1138,7 @@
         <a class="btn disabled" aria-disabled="true"><i class="fa-solid fa-database"></i> Dataset <span class="soon">Soon</span></a>
       </div>
       <p class="credit">
-        <b>REPLICA</b> · An Agentic Framework for Visually Faithful Document Reconstruction · ICDAR 2026<br />
+        <b>REPLICA</b> · An Agentic Framework for Visually Faithful Document Reconstruction · ICDAR 2026 (Oral)<br />
         Project page: <a href="https://replica-agents.github.io/">replica-agents.github.io</a><br />
         <span style="opacity:.8">Template inspired by the <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> / Academic-Project-Page style. Content © the authors.</span>
       </p>
@@ -1080,21 +1198,68 @@
   ];
 
   // ---- FID-HTML interactive callouts (6 dimensions) ------------------
-  // base: static/images/fidhtml/base.png ; each overlay is a same-size crop
+  // Each dimension maps to data-dim tokens in the live Fid-HTML code panel
+  // (see highlightFidHtml). Clicking a chip spotlights its tokens in the code.
   const FIDHTML_CALLOUTS = [
-    { id: 1, label: 'Textual Content',       img: 'static/images/fidhtml/callout_1_text.png',
+    { id: 1, label: 'Textual Content',
       desc: 'Complete text retained at word and block levels with line breaks and indents.' },
-    { id: 2, label: 'Hierarchical Structure', img: 'static/images/fidhtml/callout_2_hierarchy.png',
+    { id: 2, label: 'Hierarchical Structure',
       desc: 'Nested <div> containers reflecting sections, subsections, and logical groupings.' },
-    { id: 3, label: 'Semantic Tags',         img: 'static/images/fidhtml/callout_3_semantic.png',
-      desc: 'Structured elements (<li>, <table>, <tr>, <td>) with meaningful class names.' },
-    { id: 4, label: 'Positional Information', img: 'static/images/fidhtml/callout_4_position.png',
-      desc: 'Global placement via absolute positioning; local alignment via relative containers.' },
-    { id: 5, label: 'Styling Metadata',      img: 'static/images/fidhtml/callout_5_styling.png',
-      desc: 'Font size, color, bold, italic, underline, strikethrough via inline CSS.' },
-    { id: 6, label: 'Figures & Backgrounds', img: 'static/images/fidhtml/callout_6_figures.png',
-      desc: 'Images and page backgrounds layered with accessibility-oriented alt-text.' },
+    { id: 3, label: 'Semantic Tags',
+      desc: 'Structured elements (&lt;h1&gt;, &lt;p&gt;, &lt;figure&gt;) with meaningful class names.' },
+    { id: 4, label: 'Positional Information',
+      desc: 'Global placement via absolute position, left/top, and width/height on every block.' },
+    { id: 5, label: 'Styling Metadata',
+      desc: 'Font size, color, and text attributes (bold, italic, underline) via inline CSS.' },
+    { id: 6, label: 'Figures & Backgrounds',
+      desc: 'Images layered into the DOM via &lt;figure&gt;/&lt;img&gt; with accessibility alt-text.' },
   ];
+
+  // ---- Live Fid-HTML source shown in the interactive code panel ------
+  // Transcribed from the paper's Fid-HTML figure (fidhtml_diag_horizontal.pdf,
+  // the PUMA annual-report example). Grammarly's data-* body attributes and
+  // the PDF's soft line-wraps were removed; CSS spacing lightly normalized.
+  const FIDHTML_SRC =
+`<body><div class="header" style="position: absolute; left: 93px; top: 105px; width: 145px; height: 19px;">
+  <span style="position: absolute; left: 0px; top: 0px; width: 138px; height: 12px; text-indent: 0px; font-size: 14px; color: rgb(254, 99, 99)">
+    <b>Equity Ratio at 57.6%</b>
+  </span>
+</div><div class="text" style="position: absolute; left: 90px; top: 138px; width: 425px; height: 48px;">
+  <span style="position: absolute; left: 0px; top: 0px; width: 399px; height: 22px; text-indent: 0px; font-size: 14px;">Once again, the capital structure was successfully improved<br> in 2004. Despite the 32.8% increase in the balance sheet total <br> from € 700.1 million to € 929.6 million, the equity ratio was up </span>
+</div><div class="text" style="position: absolute; left: 90px; top: 185px; width: 283px; height: 49px;">
+  <span style="position: absolute; left: 0px; top: 5px; width: 283px; height: 49px; text-indent: 0px; font-size: 14px;">from 54.7% to 57.6%. This development<br> underscores the strong financial position <br>of the PUMA Group.</span>
+</div><div class="picture" style="position: absolute; left: 382px; top: 193px; width: 423px; height: 159px;">
+  <figure class="chart_5">
+    <img src="image_1.png" alt="Bar and line chart showing balance sheet total in million euros (2000-2004) and equity ratio percentage....">
+  </figure>
+</div><div class="header" style="position: absolute; left: 86px; top: 379px; width: 232px; height: 30px; text-indent: 11px;">
+  <h1 class="title_6" style="position: absolute; left: 11px; top: 9px; width: 239px; height: 12px; text-indent: 0px; font-size: 14px;">
+    <span style="color: rgb(255, 92, 94)">Further Improvement In Liquidity</span> </h1>
+</div><div class="text" style="position: absolute; left: 91px; top: 416px; width: 422px; height: 50px;">
+  <div class="paragraph_1">
+    <p style="position: absolute; left: 4px; top: 2px; width: 412px; height: 45px; text-indent: 0px; font-size: 14px;">As a result of the strongly improved cashflow, cash and cash <br> equivalents almost doubled to € 369.3 million. Concurrently, <br> bank debt was reduced from € 16.8 million to € 12.9 million.</p>
+  </div>
+</div><div class="header" style="position: absolute; left: 86px; top: 493px; width: 212px; height: 19px;">
+  <h1 class="title_6" style="position: absolute; left: 11px; top: 9px; width: 239px; height: 12px; text-indent: 0px; font-size: 14px;">
+    <span style="color: rgb(255, 92, 94)">Working Capital Again Improved</span> </h1>
+</div><div class="text" style="position: absolute; left: 91px; top: 524px; width: 424px; height: 49px;">
+  <span style="position: absolute; left: 0px; top: 10px; width: 400px; height: 29px; text-indent: 0px; font-size: 14px;">Working capital amounted to 9.7% of sales after 12.2% in the <br> previous year. In absolute figures, the working capital declined <br> by 4.7% at year-end, falling from € 155.7 million to</span>
+</div><div class="text" style="position: absolute; left: 92px; top: 572px; width: 282px; height: 172px;">
+  <div class="paragraph_7"><p style="position: absolute; left: 0px; top: 0px; width: 282px; height: 172px; text-indent: 4px; font-size: 14px;">€ 148.4 million. This development which <br> surpassed expectations, is primarily due to <br> marginal inventory build-ups. A higher <br> amount of merchandise was received in <br> December 2003, whereas year-end <br> 2004 indicates a shift to January 2005. The <br> calculation of working capital includes <br> inventories, plus current receivables, less <br> current non-interest-bearing liabilities and <br> provisions, to the extent attributable to the <br> operational area.</p></div>
+</div><div class="picture" style="position: absolute; left: 383px; top: 581px; width: 422px; height: 158px;">
+  <figure class="chart_9">
+    <img src="image_2.png" alt="Bar and line chart showing working capital in million euros (2000-2004) and working capital as a percentage of sales. Working capital ....">
+  </figure>
+</div><div class="text" style="position: absolute; left: 91px; top: 756px; width: 423px; height: 51px;">
+  <div class="paragraph_11">
+    <p style="position: absolute; left: 5px; top: 12px; width: 412px; height: 46px; text-indent: 1px; font-size: 14px;">Inventories were up by 2.5% to € 201.1 million and receivables<br>rose by 8% to € 189.6 million. This development confirms PUMA's<br>systematic and effective working capital management.</p>
+  </div>
+</div><div class="text" style="position: absolute; left: 534px; top: 414px; width: 425px; height: 38px;">
+  <div class="paragraph_8">
+    <p style="position: absolute; left: 5px; top: 5px; width: 413px; height: 27px; text-indent: 1px; font-size: 14px;">As a result, net liquidity improved from € 173.8 million to <br> € 356.4 million.</p>
+  </div>
+</div><div class="page-number" style="position: absolute; left: 932px; top: 983px; width: 21px; height: 17px;"></div>
+</body>`;
 
   // ---- FID-HTML vs other formats (two-level header) ------------------
   const FIDHTML_FORMATS = {
@@ -1148,8 +1313,8 @@
       agents: ["Document-Type Analyzer", "Labeling Agent", "Grouping Agent"],
       tools:  ["Detection Ensemble", "Hi-SAM", "PDF Parser"] },
     { id: 2, name: "Localize", tag: "Generate", subtitle: "Layout-Aware Sub-HTML Generation",
-      agents: ["Router Agent", "Text Agent", "Table Agent", "Image Agent", "Form Agent", "List Agent"],
-      tools:  ["OCR", "Table Structure Recognition", "Color-coded SoM"] },
+      agents: ["Router Agent", "Text Agent", "Table Agent", "Image Agent", "Form Agent", "List Agent", "Equation Agent"],
+      tools:  ["OCR + Layout BBox", "Table Structure Recognition", "Color-coded SoM"] },
     { id: 3, name: "Assemble", tag: "Merge",    subtitle: "Position- & Reading-Aware Merge",
       agents: ["Reading-Order Agent"],
       tools:  ["Position-Aware Merge", "DOM Renderer"] },
@@ -1276,35 +1441,218 @@
     },
   };
 
-  // ---- Localize stage: specialist agents whose sub-HTML output cycles
-  // through the click-to-inspect panel -------------------------------
-  const LOCALIZE_SPECIALISTS = [
-    { key: "S2_out_text",  name: "Text Agent" },
-    { key: "S2_out_form",  name: "Form Agent" },
-    { key: "S2_out_table", name: "Table Agent" },
-    { key: "S2_out_image", name: "Image Agent" },
-    { key: "S2_out_list",  name: "List Agent" },
-  ];
+  // ---- Localize stage: the six specialist agents the Router can pick ----
+  // Each region-crop is routed to exactly one of these; `color` tints its
+  // Set-of-Mark box + routing arrow, `icon` is Font Awesome.
+  const LOCALIZE_AGENTS = {
+    text:     { name: "Text Agent",     icon: "fa-align-left",          color: "#2563eb" },
+    table:    { name: "Table Agent",    icon: "fa-table-cells",         color: "#7c3aed" },
+    image:    { name: "Image Agent",    icon: "fa-image",               color: "#db2777" },
+    form:     { name: "Form Agent",     icon: "fa-list-check",          color: "#0891b2" },
+    list:     { name: "List Agent",     icon: "fa-list-ul",             color: "#ca8a04" },
+    equation: { name: "Equation Agent", icon: "fa-square-root-variable", color: "#1f9d7c" },
+  };
+  const LOCALIZE_AGENT_ORDER = ["text", "table", "image", "form", "list", "equation"];
 
-  // ---- Qualitative examples (original vs replica) --------------------
-  // Each expects: static/images/qual/{id}_original.png and {id}_replica.png
-  const qualPath = (id, kind) => `static/images/qual/${id}_${kind}.png`;
-  const mkQual = (id, type, caption) => ({
-    id, type, caption,
-    original: qualPath(id, "original"),
-    replica:  qualPath(id, "replica"),
-  });
+  // ---- Localize walkthrough data (per document) ------------------------
+  // Drives the Router-decision animation. For each preset:
+  //   page   image key of the full page (a crop is auto-cut from it via bbox)
+  //   crops  the regions the Router routes, in order. Each crop:
+  //     label       short region name
+  //     bbox        [x, y, w, h] as FRACTIONS of the page image (0–1)
+  //     ocr         the text-detector / OCR string for that crop
+  //     specialist  the Router's decision — a key of LOCALIZE_AGENTS
+  //     subhtml     the sub-HTML that specialist emits (shown as native code)
+  //
+  // The Router receives {crop image + bbox + ocr} together — the demo shows
+  // all three flowing in, then lights up `specialist` and renders `subhtml`.
+  //
+  // ▶ gov below is a REPRESENTATIVE worked example so the flow runs today.
+  //   Replace bbox / ocr / subhtml with your pipeline's real values, and add
+  //   magazine / financial / newspaper the same way. Presets with no entry
+  //   fall back to a "coming soon" note (no broken UI).
+  const LOCALIZE_DATA = {
+    gov: {
+      page: "S1_raw",
+      crops: [
+        { label: "Figure", bbox: [0.0404, 0.0298, 0.1143, 0.0905], specialist: "image",
+          ocr: "",
+          subhtml:
+`<figure class="picture_1" style="position: absolute; left: 40px; top: 42px; width: 114px; height: 128px;">
+  <img src="region_1.png" alt="figure">
+</figure>` },
+        { label: "Section Title", bbox: [0.2322, 0.0697, 0.6604, 0.0419], specialist: "text",
+          ocr: "CSIR - INSTITUTE OF MINERALS & MATERIALS TECHNOLOGY भ्वनेश्वर BHUBANESWAR-751013",
+          subhtml:
+`<h2 class="title_2" style="position: absolute; left: 232px; top: 99px; width: 660px; height: 59px; font-size: 18px; font-weight: 700; color: rgb(20,20,20);">CSIR - INSTITUTE OF MINERALS & MATERIALS TECHNOLOGY<br>भ्वनेश्वर BHUBANESWAR-751013</h2>` },
+        { label: "Paragraph", bbox: [0.0367, 0.1418, 0.6992, 0.0184], specialist: "text",
+          ocr: "Advt. No.: _ PME/P65/2023_, Project No. __GAP-384_, Post Code. _6502_.",
+          subhtml:
+`<div class="paragraph_3" style="position: absolute; left: 37px; top: 201px; width: 699px; height: 26px;">
+  <p style="font-size: 14px; line-height: 1.45;">Advt. No.: _ PME/P65/2023_, Project No. __GAP-384_, Post Code. _6502_.</p>
+</div>` },
+        { label: "Paragraph", bbox: [0.0330, 0.2884, 0.8868, 0.0439], specialist: "text",
+          ocr: "The following candidate(s) is /are found suitable for engagement in order of merit for the above project.",
+          subhtml:
+`<div class="paragraph_4" style="position: absolute; left: 33px; top: 408px; width: 887px; height: 62px;">
+  <p style="font-size: 14px; line-height: 1.45;">The following candidate(s) is /are found suitable for engagement in order of merit for the above<br>project.</p>
+</div>` },
+        { label: "Paragraph", bbox: [0.0309, 0.4973, 0.8905, 0.0361], specialist: "text",
+          ocr: "The following candidate(s) is /are found suitable as Wait Listed (WL) candidates in order of merit for the above project…",
+          subhtml:
+`<div class="paragraph_5" style="position: absolute; left: 31px; top: 703px; width: 890px; height: 51px;">
+  <p style="font-size: 14px; line-height: 1.45;">The following candidate(s) is /are found suitable as Wait Listed (WL) candidates in order of<br>merit for the above project.</p>
+</div>` },
+        { label: "Table", bbox: [0.0388, 0.5670, 0.9182, 0.1387], specialist: "table",
+          ocr: "Project S1. Application Monthly Name of the Category Position Duration Candidate Emoluments No. No. up to Project Birupa…",
+          subhtml:
+`<table class="table_6" style="position: absolute; left: 39px; top: 802px; width: 918px; height: 196px; border-collapse: collapse; font-size: 13px;">
+  <tr><th>Project</th></tr>
+  <tr><td>S1.</td></tr>
+  <tr><td>Application</td></tr>
+  <tr><td>Monthly</td></tr>
+</table>` },
+      ],
+    },
+    magazine: {
+      page: "M6_1",
+      crops: [
+        { label: "Figure", bbox: [0.3944, 0.0448, 0.2100, 0.0392], specialist: "image",
+          ocr: "",
+          subhtml:
+`<figure class="picture_1" style="position: absolute; left: 394px; top: 63px; width: 210px; height: 55px;">
+  <img src="region_1.png" alt="figure">
+</figure>` },
+        { label: "Section Title", bbox: [0.3200, 0.1463, 0.3667, 0.0168], specialist: "text",
+          ocr: "● 〔美〕F.S.菲茨杰拉德 ◎陈 欣译",
+          subhtml:
+`<h2 class="title_2" style="position: absolute; left: 320px; top: 207px; width: 367px; height: 24px; font-size: 18px; font-weight: 700; color: rgb(20,20,20);">● 〔美〕F.S.菲茨杰拉德 ◎陈<br>欣译</h2>` },
+        { label: "Paragraph", bbox: [0.1144, 0.2190, 0.2356, 0.2094], specialist: "text",
+          ocr: "早在1860年,在家生孩 子还是件合情合理的事。而如 今,据说医学界高高在上的 “众神”早已定下规约,新生 儿的第一声啼哭应该在空气中 飘荡着消毒液气味的医院里发 出。因此, 当年轻的罗杰·巴 顿先生和他的妻子在 1860 年 的一个夏日决…",
+          subhtml:
+`<div class="paragraph_3" style="position: absolute; left: 114px; top: 310px; width: 236px; height: 296px;">
+  <p style="font-size: 14px; line-height: 1.45;">早在1860年,在家生孩<br>子还是件合情合理的事。而如<br>今,据说医学界高高在上的<br>“众神”早已定下规约,新生<br>儿的第一声啼哭应该在空气中<br>飘荡着消毒液气味的医院里发<br>出。因此, 当年轻的罗杰·巴<br>顿先生和他的妻子在 1860 年<br>的一个夏日决定让他们的第一<br>个孩子在医院出生时，他们已<br>经领先潮流整整 50 年。</p>
+</div>` },
+        { label: "Paragraph", bbox: [0.6511, 0.2750, 0.2356, 0.2694], specialist: "text",
+          ocr: "甚至当巴顿家的这位新丁 剪短了头发,并将那稀疏的头 发染成不自然的黑色, 把胡子 刮得干干净净,穿上裁缝为其 量身定做的小男孩样式的衣 服, 巴顿先生还是无法忽视这 样一个事实: 他的第一个孩子 长得实在不太像样。尽管佝偻 着背, 本杰明·…",
+          subhtml:
+`<div class="paragraph_4" style="position: absolute; left: 651px; top: 389px; width: 236px; height: 381px;">
+  <p style="font-size: 14px; line-height: 1.45;">甚至当巴顿家的这位新丁<br>剪短了头发,并将那稀疏的头<br>发染成不自然的黑色, 把胡子<br>刮得干干净净,穿上裁缝为其<br>量身定做的小男孩样式的衣<br>服, 巴顿先生还是无法忽视这<br>样一个事实: 他的第一个孩子<br>长得实在不太像样。尽管佝偻<br>着背, 本杰明·巴顿——他们<br>给他起了这个名字——仍有<br>1.7 米高。他的眉毛即使已修<br>理过并染过色, 仍无法提亮下<br>面那双暗淡无光、无精打采的<br>眼睛。</p>
+</div>` },
+        { label: "Paragraph", bbox: [0.6511, 0.5524, 0.2356, 0.2462], specialist: "text",
+          ocr: "但巴顿先生还是坚持认 为, 本杰明既是个婴儿, 就该 像个婴儿的样子。起初,他声 称,如果本杰明不肯喝热牛 奶,那就什么东西也别吃了; 但最终他还是让了步, 同意让 儿子吃面包、黄油甚至燕麦 片。一天, 巴顿先生给本杰明 带回来一个拨浪鼓,…",
+          subhtml:
+`<div class="paragraph_5" style="position: absolute; left: 651px; top: 781px; width: 236px; height: 348px;">
+  <p style="font-size: 14px; line-height: 1.45;">但巴顿先生还是坚持认<br>为, 本杰明既是个婴儿, 就该<br>像个婴儿的样子。起初,他声<br>称,如果本杰明不肯喝热牛<br>奶,那就什么东西也别吃了;<br>但最终他还是让了步, 同意让<br>儿子吃面包、黄油甚至燕麦<br>片。一天, 巴顿先生给本杰明<br>带回来一个拨浪鼓, 并明确吩<br>咐他要“好好玩”。老人只好<br>一脸厌倦地接过来。那一整<br>天, 时不时地可以听到他顺从<br>地咚咚摇两下。</p>
+</div>` },
+      ],
+    },
+    newspaper: {
+      page: "IndicDLP_6",
+      crops: [
+        { label: "Figure", bbox: [0.5000, 0.1147, 0.2968, 0.1201], specialist: "image",
+          ocr: "obgoti somo Q34 - ಮಿದಕ ಕನಿಂದ ಕರ್ಯಾಕಕ್ಕಂ RETURNIN DEFICES 034 - Med sser Cor",
+          subhtml:
+`<figure class="picture_1" style="position: absolute; left: 500px; top: 162px; width: 297px; height: 170px;">
+  <img src="region_1.png" alt="obgoti somo Q34 - ಮಿದಕ ಕನಿಂದ ಕರ್ಯಾಕಕ್ಕಂ RETURNIN DEFICES 034 - Med sse…">
+</figure>` },
+        { label: "List", bbox: [0.2856, 0.1357, 0.1826, 0.0077], specialist: "list",
+          ocr: "🕨 అభివృద్ధి చేస్తామనే నినాదంతో ముందుకు వెళ్తా",
+          subhtml:
+`<ul class="list_2" style="position: absolute; left: 286px; top: 192px; width: 183px; height: 11px; padding-left: 18px;">
+    <li>🕨 అభివృద్ధి చేస్తామనే నినాదంతో ముందుకు వెళ్తా</li>
+  </ul>` },
+        { label: "Paragraph", bbox: [0.5122, 0.4637, 0.2177, 0.1349], specialist: "text",
+          ocr: "అభివృద్ధి పనులు చేశారని అన్నారు తెలంగాణ రాష్ట్రం రాకముందు ఎ(రవల్లి గ్రామం గురించి రాష్ట్రంలో దేశంలో ఎవరికి తెలియదని ముఖ్…",
+          subhtml:
+`<div class="paragraph_3" style="position: absolute; left: 512px; top: 656px; width: 218px; height: 191px;">
+  <p style="font-size: 14px; line-height: 1.45;">అభివృద్ధి పనులు చేశారని అన్నారు తెలంగాణ రాష్ట్రం రాకముందు ఎ(రవల్లి<br>గ్రామం గురించి రాష్ట్రంలో దేశంలో ఎవరికి తెలియదని ముఖ్యమంత్రి నేతృ<br>త్వంలో ఎగ్రవల్లి గ్రామం అభివృద్ధి చెంది దేశ స్థాయిలో అవార్మలు దక్కిం<br>చుకుందని అన్నారు. మేనిఫెస్ట్రోలో మరియు ఈ తొమ్మిది ఏళ్లలో ప్రవేశపె<br>ట్టిన సంక్షేమ పథకాల గురించి గడపగడపకు ప్రచారం చేశారు. మరోసారి<br>గెలిపించుకొని మరింత అభివృద్ధి పసులు చేపించుకుందామని అన్నారు.<br>గ్రామం మొత్తం గులాబీ జెందాలతో నిండిపోయి మందల ప్రజా ప్రతిని<br>ధులు గ్రామ సర్పంచ్ వార్డ్ మెంబర్లు (పచారం చేస్తూఎమ్మెల్యేగా లక్ష్మ భారీ…</p>
+</div>` },
+        { label: "Paragraph", bbox: [0.0323, 0.5605, 0.2219, 0.1522], specialist: "text",
+          ocr: "మనతెలంగాణ/సంగారెడ్డి బ్యూరో: సంగారెడ్డి నియోజకవర్గంలో రాష్ట్ర ఐటి, పురపాలక శాఖ మంత్రి కేటీఆర్ బుధవారం పర్యటిస్తున్నారు.…",
+          subhtml:
+`<div class="paragraph_4" style="position: absolute; left: 32px; top: 793px; width: 222px; height: 215px;">
+  <p style="font-size: 14px; line-height: 1.45;">మనతెలంగాణ/సంగారెడ్డి బ్యూరో: సంగారెడ్డి నియోజకవర్గంలో రాష్ట్ర ఐటి,<br>పురపాలక శాఖ మంత్రి కేటీఆర్ బుధవారం పర్యటిస్తున్నారు. యువ నేత<br>ప్రచారాన్ని ఇక్కడి బిఆర్ఎస్ నాయకులు ప్రతిష్ఠాత్మకంగా తీసుకున్నారు.<br>దీంతో కేటీఆర్ (పచారానికి ప్రాధాన్యత ఏర్పడింది. ముంబయి హైవేపై ఉన్న<br>రుద్రారం గణేష్గద్ద దగ్గర నుంచి కేటీఆర్ పర్యటన ఉంటుంది.సుమారుగా<br>ఐదు వేల బెక్ల ర్యాలీతో కౌలంపేట, కంది, పోతిరెడ్డిపల్లి చౌరస్తా, కలెక్టరేట్,<br>ఐబి, కొత్త బస్టాండ్, పాతబస్టాండ్ మీదుగా గంజ్మమైదాన్ కు ఈ ర్యాలీ చేరు<br>కుంటుంది. అనంతరం గంజ్మేదాన్లో సభ జరుగుతుందని పార్టీ…</p>
+</div>` },
+        { label: "Section Title", bbox: [0.2879, 0.6097, 0.4396, 0.0304], specialist: "text",
+          ocr: "ත්වර් අම්ව සිද්දුවේ ප්රියුද්ධ සේ ප්රියුද්ධ සේව සේව සේව සේව සේව සේව සේව සේව සේව සේව",
+          subhtml:
+`<h2 class="title_5" style="position: absolute; left: 288px; top: 862px; width: 440px; height: 43px; font-size: 18px; font-weight: 700; color: rgb(20,20,20);">ත්වර් අම්ව සිද්දුවේ ප්රියුද්ධ සේ ප්රියුද්ධ සේව සේව සේව සේව සේව සේව සේව සේව සේව සේව</h2>` },
+        { label: "Paragraph", bbox: [0.5117, 0.6472, 0.2186, 0.1425], specialist: "text",
+          ocr: "ణి ప్రియదర్శిని మాట్లాడుతూ... నవంబర్ 30న ఎన్నికల కమిషన్ నియమ నిబంధనల మకారం పండగ వాతవరణంలో ఓటర్లందరు తమ ఓటు హక్కును వినియ…",
+          subhtml:
+`<div class="paragraph_6" style="position: absolute; left: 512px; top: 915px; width: 219px; height: 201px;">
+  <p style="font-size: 14px; line-height: 1.45;">ణి ప్రియదర్శిని మాట్లాడుతూ... నవంబర్ 30న ఎన్నికల కమిషన్ నియమ<br>నిబంధనల మకారం పండగ వాతవరణంలో ఓటర్లందరు తమ ఓటు<br>హక్కును వినియోగించుకోవాలన్నారు. ఎన్నికల నోటిఫికేషన్ వెలువైనప్పటి<br>నుంచి జిల్లాలో అన్ని గ్రామాలలో ఓటు హక్కును వినియోగించుకోవాలని<br>అనేక అవగాహన కార్యక్రమాలు చేపట్టినట్లు పేర్కొన్నారు. మెదక్ జిల్లా లో<br>579 పోలీంగ్ కేంద్రాలను ఏర్పాటు చేశామన్నారు. నిష్పక్ష పాతంగా,<br>స్వచ్చందంగా ఎలాంటి (పలోభాలకు లొంగకుండా మెదక్, నర్సాపూర్<br>జిల్లాలో ఉన్న ఓటర్లందరు తమ ఓటు హక్కును వినియోగించుకోవాలన్నా<br>రు. పోలీంగ్ కేం(దాలకు ఎన్నికల కమిషన్ గుర్…</p>
+</div>` },
+      ],
+    },
+    financial: {
+      page: "SROIE_2",
+      crops: [
+        { label: "Section Title", bbox: [0.0363, 0.0419, 0.8558, 0.0154], specialist: "text",
+          ocr: "VIVOPAC MARKETING SDN BHD (1070687-M)",
+          subhtml:
+`<h2 class="title_1" style="position: absolute; left: 36px; top: 59px; width: 856px; height: 22px; font-size: 18px; font-weight: 700; color: rgb(20,20,20);">VIVOPAC MARKETING SDN BHD (1070687-M)</h2>` },
+        { label: "Paragraph", bbox: [0.0363, 0.0659, 0.7735, 0.0127], specialist: "text",
+          ocr: "14 JALAN MANIS 4 TAMAN SEGAR 56100 KL",
+          subhtml:
+`<div class="paragraph_2" style="position: absolute; left: 36px; top: 93px; width: 774px; height: 18px;">
+  <p style="font-size: 14px; line-height: 1.45;">14 JALAN MANIS 4 TAMAN SEGAR 56100 KL</p>
+</div>` },
+        { label: "Paragraph", bbox: [0.0972, 0.9396, 0.7382, 0.0110], specialist: "text",
+          ocr: "For exchange of goods sold the following apply:",
+          subhtml:
+`<div class="paragraph_3" style="position: absolute; left: 97px; top: 1329px; width: 738px; height: 16px;">
+  <p style="font-size: 14px; line-height: 1.45;">For exchange of goods sold the following apply:</p>
+</div>` },
+        { label: "List", bbox: [0.0759, 0.9633, 0.8397, 0.0106], specialist: "list",
+          ocr: "Exchange is done within 7 days from date of receipt",
+          subhtml:
+`<ul class="list_4" style="position: absolute; left: 76px; top: 1362px; width: 840px; height: 15px; padding-left: 18px;">
+    <li>Exchange is done within 7 days from date of receipt</li>
+  </ul>` },
+        { label: "Paragraph", bbox: [0.0759, 0.9750, 0.7382, 0.0106], specialist: "text",
+          ocr: "2. In good condition and in it's original pakeing",
+          subhtml:
+`<div class="paragraph_5" style="position: absolute; left: 76px; top: 1379px; width: 738px; height: 15px;">
+  <p style="font-size: 14px; line-height: 1.45;">2. In good condition and in it's original pakeing</p>
+</div>` },
+      ],
+    },
+  };
+
+  // ---- Qualitative examples (original image vs live FID-HTML) --------
+  // original : the source-document PNG (left).
+  // html     : the reconstructed FID-HTML, rendered live in a scaled iframe
+  //            (right) — real, selectable text. w/h = the html <body> pixel
+  //            size (from static/images/qual/*_corrected.html), used to
+  //            scale the iframe to the column width.
+  // replicaImg : fallback still image, used only if no html is set.
+  const Q = "static/images/qual/";
   const QUAL_EXAMPLES = [
-    mkQual("newspaper",   "Historic Newspaper",  "Dense multi-column layout with historic typography and rules — columns and reading order preserved."),
-    mkQual("magazine",    "Multi-Column Magazine","Editorial grid with pull quotes and images — typography, color, and spatial layout retained."),
-    mkQual("financial",   "Financial Document",  "Tabular financial statement — numeric tables and alignment faithfully reconstructed."),
-    mkQual("govform",     "Government Form",      "Structured form with fields and boxes — form semantics and positioning preserved."),
-    mkQual("idcert",      "ID / Certificate",    "Official certificate with seals and stamps — backgrounds and figures restored."),
-    mkQual("research",    "Research Paper",      "Two-column academic paper — headings, equations, and figure captions kept intact."),
-    mkQual("receipt",     "Receipt / Invoice",   "Line-item receipt — monospace alignment and totals reconstructed."),
-    mkQual("multiling",   "Multilingual Doc",    "Non-Latin script document — glyph shaping and directionality faithfully rendered."),
-    mkQual("brochure",    "Brochure",            "Marketing brochure with color blocks — visual styling and imagery preserved."),
-    mkQual("legal",       "Legal Document",      "Legal text with numbered clauses — hierarchical structure preserved."),
+    { type: "Government Gazette · Gujarati",  original: Q + "IndicDLP_1.png", html: Q + "IndicDLP_1_corrected.html", w: 433,  h: 774,
+      caption: "Gazette of India (Extraordinary) in Gujarati — numbered clauses, headings, and reading order reconstructed in a non-Latin script." },
+    // Excluded for now — health fact-sheet (20005.png / 20005_html.html), re-enable by uncommenting:
+    // { type: "Health Fact Sheet · Multi-column", original: Q + "20005.png", html: Q + "20005_html.html", w: 1219, h: 1594,
+    //   caption: "Editorial fact-sheet grid with a floated photo — column boundaries, headings, and pull-text layout faithfully preserved." },
+    { type: "Typed Business Letter",          original: Q + "RVLCDIP_4.png", html: Q + "RVLCDIP_4_corrected.html", w: 775,  h: 1000,
+      caption: "Scanned typewritten letter (RVL-CDIP) — line breaks, indentation, and monospace-style alignment recovered as selectable text." },
+    { type: "Retail Receipt · Tax Invoice",   original: Q + "X51005621482.png", html: Q + "X51005621482_corrected.html", w: 624, h: 1500,
+      caption: "Thermal receipt (SROIE) — logo, line items, and right-aligned totals reconstructed with precise spatial fidelity." },
+    { type: "Retail Receipt · Fuel Station",  original: Q + "X51005230605.png", html: Q + "X51005230605_corrected.html", w: 616, h: 1336,
+      caption: "Faded thermal petrol-station receipt (SROIE) — line items, GST summary, and totals recovered despite low contrast." },
+    { type: "Scientific Paper · Korean",      original: Q + "LoRaLay_1.png", html: Q + "LoRaLay_1_corrected.html", w: 1654, h: 2339,
+      caption: "Two-column Korean journal page (LoRaLay) — body columns, figure captions, and running footer kept intact." },
+    { type: "Indic Magazine Spread",          original: Q + "IndicDLP_2.png", html: Q + "IndicDLP_2_corrected.html", w: 960,  h: 540,
+      caption: "Landscape magazine layout with imagery and multi-column text — visual styling and placement retained." },
+    { type: "Historic Newspaper",             original: Q + "newspaper_original.png", html: Q + "17935_corrected.html", w: 772, h: 1000,
+      caption: "Dense historic newspaper (Family Practice News) — multi-column rules, headlines, and reading order preserved across the full broadsheet." },
+    { type: "Tech Magazine Article",          original: Q + "00000087.png", html: Q + "00000087_corrected.html", w: 2374, h: 3254,
+      caption: "Communications of the ACM feature spread — device screenshots, pull quotes, and a three-column editorial grid reconstructed." },
+    { type: "Automotive Magazine Spread",     original: Q + "00000127.png", html: Q + "00000127_corrected.html", w: 2412, h: 3526,
+      caption: "Full-bleed car-magazine feature — oversized display typography, captioned photography, and body copy kept faithful to the source." },
+    { type: "Celebrity Interview · Q&A",      original: Q + "00000269.png", html: Q + "00000269_corrected.html", w: 2316, h: 3153,
+      caption: "TIME magazine \"10 Questions\" interview — three-column Q&A layout with a centered portrait, reconstructed with original typography." },
   ];
 
   // ---- Summary stat chips -------------------------------------------
@@ -1321,6 +1669,15 @@
   // metrics order: WRR, CRR, NTED, LPS, GPS, VFS, OSall, OSen, OSzh
   const RESULTS = {
     columns: ["Method", "Params", "WRR↑", "CRR↑", "NTED↓", "LPS↑", "GPS↑", "VFS↑", "OSall↑", "OSen↑", "OSzh↑"],
+    // Category grouping row above the column header (spans must sum to columns.length).
+    categoryHeader: [
+      { name: "", span: 2 },                     // Method + Params
+      { name: "Text Extraction", span: 2 },      // WRR, CRR
+      { name: "Logical Structure", span: 1 },    // NTED
+      { name: "Physical Structure", span: 2 },   // LPS, GPS
+      { name: "Visual Fidelity", span: 1 },      // VFS
+      { name: "Overall", span: 3 },              // OSall, OSen, OSzh
+    ],
     // lowerBetter flags align to metric columns (index 2..10)
     lowerBetter: { "NTED↓": true },
     groups: [
@@ -1355,11 +1712,14 @@
 
   // ---- Bar chart tabs (which metric column to plot) -----------------
   // metricIndex maps into the v[] array above
+  // transform (optional) maps the raw metric to a higher-is-better score for plotting.
+  // Logical Structure is reported as NTED (lower-better); we plot LS = 1 − NTED.
   const CHART_TABS = [
     { key: "OSall", label: "Overall (OSall)", metricIndex: 6, lowerBetter: false },
+    { key: "TE",    label: "Text Extraction (WRR)", metricIndex: 0, lowerBetter: false },
+    { key: "LS",    label: "Logical Structure (1−NTED)", metricIndex: 2, lowerBetter: false, transform: v => 1 - v },
+    { key: "PS",    label: "Physical Structure (GPS)", metricIndex: 4, lowerBetter: false },
     { key: "VFS",   label: "Visual Fidelity (VFS)", metricIndex: 5, lowerBetter: false },
-    { key: "GPS",   label: "Global Position (GPS)", metricIndex: 4, lowerBetter: false },
-    { key: "WRR",   label: "Text (WRR)", metricIndex: 0, lowerBetter: false },
   ];
 
   // ---- Ablation (Table 3) — cumulative components -------------------
@@ -1542,7 +1902,7 @@
   // InteractiveDemov2 prototype and re-skinned to the site's design tokens.
   let currentDoc = 0;
   let stageIdx = 0, beatIdx = 0, beats = [], playing = false, timer = null, speed = 1150, doneStages = new Set();
-  let cycleTimer = null, cycleIdx = 0, specSlots = [];
+  let cycleTimer = null;
 
   function CV() { return $("#pdemoCanvas"); }
 
@@ -1636,33 +1996,86 @@
     c.innerHTML = text;
   }
 
-  function openViewer(agent) {
-    $("#pdemoOutviewer").classList.add("open");
-    $("#pdemoOvTitle").textContent = agent.name + " → sub-HTML";
-    const body = $("#pdemoOvBody");
-    body.innerHTML = "";
-    const frame = el("div");
-    body.appendChild(frame);
-    loadImage(frame, demoSrc(PIPELINE_PRESETS[currentDoc].id, agent.key), agent.name + " output");
-    body.appendChild(el("div", "ov-hint", `Output of ${agent.name} (${agent.key})`));
+  // ---- Localize: Router-decision walkthrough state + helpers ----------
+  let locCrops = [], locPage = "", locCropIdx = 0, locBadges = {}, locPacket = null;
+
+  // Crop a region out of the full page image via CSS background positioning
+  // (so we never need per-crop PNGs — just the page image + a bbox).
+  const _pageSizeCache = {};
+  function withPageSize(pageUrl, cb) {
+    if (_pageSizeCache[pageUrl]) { cb(_pageSizeCache[pageUrl]); return; }
+    const im = new Image();
+    im.onload = () => { _pageSizeCache[pageUrl] = { w: im.naturalWidth, h: im.naturalHeight }; cb(_pageSizeCache[pageUrl]); };
+    im.onerror = () => cb(null);
+    im.src = pageUrl;
+  }
+  // Show the WHOLE bbox region of the page inside `imgEl`'s box, non-distorted
+  // and centered (contain): the region is scaled to fit and never squished.
+  function setCropImg(imgEl, pageUrl, bbox) {
+    imgEl.src = pageUrl;
+    const apply = () => withPageSize(pageUrl, sz => {
+      if (!sz) return;
+      const box = imgEl.parentElement;
+      const boxW = box.clientWidth || 160, boxH = box.clientHeight || 120;
+      const [x, y, w, h] = bbox;
+      const rw = w * sz.w, rh = h * sz.h;
+      const scale = Math.min(boxW / rw, boxH / rh);
+      imgEl.style.width = (sz.w * scale) + "px";
+      imgEl.style.height = (sz.h * scale) + "px";
+      imgEl.style.marginLeft = ((boxW - rw * scale) / 2 - x * sz.w * scale) + "px";
+      imgEl.style.marginTop = ((boxH - rh * scale) / 2 - y * sz.h * scale) + "px";
+    });
+    apply();
   }
   function closeViewer() { $("#pdemoOutviewer").classList.remove("open"); }
 
-  function startCycle() {
-    stopCycle(); cycleIdx = 0;
-    const tick = () => {
-      specSlots.forEach(s => s.classList.remove("cycling"));
-      const s = specSlots[cycleIdx % specSlots.length];
-      if (s) s.classList.add("cycling");
-      openViewer(LOCALIZE_SPECIALISTS[cycleIdx % LOCALIZE_SPECIALISTS.length]);
-      cycleIdx++;
-      cycleTimer = setTimeout(tick, 1600);
-    };
+  // Render one specialist's sub-HTML fragment as native, highlighted code.
+  function openCropViewer(crop) {
+    const ag = LOCALIZE_AGENTS[crop.specialist] || { name: crop.specialist, icon: "fa-code", color: "var(--accent)" };
+    $("#pdemoOutviewer").classList.add("open");
+    $("#pdemoOvTitle").innerHTML = `<i class="fa-solid ${ag.icon}" style="color:${ag.color}"></i> ${ag.name} → sub-HTML`;
+    $("#pdemoOvBody").innerHTML =
+      `<div class="ov-meta"><span class="ov-tag" style="background:${ag.color}">${crop.label}</span>` +
+      `<span class="ov-chip">bbox [${crop.bbox.map(n => n.toFixed(2)).join(", ")}]</span></div>` +
+      `<pre class="fid-code ovcode">${highlightFidHtml(crop.subhtml)}</pre>` +
+      `<div class="ov-hint">Emitted by the ${ag.name} from crop + OCR + bbox.</div>`;
+  }
+  // Update the crop+bbox+OCR "context packet" (no routing yet).
+  function setPacket(crop) {
+    if (!locPacket || !crop) return;
+    const ag = LOCALIZE_AGENTS[crop.specialist];
+    locPacket.wrap.classList.remove("pop"); void locPacket.wrap.offsetWidth; locPacket.wrap.classList.add("pop");
+    if (locPage && locPacket.cropImg) setCropImg(locPacket.cropImg, demoSrc(PIPELINE_PRESETS[currentDoc].id, locPage), crop.bbox);
+    locPacket.crop.style.borderColor = ag ? ag.color : "var(--accent)";
+    locPacket.name.textContent = crop.label;
+    locPacket.bbox.textContent = crop.bbox.map(n => n.toFixed(2)).join(", ");
+    locPacket.ocr.textContent = crop.ocr;
+  }
+  // Light up the routed specialist badge + its arrow; dim the rest.
+  function routeTo(key) {
+    Object.keys(locBadges).forEach(k => {
+      const on = k === key, ag = LOCALIZE_AGENTS[k];
+      locBadges[k].classList.toggle("routed", on);
+      (arrowElsByTarget["S2_ag_" + k] || []).forEach(a => {
+        a.classList.toggle("show", on);
+        a.style.stroke = on ? ag.color : "";
+      });
+    });
+  }
+  function showCrop(i) {
+    if (!locCrops.length) return;
+    locCropIdx = ((i % locCrops.length) + locCrops.length) % locCrops.length;
+    const crop = locCrops[locCropIdx];
+    setPacket(crop); routeTo(crop.specialist); openCropViewer(crop);
+  }
+  function startCropCycle() {
+    stopCycle();
+    const tick = () => { showCrop(locCropIdx); locCropIdx++; cycleTimer = setTimeout(tick, 2600); };
     tick();
   }
   function stopCycle() {
     clearTimeout(cycleTimer); cycleTimer = null;
-    specSlots.forEach(s => s.classList.remove("cycling"));
+    Object.values(locBadges).forEach(b => b.classList.remove("cycling"));
   }
 
   function buildSegment() {
@@ -1695,41 +2108,77 @@
 
   function buildLocalize() {
     clearCanvas(); ensureArrowLayer(); const bts = [];
-    const tree = slotEl("S2_tree", 1, 14, 20, 70, "Nested Hierarchical Layout Tree (from Segment)");
-    const L = PIPELINE_PRESETS[currentDoc].lift, tx = 1, ty = 14, tw = 20, th = 70;
-    const lb = el("div", "pdemo-liftbox");
-    lb.style.left = (tx + tw * L.x / 100) + "%"; lb.style.top = (ty + th * L.y / 100) + "%";
-    lb.style.width = (tw * L.w / 100) + "%"; lb.style.height = (th * L.h / 100) + "%";
-    CV().appendChild(lb);
-    const crop = slotEl("S2_crop", 26, 26, 22, 32, "Layout crop with Set-of-Mark boxes");
-    const router = slotEl("S2_router", 56, 4, 16, 22, "Router Agent");
-    const specialists = slotEl("S2_specialists", 52, 30, 44, 26, "5 specialist agents: Text · Form · Table · Image · List");
-    specSlots = [];
-    for (let i = 0; i < 5; i++) {
-      const hs = el("div", "pdemo-slot show clickable");
-      hs.style.left = (52 + i * (44 / 5)) + "%"; hs.style.top = "30%"; hs.style.width = (44 / 5) + "%"; hs.style.height = "26%";
-      hs.title = "Click to inspect " + LOCALIZE_SPECIALISTS[i].name + " output";
-      hs.addEventListener("click", () => {
+    // Positioned box that also registers an arrow anchor + reveal key.
+    const place = (cls, x, y, w, h, key, html) => {
+      const e = el("div", cls, html);
+      e.style.left = x + "%"; e.style.top = y + "%"; e.style.width = w + "%"; e.style.height = h + "%";
+      if (key) { e.dataset.key = key; arrowRectsByKey[key] = { x, y, w, h }; }
+      CV().appendChild(e);
+      return e;
+    };
+    const data = LOCALIZE_DATA[PIPELINE_PRESETS[currentDoc].id];
+    locCrops = data ? data.crops : []; locPage = data ? data.page : ""; locCropIdx = 0; locBadges = {}; locPacket = null;
+
+    const tree = slotEl("S2_tree", 1, 12, 12, 78, "Nested Hierarchical Layout Tree (from Segment)");
+
+    // Context packet: crop + layout bbox + OCR text (the Router's full input).
+    const packet = place("pdemo-packet", 14, 18, 18, 62, "S2_packet",
+      '<div class="pk-name">Region</div>' +
+      '<div class="pk-crop"><img alt="region crop"></div>' +
+      '<div class="pk-field"><span class="pk-k"><i class="fa-solid fa-vector-square"></i> bbox</span><span class="pk-bbox">—</span></div>' +
+      '<div class="pk-field"><span class="pk-k"><i class="fa-solid fa-font"></i> ocr</span><span class="pk-ocr">—</span></div>');
+    locPacket = { wrap: packet, name: packet.querySelector(".pk-name"), crop: packet.querySelector(".pk-crop"),
+      cropImg: packet.querySelector(".pk-crop img"),
+      bbox: packet.querySelector(".pk-bbox"), ocr: packet.querySelector(".pk-ocr") };
+
+    const router = place("pdemo-router", 33, 34, 11, 20, "S2_router",
+      '<i class="fa-solid fa-code-branch"></i><span>Router<br>Agent</span>');
+
+    // Six specialist badges the Router chooses between (kept left of the
+    // sub-HTML viewer so both stay visible when a fragment is shown).
+    LOCALIZE_AGENT_ORDER.forEach((k, i) => {
+      const ag = LOCALIZE_AGENTS[k];
+      const b = place("pdemo-sbadge", 47, 6 + i * 12.6, 15, 10.6, "S2_ag_" + k,
+        `<i class="fa-solid fa-robot"></i><span>${ag.name}</span><i class="fa-solid ${ag.icon} sp-ic"></i>`);
+      b.style.setProperty("--agc", ag.color);
+      b.addEventListener("click", () => {
         stopCycle();
-        specSlots.forEach(s => s.classList.remove("pinned"));
-        hs.classList.add("pinned");
-        openViewer(LOCALIZE_SPECIALISTS[i]);
+        Object.values(locBadges).forEach(x => x.classList.remove("pinned"));
+        b.classList.add("pinned");
+        const idx = locCrops.findIndex(c => c.specialist === k);
+        if (idx >= 0) showCrop(idx);
+        else {
+          routeTo(k);
+          $("#pdemoOutviewer").classList.add("open");
+          $("#pdemoOvTitle").innerHTML = `<i class="fa-solid ${ag.icon}" style="color:${ag.color}"></i> ${ag.name}`;
+          $("#pdemoOvBody").innerHTML = `<div class="ov-hint">No region in this document was routed to the ${ag.name}.</div>`;
+        }
       });
-      CV().appendChild(hs);
-      specSlots.push(hs);
-    }
-    const collection = slotEl("S2_collection", 52, 84, 44, 12, "Collection of all sub-HTML fragments");
-    connect("S2_tree", "S2_crop");
-    connect("S2_crop", "S2_router");
-    connect("S2_router", "S2_specialists");
-    connect("S2_specialists", "S2_collection");
+      locBadges[k] = b;
+    });
+    arrowRectsByKey["S2_agcol"] = { x: 47, y: 6, w: 15, h: 77 };
+    const collect = place("pdemo-collect", 33, 86, 29, 11, "S2_collect",
+      '<i class="fa-solid fa-layer-group"></i>&nbsp; Collection of sub-HTML fragments');
+
+    connect("S2_tree", "S2_packet");
+    connect("S2_packet", "S2_router");
+    LOCALIZE_AGENT_ORDER.forEach(k => connect("S2_router", "S2_ag_" + k));
+    connect("S2_agcol", "S2_collect");
     drawArrows();
-    bts.push(() => { reveal(tree); cap("From Segment we have the <b>Nested Hierarchical Layout Tree</b> — every region, organized."); });
-    bts.push(() => { lb.classList.add("show"); cap("Each <b>region is lifted out of the tree</b> — this is where the crops come from."); });
-    bts.push(() => { reveal(crop); cap("The lifted region becomes a <b>crop with Set-of-Mark boxes</b> overlaid."); });
-    bts.push(() => { reveal(router); cap("The <b>Router Agent</b> reads the crop and decides which specialist should handle it. <i>Auxiliary context — OCR &amp; attributes — feeds this decision.</i>"); });
-    bts.push(() => { reveal(specialists); specSlots.forEach(s => s.classList.add("show")); cap("It <b>fans out to five specialist agents</b>. Their outputs auto-cycle on the right — <b>click any agent to pin its sub-HTML</b>."); startCycle(); });
-    bts.push(() => { reveal(collection); cap("Every specialist emits a styled fragment; these gather into the <b>Collection of sub-HTML fragments</b>. → Assemble."); });
+
+    const showBadges = () => Object.values(locBadges).forEach(b => b.classList.add("show"));
+
+    if (!locCrops.length) {
+      bts.push(() => { reveal(tree); cap("Localize runs <b>region-by-region</b> over the layout tree from Segment."); });
+      bts.push(() => { reveal(router); showBadges(); reveal(collect); cap("The <b>Router Agent</b> routes each region — with its <b>crop + bbox + OCR</b> — to one of six specialists. The step-through walkthrough is populated for the <b>Government Notice</b> example; add a <span class='mono'>LOCALIZE_DATA</span> entry for this document to enable it here."); });
+      return bts;
+    }
+
+    bts.push(() => { reveal(tree); cap("Localize runs <b>region-by-region</b>. This is the hierarchical layout tree from Segment."); });
+    bts.push(() => { reveal(packet); setPacket(locCrops[0]); cap("Each region is <b>lifted as a crop</b> and bundled with its <b>layout bbox</b> and the region's <b>OCR text</b> — this whole packet is what the Router sees."); });
+    bts.push(() => { reveal(router); showBadges(); cap("The packet — <b>crop + bbox + OCR together</b> — is handed to the <b>Router Agent</b>, which weighs all three signals."); });
+    bts.push(() => { showCrop(0); cap("The Router <b>decides the specialist</b> (highlighted, colored arrow), and that agent emits a styled <b>sub-HTML fragment</b> → shown on the right."); });
+    bts.push(() => { reveal(collect); startCropCycle(); cap("Every region is routed the same way; fragments gather into the <b>Collection of sub-HTML</b>. It <b>auto-cycles</b> the regions — <b>click any specialist to pin its output</b>. → Assemble."); });
     return bts;
   }
 
@@ -1862,10 +2311,45 @@
     return { el: slot, set };
   }
 
+  // Render a beautiful stacked display of sub-HTML fragments from Localize stage.
+  function renderFragmentStack(slot, docKey) {
+    const data = LOCALIZE_DATA[docKey];
+    if (!data || !data.crops) return;
+    const stack = el("div", "frag-stack");
+
+    // Header: "Collection of sub-HTML fragments (from Localize)"
+    const header = el("div", "frag-stack-header");
+    header.innerHTML = `<i class="fa-solid fa-layer-group"></i><span>Collection of sub-HTML fragments (from Localize)</span>`;
+    stack.appendChild(header);
+
+    // Container for the cards
+    const items = el("div", "frag-stack-items");
+    data.crops.forEach(crop => {
+      const ag = LOCALIZE_AGENTS[crop.specialist] || { name: crop.specialist, icon: "fa-code", color: "var(--accent)" };
+      const card = el("div", "frag-card");
+      card.style.setProperty("--ag-color", ag.color);
+      const head = el("div", "frag-head");
+      head.innerHTML = `<i class="fa-solid ${ag.icon}"></i><span>${ag.name}</span><span class="frag-label">${crop.label}</span>`;
+      const code = el("div", "frag-code");
+      code.innerHTML = highlightFidHtml(crop.subhtml);
+      card.appendChild(head);
+      card.appendChild(code);
+      items.appendChild(card);
+    });
+    stack.appendChild(items);
+
+    slot.innerHTML = "";
+    slot.appendChild(stack);
+  }
+
   function buildAssemble() {
     clearCanvas(); ensureArrowLayer(); const bts = [];
     const doc = RO_DATA[PIPELINE_PRESETS[currentDoc].id];
     const frags = slotEl("S3_fragments", 1, 16, 20, 68, "Collection of sub-HTML fragments (from Localize)");
+    // Populate fragment stack with sub-HTML snippets from Localize stage.
+    renderFragmentStack(frags, PIPELINE_PRESETS[currentDoc].id);
+    // Always show the fragments immediately (don't wait for animation).
+    reveal(frags);
     const agent = slotEl("S3_agent", 77, 6,  21, 20, "Reading-Order Agent");
     const merge = slotEl("S3_merge", 77, 34, 21, 18, "Position-Aware Merge");
     const final = slotEl("S3_final", 77, 56, 21, 40, "Initial HTML document (output → Refine)");
@@ -1877,7 +2361,7 @@
       // presets without reading-order data fall back to the fragment story
       const note = slotEl("S3_reading", 26, 6, 44, 88, "Reading-order figure (add S3_reading.png + RO_DATA entry)");
       drawArrows();
-      bts.push(() => { reveal(frags); cap("The parallel specialists produced fragments <b>out of order</b> — we can't just concatenate them."); });
+      bts.push(() => { cap("The Localize stage produced these <b>sub-HTML fragments</b> (one per region from each specialist). But they arrived <b>out of order</b> — we can't just concatenate them."); });
       bts.push(() => { reveal(note); reveal(agent); cap("The <b>Reading-Order Agent</b> evaluates candidate sequences using spatial &amp; textual coherence for this document…"); });
       bts.push(() => { cap("…and <b>locks onto the correct reading order</b> — the stream now reads coherently.", "good"); });
       bts.push(() => { reveal(merge); reveal(final); cap("<b>Ordering first, then merging:</b> the Position-Aware Merge composes fragments by coordinates in that order → one <b>Initial HTML document</b>. → Refine."); });
@@ -1887,7 +2371,7 @@
     const fig = buildROFigure(boxEl(23, 4, 32, 92), doc);
     const rib = buildRORibbon(boxEl(57, 7, 18, 86), doc);
     drawArrows();
-    bts.push(() => { reveal(frags); cap("The parallel specialists produced fragments <b>out of order</b> — we can't just concatenate them. The page looks fine either way; the <b>HTML source order</b> is what breaks."); });
+    bts.push(() => { reveal(frags); cap("The Localize stage produced these <b>sub-HTML fragments</b> (one per region from each specialist). But they arrived <b>out of order</b> — we can't concatenate them yet. The page looks fine either way; the <b>HTML source order</b> is what breaks."); });
     bts.push(() => { reveal(fig.el); reveal(rib.el); fig.set("naive"); rib.set("naive"); cap(doc.cap.naive, "warn"); });
     bts.push(() => { reveal(agent); fig.set("think"); rib.set("think"); cap(doc.cap.think); });
     bts.push(() => { fig.set("correct"); rib.set("correct"); cap(doc.cap.correct, "good"); });
@@ -2037,7 +2521,7 @@
     let arrowResizeTimer = null;
     window.addEventListener("resize", () => {
       clearTimeout(arrowResizeTimer);
-      arrowResizeTimer = setTimeout(drawArrows, 120);
+      arrowResizeTimer = setTimeout(() => { drawArrows(); fitQualReplica(); }, 120);
     });
   }
 
@@ -2059,12 +2543,37 @@
     qualIdx = i;
     const q = QUAL_EXAMPLES[i];
     loadImage($("#qualOriginal"), q.original, `${q.type} — original`);
-    loadImage($("#qualReplica"), q.replica, `${q.type} — REPLICA`);
+    const rep = $("#qualReplica");
+    const liveTag = $("#qualLiveTag");
+    if (q.html) {
+      if (liveTag) liveTag.style.display = "";
+      rep.classList.add("loading");
+      rep.innerHTML = `<iframe title="${q.type} — REPLICA FID-HTML" loading="lazy" scrolling="no" src="${q.html}" style="width:${q.w}px;height:${q.h}px;"></iframe>`;
+      const iframe = rep.querySelector("iframe");
+      iframe.addEventListener("load", () => { rep.classList.remove("loading"); fitQualReplica(); });
+      fitQualReplica();
+    } else {
+      if (liveTag) liveTag.style.display = "none";
+      rep.classList.remove("loading");
+      rep.style.height = "";
+      loadImage(rep, q.replicaImg, `${q.type} — REPLICA`);
+    }
     $("#qualCaption").innerHTML = `<div class="qtype">${q.type}</div><div>${q.caption}</div>`;
     $("#qualCounter").textContent = `${i + 1} / ${QUAL_EXAMPLES.length}`;
     $$("#qualThumbs .tsi").forEach((t, j) => t.classList.toggle("active", j === i));
     const activeThumb = $(`#qualThumbs .tsi[data-qi="${i}"]`);
     if (activeThumb) activeThumb.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  }
+  // Scale the live FID-HTML iframe to the column width, preserving aspect.
+  function fitQualReplica() {
+    const q = QUAL_EXAMPLES[qualIdx];
+    const rep = $("#qualReplica");
+    if (!q || !q.html || !rep) return;
+    const iframe = rep.querySelector("iframe");
+    if (!iframe) return;
+    const scale = rep.clientWidth / q.w;
+    iframe.style.transform = `scale(${scale})`;
+    rep.style.height = (q.h * scale) + "px";
   }
 
   /* ===================== STATS ===================== */
@@ -2092,7 +2601,8 @@
   }
   function renderBars(animate) {
     const tab = CHART_TABS[currentTab];
-    const rows = allRows().map(r => ({ m: r.m, ours: !!r.ours, val: r.v[tab.metricIndex] }));
+    const tf = tab.transform || (v => v);
+    const rows = allRows().map(r => ({ m: r.m, ours: !!r.ours, val: tf(r.v[tab.metricIndex]) }));
     rows.sort((a, b) => tab.lowerBetter ? a.val - b.val : b.val - a.val);
     const max = Math.max(...rows.map(r => r.val)) || 1;
     $("#chartBars").innerHTML = rows.map(r => {
@@ -2135,7 +2645,12 @@
   }
   function renderMainTable() {
     const best = bestIndexPerMetric();
-    let html = "<thead><tr>" + RESULTS.columns.map(c => `<th>${c}</th>`).join("") + "</tr></thead><tbody>";
+    let html = "<thead>";
+    if (RESULTS.categoryHeader) {
+      html += "<tr class='grp cat'>" + RESULTS.categoryHeader.map(c =>
+        `<th colspan="${c.span}"${c.name ? "" : " class='blank'"}>${c.name}</th>`).join("") + "</tr>";
+    }
+    html += "<tr>" + RESULTS.columns.map(c => `<th>${c}</th>`).join("") + "</tr></thead><tbody>";
     RESULTS.groups.forEach(g => {
       html += `<tr class="group-label"><td colspan="${RESULTS.columns.length}">${g.name}</td></tr>`;
       g.rows.forEach(r => {
@@ -2200,28 +2715,102 @@
 
   /* ===================== FID-HTML ===================== */
   let fidActive = null;
+  // Escape text for safe injection into the syntax-highlighted code panel.
+  function fidEsc(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  // A CSS declaration → which document dimension it demonstrates.
+  const FID_POS_PROPS = ["position", "left", "top", "width", "height", "text-indent"];
+  const FID_STYLE_PROPS = ["color", "font-size", "font-weight", "font-style", "text-decoration", "background", "background-color"];
+  function fidRenderStyle(v) {
+    const parts = v.split(";");
+    let out = "";
+    parts.forEach((d, i) => {
+      if (d.trim()) {
+        const prop = (d.split(":")[0] || "").trim().toLowerCase();
+        const dim = FID_POS_PROPS.includes(prop) ? "4" : FID_STYLE_PROPS.includes(prop) ? "5" : "";
+        out += `<span class="c-css"${dim ? ` data-dim="${dim}"` : ""}>${fidEsc(d)}</span>`;
+      }
+      if (i < parts.length - 1) out += '<span class="c-punc">;</span>';
+    });
+    return out;
+  }
+  function fidRenderAttrVal(name, val) {
+    if (name === "class") return `<span class="c-str" data-dim="3">${fidEsc(val)}</span>`;
+    if (name === "src" || name === "alt") return `<span class="c-str" data-dim="6">${fidEsc(val)}</span>`;
+    if (name === "style") return fidRenderStyle(val);
+    return `<span class="c-str">${fidEsc(val)}</span>`;
+  }
+  function fidRenderAttrs(region) {
+    let out = "", m;
+    const re = /([a-zA-Z][a-zA-Z0-9-]*)(?:\s*=\s*"([^"]*)")?/g;
+    while ((m = re.exec(region))) {
+      if (!m[0].trim()) { re.lastIndex++; continue; }
+      out += ` <span class="c-attr">${m[1]}</span>`;
+      if (m[2] !== undefined) {
+        out += '<span class="c-punc">="</span>' + fidRenderAttrVal(m[1].toLowerCase(), m[2]) + '<span class="c-punc">"</span>';
+      }
+    }
+    return out;
+  }
+  function fidRenderTag(tag) {
+    const closing = /^<\//.test(tag);
+    const selfClose = /\/>$/.test(tag);
+    const nm = tag.match(/^<\/?\s*([a-zA-Z0-9]+)/);
+    const name = nm ? nm[1].toLowerCase() : "";
+    let tagDim = "";
+    if (name === "div") tagDim = "2";                                              // hierarchical containers
+    else if (name === "img" || name === "figure") tagDim = "6";                   // figures
+    else if (["h1", "h2", "h3", "h4", "p", "li", "ul", "ol", "table", "tr", "td"].includes(name)) tagDim = "3"; // semantic tags
+    else if (["b", "strong", "i", "em", "u"].includes(name)) tagDim = "5";        // styling emphasis
+    const attrRegion = tag.replace(/^<\/?\s*[a-zA-Z0-9]+/, "").replace(/\s*\/?>$/, "");
+    let out = `<span class="c-punc">&lt;${closing ? "/" : ""}</span>`;
+    out += `<span class="c-tag"${tagDim ? ` data-dim="${tagDim}"` : ""}>${name}</span>`;
+    out += fidRenderAttrs(attrRegion);
+    out += `<span class="c-punc">${selfClose ? "/" : ""}&gt;</span>`;
+    return out;
+  }
+  function fidRenderText(t) {
+    if (!t) return "";
+    if (!t.trim()) return fidEsc(t);                       // preserve indentation/newlines, no span
+    return `<span class="c-text" data-dim="1">${fidEsc(t)}</span>`;  // textual content
+  }
+  // Tokenize the raw Fid-HTML into tags/text, syntax-highlight, and tag each
+  // token with the document dimension(s) it demonstrates (data-dim).
+  function highlightFidHtml(src) {
+    let out = "", last = 0, m;
+    const re = /<[^>]+>/g;
+    while ((m = re.exec(src))) {
+      if (m.index > last) out += fidRenderText(src.slice(last, m.index));
+      out += fidRenderTag(m[0]);
+      last = re.lastIndex;
+    }
+    if (last < src.length) out += fidRenderText(src.slice(last));
+    return out;
+  }
   function renderFidhtml() {
     $("#fidChips").innerHTML = FIDHTML_CALLOUTS.map(c => `
       <button class="fid-chip" data-fc="${c.id}">
-        <span class="fc-num">${c.id}</span>
+        <span class="fc-num d${c.id}">${c.id}</span>
         <span><span class="fc-name">${circled(c.id)} ${c.label}</span><span class="fc-desc">${c.desc}</span></span>
       </button>`).join("");
     $$("#fidChips .fid-chip").forEach(ch => ch.addEventListener("click", () => toggleFid(parseInt(ch.dataset.fc, 10))));
+    const code = $("#fidCode");
+    if (code) code.innerHTML = highlightFidHtml(FIDHTML_SRC);
     renderFidFormatTable();
   }
   function toggleFid(id) {
-    const wrap = $("#fidOverlay");
+    const code = $("#fidCode");
+    const chips = $$("#fidChips .fid-chip");
     if (fidActive === id) {
       fidActive = null;
-      wrap.classList.remove("show"); wrap.innerHTML = "";
-      $$("#fidChips .fid-chip").forEach(c => c.classList.remove("active"));
+      if (code) code.className = "fid-code";
+      chips.forEach(c => c.classList.remove("active"));
       return;
     }
     fidActive = id;
-    const c = FIDHTML_CALLOUTS.find(x => x.id === id);
-    loadImage(wrap, c.img, c.label);
-    wrap.classList.add("show");
-    $$("#fidChips .fid-chip").forEach(ch => ch.classList.toggle("active", parseInt(ch.dataset.fc, 10) === id));
+    if (code) code.className = `fid-code has-hl hl-${id}`;
+    chips.forEach(ch => ch.classList.toggle("active", parseInt(ch.dataset.fc, 10) === id));
   }
   function renderFidFormatTable() {
     const F = FIDHTML_FORMATS;
@@ -2368,7 +2957,8 @@
     swapThemedImages();
   }
   function initTheme() {
-    const initial = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    // Default to light mode regardless of OS preference; the toggle still switches to dark.
+    const initial = "light";
     document.documentElement.setAttribute("data-theme", initial);
     applyThemeIcon();
     $("#themeToggle").addEventListener("click", () => setTheme(currentTheme() === "dark" ? "light" : "dark"));
