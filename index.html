@@ -89,6 +89,10 @@
 
     .container { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
     .container.wide { max-width: 1340px; }
+    .container.full { max-width: none; padding: 0 28px; }
+    #demo { padding: 44px 0 56px; }
+    .section-head.compact { margin-bottom: 18px; }
+    .section-head.compact h2 { font-size: 28px; }
     section { padding: 72px 0; }
     section.alt { background: var(--bg-alt); }
     .section-head { text-align: center; margin-bottom: 44px; }
@@ -251,11 +255,20 @@
       background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
       box-shadow: var(--shadow-md); overflow: hidden;
     }
-    .pdemo-picker { padding: 20px; border-bottom: 1px solid var(--border); }
-    .pdemo-picker .lbl { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); margin-bottom: 12px; }
-    .pdemo-doc-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    /* two-column layout: doc picker rail on the left, demo fills the rest */
+    .pdemo-layout { display: grid; grid-template-columns: 176px minmax(0, 1fr); align-items: stretch; }
+    .pdemo-main { min-width: 0; display: flex; flex-direction: column; }
+    @media (max-width: 900px) {
+      .pdemo-layout { grid-template-columns: 1fr; }
+      .pdemo-picker { border-right: none; border-bottom: 1px solid var(--border); }
+      .pdemo-doc-row { flex-direction: row; flex-wrap: wrap; }
+      .pdemo-doc { width: 128px; }
+    }
+    .pdemo-picker { padding: 16px 14px; border-right: 1px solid var(--border); }
+    .pdemo-picker .lbl { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-3); margin-bottom: 12px; }
+    .pdemo-doc-row { display: flex; flex-direction: column; gap: 10px; }
     .pdemo-doc {
-      width: 128px; border: 2px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer;
+      width: 100%; border: 2px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer;
       background: var(--bg-elev); transition: all .18s; text-align: center; padding-bottom: 8px; position: relative;
     }
     .pdemo-doc:hover { border-color: var(--accent-soft-2); transform: translateY(-2px); }
@@ -283,7 +296,7 @@
     .ctl:disabled:hover { border-color: var(--border-strong); color: var(--text); }
 
     /* stage progress bar */
-    .pdemo-stagebar { display: flex; align-items: flex-start; padding: 22px 20px 4px; user-select: none; }
+    .pdemo-stagebar { display: flex; align-items: flex-start; padding: 14px 24px 0; user-select: none; }
     .pdemo-snode { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; position: relative; }
     .pdemo-snode .num {
       width: 40px; height: 40px; border-radius: 50%; position: relative; z-index: 1;
@@ -298,15 +311,17 @@
     .pdemo-sline .fill { position: absolute; inset: 0; width: 0; background: var(--accent); transition: width .5s; }
 
     /* stage viewer */
-    .pdemo-stage-wrap { padding: 18px 20px 24px; }
-    .pdemo-stage-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+    .pdemo-stage-wrap { padding: 10px 24px 14px; flex: 1 1 auto; min-width: 0; }
+    .pdemo-stage-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
     .pdemo-badge { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: #fff; background: var(--accent); padding: 3px 9px; border-radius: 6px; }
     .pdemo-stage-head h3 { font-size: 20px; }
     .pdemo-sub { color: var(--text-2); font-size: 13.5px; }
 
     .pdemo-body { position: relative; }
-    .pdemo-canvas { position: relative; width: 100%; aspect-ratio: 16 / 9; }
-    @media (max-width: 700px) { .pdemo-canvas { aspect-ratio: 4 / 5; } }
+    /* Height driven by the viewport so the whole demo (picker, stages, canvas,
+       caption, transport) fits on one screen with the canvas as large as possible. */
+    .pdemo-canvas { position: relative; width: 100%; height: clamp(520px, calc(100vh - 400px), 1020px); }
+    @media (max-width: 700px) { .pdemo-canvas { height: auto; aspect-ratio: 4 / 5; } }
     .pdemo-arrows { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
     .pdemo-arrow { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; opacity: 0; transition: opacity .45s ease; }
     .pdemo-arrow.show { opacity: .55; }
@@ -397,7 +412,7 @@
     .chip i { margin-right: 5px; opacity: .8; }
     .chip.tool { color: var(--text-2); background: var(--bg-alt); border-color: var(--border); }
 
-    .pdemo-transport { display: flex; align-items: center; gap: 14px; margin: 18px 20px 20px; padding: 14px 18px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius-sm); box-shadow: var(--shadow-sm); flex-wrap: wrap; }
+    .pdemo-transport { display: flex; align-items: center; gap: 14px; margin: 0 24px 16px; padding: 10px 16px; background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius-sm); box-shadow: var(--shadow-sm); flex-wrap: wrap; }
     .pdemo-scrub { flex: 1; min-width: 180px; display: flex; align-items: center; gap: 10px; }
     .pdemo-track { flex: 1; height: 6px; background: var(--bg-alt); border-radius: 20px; position: relative; cursor: pointer; }
     .pdemo-track .prog { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent); border-radius: 20px; width: 0; transition: width .3s; }
@@ -475,6 +490,9 @@
     .qual-replica iframe { position: absolute; top: 0; left: 0; border: 0; transform-origin: top left; background: #fff; }
     .qual-replica > img { display: block; width: 100%; height: auto; }
     .qual-replica.loading::after { content: "Rendering FID-HTML…"; position: absolute; inset: 0; display: grid; place-items: center; color: var(--text-3); font-size: 13px; font-family: 'JetBrains Mono', monospace; }
+    .qual-flip { margin-left: 10px; }
+    .qc-head .live-tag { margin-left: auto; }
+    .qual-replica .fid-code.qualcode { max-height: 780px; overflow: auto; margin: 0; background: var(--code-bg); }
     .qual-caption { text-align: center; margin: 20px auto 18px; max-width: 720px; color: var(--text-2); font-size: 15px; }
     .qual-caption .qtype { display: inline-block; font-size: 12px; font-weight: 700; color: var(--accent); background: var(--accent-soft); padding: 3px 11px; border-radius: 999px; margin-bottom: 8px; }
     .qual-nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 8px; }
@@ -655,8 +673,20 @@
     @keyframes tfade { from { opacity: 0; transform: scale(.985); } to { opacity: 1; transform: none; } }
 
     /* ==================== FID-HTML ==================== */
-    .fid-figure { display: grid; grid-template-columns: 1.55fr 1fr; gap: 26px; align-items: start; }
-    @media (max-width: 900px) { .fid-figure { grid-template-columns: 1fr; } }
+    .fid-figure { display: grid; grid-template-columns: .85fr 1.75fr .95fr; gap: 24px; align-items: start; }
+    @media (max-width: 1100px) { .fid-figure { grid-template-columns: 1fr 1.6fr; } .fid-orig { display: none; } }
+    @media (max-width: 900px) { .fid-figure { grid-template-columns: 1fr; } .fid-orig { display: block; } }
+    /* rendered mode: the six dimension chips only apply to the code view */
+    .fid-figure.rendered { grid-template-columns: .85fr 2.7fr; }
+    .fid-figure.rendered .fid-chips { display: none; }
+    .fid-codecol, .fid-orig { min-width: 0; }
+    .fid-orig-head { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 10px; color: var(--text-2); }
+    .fid-orig-head .badge-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--text-3); }
+    .fid-flip { margin-left: auto; display: inline-flex; border: 1px solid var(--border-strong); border-radius: 8px; overflow: hidden; }
+    .fid-flip button { font-family: inherit; font-size: 11.5px; font-weight: 700; padding: 5px 12px; border: none; background: transparent; color: var(--text-2); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+    .fid-flip button.on { background: var(--accent); color: #fff; }
+    .fid-render { height: 640px; overflow: auto; background: #fff; position: relative; }
+    .fid-render iframe { display: block; border: 0; transform-origin: top left; background: #fff; }
     .fid-chips { display: flex; flex-direction: column; gap: 9px; }
     .fid-chip { display: flex; gap: 12px; align-items: flex-start; border: 1px solid var(--border); background: var(--card); border-radius: 12px; padding: 12px 14px; cursor: pointer; transition: all .15s; text-align: left; width: 100%; font-family: inherit; }
     .fid-chip:hover { border-color: var(--accent); transform: translateX(2px); }
@@ -811,11 +841,11 @@
   <!-- ==================== INTERACTIVE TEASER ==================== -->
   <section id="teaser" style="padding-top: 24px;">
     <div class="container">
-      <div class="section-head reveal" style="margin-bottom: 30px;">
+      <!-- <div class="section-head reveal" style="margin-bottom: 30px;">
         <span class="eyebrow">At a Glance</span>
         <h2>One Document, Four Reconstructions</h2>
         <p>The same page reconstructed by REPLICA vs. strong baselines. Only REPLICA preserves physical structure <b>and</b> visual fidelity across all four axes.</p>
-      </div>
+      </div> -->
 
       <div class="teaser-i reveal">
         <div class="tp-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Reconstruction — pick a method to compare against the input</div>
@@ -886,16 +916,26 @@
         </p>
       </div>
 
-      <div class="fid-figure reveal">
-        <div>
+      <div class="fid-figure reveal" id="fidFigure">
+        <div class="fid-orig">
+          <div class="fid-orig-head"><span class="badge-dot"></span> Original document</div>
+          <div class="frame" id="fidOrigImg"></div>
+          <p class="figcap" style="margin-top: 10px; font-size: 12.5px;">"Facts of Life" — scanned magazine fact sheet (input page).</p>
+        </div>
+        <div class="fid-codecol">
           <div class="fid-code-wrap">
             <div class="fid-code-bar">
               <span class="dots"><i></i><i></i><i></i></span>
-              <span class="fid-code-title">fid-html · annotated financial report (ground truth)</span>
+              <span class="fid-code-title">fid-html · "Facts of Life" (ground truth)</span>
+              <div class="fid-flip" id="fidFlip">
+                <button data-v="code" class="on"><i class="fa-solid fa-code"></i> Fid-HTML</button>
+                <button data-v="render"><i class="fa-solid fa-eye"></i> Rendered</button>
+              </div>
             </div>
             <pre class="fid-code" id="fidCode"><!-- injected --></pre>
+            <div class="fid-render" id="fidRender" hidden></div>
           </div>
-          <p class="figcap" style="margin-top: 12px;">This is the <b>real Fid-HTML source</b>. Click a dimension to spotlight exactly where it lives in the code — click again to clear.</p>
+          <p class="figcap" style="margin-top: 12px;" id="fidFigcap">This is the <b>real Fid-HTML source</b> of the page on the left. Click a dimension to spotlight exactly where it lives in the code — flip to <b>Rendered</b> to see this exact markup drawn by your browser (the text is real and selectable).</p>
         </div>
         <div class="fid-chips" id="fidChips"><!-- injected --></div>
       </div>
@@ -951,20 +991,22 @@
 
   <!-- ====================== INTERACTIVE DEMO ====================== -->
   <section id="demo" class="alt">
-    <div class="container wide">
-      <div class="section-head reveal">
+    <div class="container full">
+      <div class="section-head reveal compact">
         <span class="eyebrow">Interactive</span>
         <h2>Pipeline Demo</h2>
         <p>Pick a document, then step or play through REPLICA's four stages. Intermediate outputs are pre-computed — no live inference.</p>
       </div>
 
       <div class="pdemo-wrap reveal">
-        <!-- document picker -->
+        <div class="pdemo-layout">
+        <!-- document picker (left rail) -->
         <div class="pdemo-picker">
-          <div class="lbl"><i class="fa-solid fa-layer-group"></i> &nbsp;Choose an input document</div>
+          <div class="lbl"><i class="fa-solid fa-layer-group"></i> &nbsp;Input document</div>
           <div class="pdemo-doc-row" id="pdemoDocRow"><!-- injected --></div>
         </div>
 
+        <div class="pdemo-main">
         <!-- stage progress -->
         <div class="pdemo-stagebar" id="pdemoStagebar"><!-- injected --></div>
 
@@ -1006,6 +1048,8 @@
             <button data-s="700">2×</button>
           </div>
         </div>
+        </div><!-- /.pdemo-main -->
+        </div><!-- /.pdemo-layout -->
         <div class="pdemo-hint">Use <b>Step</b> to advance one beat, or <b>Play</b> to run a stage. In <b>Localize</b>, agent outputs auto-cycle — click one to pin it. Keyboard (while hovering the demo): space = play/pause, arrows = step.</div>
       </div>
     </div>
@@ -1073,7 +1117,12 @@
             <div class="frame" id="qualOriginal"></div>
           </div>
           <div class="qual-col replica">
-            <div class="qc-head"><span class="badge-dot"></span> REPLICA Reconstruction <span class="live-tag" id="qualLiveTag"><i class="fa-solid fa-i-cursor"></i> live FID-HTML · selectable</span></div>
+            <div class="qc-head"><span class="badge-dot"></span> REPLICA Reconstruction <span class="live-tag" id="qualLiveTag"><i class="fa-solid fa-i-cursor"></i> live FID-HTML · selectable</span>
+              <span class="fid-flip qual-flip" id="qualFlip">
+                <button data-v="render" class="on"><i class="fa-solid fa-eye"></i> Rendered</button>
+                <button data-v="code"><i class="fa-solid fa-code"></i> Fid-HTML</button>
+              </span>
+            </div>
             <div class="qual-replica" id="qualReplica"></div>
           </div>
         </div>
@@ -1216,49 +1265,161 @@
   ];
 
   // ---- Live Fid-HTML source shown in the interactive code panel ------
-  // Transcribed from the paper's Fid-HTML figure (fidhtml_diag_horizontal.pdf,
-  // the PUMA annual-report example). Grammarly's data-* body attributes and
-  // the PDF's soft line-wraps were removed; CSS spacing lightly normalized.
+  // The REAL ground-truth Fid-HTML of the "Facts of Life" magazine fact
+  // sheet (static/images/qual/20005_html.html), with the base64 page
+  // background replaced by a filename stub; attribute soft-wraps collapsed.
   const FIDHTML_SRC =
-`<body><div class="header" style="position: absolute; left: 93px; top: 105px; width: 145px; height: 19px;">
-  <span style="position: absolute; left: 0px; top: 0px; width: 138px; height: 12px; text-indent: 0px; font-size: 14px; color: rgb(254, 99, 99)">
-    <b>Equity Ratio at 57.6%</b>
-  </span>
-</div><div class="text" style="position: absolute; left: 90px; top: 138px; width: 425px; height: 48px;">
-  <span style="position: absolute; left: 0px; top: 0px; width: 399px; height: 22px; text-indent: 0px; font-size: 14px;">Once again, the capital structure was successfully improved<br> in 2004. Despite the 32.8% increase in the balance sheet total <br> from € 700.1 million to € 929.6 million, the equity ratio was up </span>
-</div><div class="text" style="position: absolute; left: 90px; top: 185px; width: 283px; height: 49px;">
-  <span style="position: absolute; left: 0px; top: 5px; width: 283px; height: 49px; text-indent: 0px; font-size: 14px;">from 54.7% to 57.6%. This development<br> underscores the strong financial position <br>of the PUMA Group.</span>
-</div><div class="picture" style="position: absolute; left: 382px; top: 193px; width: 423px; height: 159px;">
-  <figure class="chart_5">
-    <img src="image_1.png" alt="Bar and line chart showing balance sheet total in million euros (2000-2004) and equity ratio percentage....">
-  </figure>
-</div><div class="header" style="position: absolute; left: 86px; top: 379px; width: 232px; height: 30px; text-indent: 11px;">
-  <h1 class="title_6" style="position: absolute; left: 11px; top: 9px; width: 239px; height: 12px; text-indent: 0px; font-size: 14px;">
-    <span style="color: rgb(255, 92, 94)">Further Improvement In Liquidity</span> </h1>
-</div><div class="text" style="position: absolute; left: 91px; top: 416px; width: 422px; height: 50px;">
-  <div class="paragraph_1">
-    <p style="position: absolute; left: 4px; top: 2px; width: 412px; height: 45px; text-indent: 0px; font-size: 14px;">As a result of the strongly improved cashflow, cash and cash <br> equivalents almost doubled to € 369.3 million. Concurrently, <br> bank debt was reduced from € 16.8 million to € 12.9 million.</p>
-  </div>
-</div><div class="header" style="position: absolute; left: 86px; top: 493px; width: 212px; height: 19px;">
-  <h1 class="title_6" style="position: absolute; left: 11px; top: 9px; width: 239px; height: 12px; text-indent: 0px; font-size: 14px;">
-    <span style="color: rgb(255, 92, 94)">Working Capital Again Improved</span> </h1>
-</div><div class="text" style="position: absolute; left: 91px; top: 524px; width: 424px; height: 49px;">
-  <span style="position: absolute; left: 0px; top: 10px; width: 400px; height: 29px; text-indent: 0px; font-size: 14px;">Working capital amounted to 9.7% of sales after 12.2% in the <br> previous year. In absolute figures, the working capital declined <br> by 4.7% at year-end, falling from € 155.7 million to</span>
-</div><div class="text" style="position: absolute; left: 92px; top: 572px; width: 282px; height: 172px;">
-  <div class="paragraph_7"><p style="position: absolute; left: 0px; top: 0px; width: 282px; height: 172px; text-indent: 4px; font-size: 14px;">€ 148.4 million. This development which <br> surpassed expectations, is primarily due to <br> marginal inventory build-ups. A higher <br> amount of merchandise was received in <br> December 2003, whereas year-end <br> 2004 indicates a shift to January 2005. The <br> calculation of working capital includes <br> inventories, plus current receivables, less <br> current non-interest-bearing liabilities and <br> provisions, to the extent attributable to the <br> operational area.</p></div>
-</div><div class="picture" style="position: absolute; left: 383px; top: 581px; width: 422px; height: 158px;">
-  <figure class="chart_9">
-    <img src="image_2.png" alt="Bar and line chart showing working capital in million euros (2000-2004) and working capital as a percentage of sales. Working capital ....">
-  </figure>
-</div><div class="text" style="position: absolute; left: 91px; top: 756px; width: 423px; height: 51px;">
-  <div class="paragraph_11">
-    <p style="position: absolute; left: 5px; top: 12px; width: 412px; height: 46px; text-indent: 1px; font-size: 14px;">Inventories were up by 2.5% to € 201.1 million and receivables<br>rose by 8% to € 189.6 million. This development confirms PUMA's<br>systematic and effective working capital management.</p>
-  </div>
-</div><div class="text" style="position: absolute; left: 534px; top: 414px; width: 425px; height: 38px;">
-  <div class="paragraph_8">
-    <p style="position: absolute; left: 5px; top: 5px; width: 413px; height: 27px; text-indent: 1px; font-size: 14px;">As a result, net liquidity improved from € 173.8 million to <br> € 356.4 million.</p>
-  </div>
-</div><div class="page-number" style="position: absolute; left: 932px; top: 983px; width: 21px; height: 17px;"></div>
+`<body>
+<div class="text" style="position: absolute; left: 69px; top: 820px; width: 353px; height: 158px;">
+<div class="paragraph_0">
+<p style="color:rgb(101, 101, 101); position: absolute; left: 11px; top: 1px; width: 331px; height: 156px; text-indent: 1px;"><span class="textFitted" style="display: inline-block; font-size: 16.2px;">As you age, you may be more likely to<br/>develop gingivitis. Gingivitis is caused by<br/>the bacteria found in plaque that attack<br/>the gums. Symptoms of gingivitis include<br/>red, swollen gums and bleeding when<br/>you brush. If you have these symptoms,<br/>see a dentist.</span></p>
+</div>
+</div>
+<div class="header" style="position: absolute; left: 753px; top: 72px; width: 360px; height: 24px;">
+<div class="header_1">
+<p style="position: absolute; left: 58px; top: 0px; width: 353px; height: 22px; text-indent: 0px;font-size:21px;"><b>Fact Sheet</b> <span style="color:rgb(104, 103, 104)"> Geriatric Dental Care </span></p>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 45px; top: 1084px; width: 356px; height: 192px;">
+<div class="paragraph_2">
+<p style="position: absolute; left: 11px; top: 3px; width: 336px; height: 179px; text-indent: 25px;"><span class="textFitted" style="display: inline-block; font-size: 16.px;">
+<span style="color:rgb(102, 102, 102)">As</span> <span style="color:rgb(102, 102, 102)">you</span> <span style="color:rgb(102, 102, 102)">age,</span> <span style="color:rgb(102, 102, 102)">changes</span> <span style="color:rgb(102, 102, 102)">in</span> <span style="color:rgb(102, 102, 102)">salivary</span> <span style="color:rgb(102, 102, 102)">flow</span><br/>
+<span style="color:rgb(102, 102, 102)">and</span> <span style="color:rgb(102, 102, 102)">content</span> <span style="color:rgb(102, 102, 102)">may</span> <span style="color:rgb(102, 102, 102)">further</span> <span style="color:rgb(102, 102, 102)">lead</span> <span style="color:rgb(102, 102, 102)">to</span> <span style="color:rgb(102, 102, 102)">gingivitis,</span><br/>
+<span style="color:rgb(102, 102, 102)">as</span> <span style="color:rgb(102, 102, 102)">well</span> <span style="color:rgb(102, 102, 102)">as</span> <span style="color:rgb(102, 102, 102)">cavities.</span> <span style="color:rgb(102, 102, 102)">Because</span> <span style="color:rgb(102, 102, 102)">approximately</span><br/>
+<span style="color:rgb(102, 102, 102)">80</span> <span style="color:rgb(102, 102, 102)">percent</span> <span style="color:rgb(102, 102, 102)">of</span> <span style="color:rgb(102, 102, 102)">all</span> <span style="color:rgb(102, 102, 102)">American</span> <span style="color:rgb(102, 102, 102)">adults</span> <span style="color:rgb(102, 102, 102)">suffer</span><br/>
+<span style="color:rgb(102, 102, 102)">from</span> <span style="color:rgb(102, 102, 102)">some</span> <span style="color:rgb(102, 102, 102)">form</span> <span style="color:rgb(102, 102, 102)">of</span> <span style="color:rgb(102, 102, 102)">gingivitis,</span> <span style="color:rgb(102, 102, 102)">it’s</span> <span style="color:rgb(102, 102, 102)">impor-</span><br/>
+<span style="color:rgb(102, 102, 102)">tant</span> <span style="color:rgb(102, 102, 102)">to</span> <span style="color:rgb(102, 102, 102)">see</span> <span style="color:rgb(102, 102, 102)">your</span> <span style="color:rgb(102, 102, 102)">dentist</span> <span style="color:rgb(102, 102, 102)">twice</span> <span style="color:rgb(102, 102, 102)">a</span> <span style="color:rgb(102, 102, 102)">year</span> <span style="color:rgb(102, 102, 102)">for</span><br/>
+<span style="color:rgb(102, 102, 102)">regular</span> <span style="color:rgb(102, 102, 102)">cleanings</span> <span style="color:rgb(102, 102, 102)">and</span> <span style="color:rgb(102, 102, 102)">checkups.</span> <span style="color:rgb(102, 102, 102)">If</span> <span style="color:rgb(102, 102, 102)">regular</span><br/>
+<span style="color:rgb(102, 102, 102)">oral</span> <span style="color:rgb(102, 102, 102)">care</span> <span style="color:rgb(102, 102, 102)">is</span> <span style="color:rgb(102, 102, 102)">too</span> <span style="color:rgb(102, 102, 102)">difficult</span> <span style="color:rgb(102, 102, 102)">for</span> <span style="color:rgb(102, 102, 102)">you</span> <span style="color:rgb(102, 102, 102)">(see</span> <span style="color:rgb(102, 102, 102)">be-</span>
+</span></p>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 253px; top: 1415px; width: 233px; height: 24px;">
+<div class="title_3">
+<p style="position: absolute; left: 9px; top: 5px; width: 209px; height: 15px; text-indent: 0px;"><span class="textFitted" style="display: inline-block; font-size: 13.4px;">mḥpršty</span></p>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 789px; top: 962px; width: 357px; height: 332px;">
+<div class="paragraph_4">
+<p style="color:rgb(101, 101, 101); position: absolute; left: 9px; top: 2px; width: 339px; height: 319px; text-indent: 1px;"><span class="textFitted" style="display: inline-block; font-size: 16.5px;">Studies have shown that maintaining<br/>a healthy mouth may keep your body<br/>healthier and help you to avoid diabetes,<br/>heart disease, and stroke. Older patients<br/>who are planning to enter a nursing<br/>home should inquire about on-site dental<br/>care. People who do not have teeth<br/>still need to visit the dentist regularly,<br/>since many aspects of oral health, such<br/>as adjusting dentures and oral cancer<br/>screenings, can be handled during routine<br/>dental visits. The best way to achieve<br/>good oral health is to visit your dentist at<br/>least twice a year.</span></p>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 249px; top: 1436px; width: 407px; height: 126px;">
+<div class="paragraph_5">
+<p style="position: absolute; left: 10px; top: 6px; width: 366px; height: 110px; text-indent: 1px;font-size:14px;">Brought to you by the AGD, this Web site answers<br/>important dental health questions, offers the latest<br/>information on current treatments, provides tips for<br/>first-rate oral hygiene, and can help visitors find highly<br/>qualified general dentists near where they live.</p>
+</div>
+</div>
+<div class="title" style="position: absolute; left: 70px; top: 195px; width: 482px; height: 108px;">
+<div class="title_6">
+<h1 style="position: absolute; left: 10px; top: 2px; width: 446px; height: 97px; text-indent: 0px;"><span class="textFitted" style="display: inline-block; font-size: 64.9px;">Facts of Life</span></h1>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 67px; top: 309px; width: 355px; height: 175px;">
+<div class="paragraph_7">
+<p style="color:rgb(101, 101, 101); position: absolute; left: 13px; top: 8px; width: 333px; height: 158px; text-indent: 1px;"><span class="textFitted" style="display: inline-block; font-size: 16.2px;">Due to advances in medicine and an<br/>increase in prolonged life expectancy, the<br/>number of older people will continue to<br/>increase worldwide. It is essential that all<br/>older adults practice and maintain good<br/>oral hygiene due to the high correlation<br/>between oral health and general health.</span></p>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 697px; top: 1415px; width: 412px; height: 55px;">
+<div class="contact-info_8">
+<p style="position: absolute; left: 13px; top: 4px; width: 380px; height: 39px; text-indent: 1px;"><span class="textFitted" style="display: inline-block; font-size: 16.7px;">AGD’s toll-free referral number. Call to locate an AGD member dentist in your area.</span></p>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 430px; top: 310px; width: 331px; height: 62px;">
+<div class="paragraph_9">
+<p style="position: absolute; left: 9px; top: 7px; width: 307px; height: 46px; text-indent: 0px;"><span class="textFitted" style="display: inline-block; font-size: 16.2px;">
+<span style="color:rgb(101, 101, 101)">low), your dentist can provide alterna-</span><br/>
+<span style="color:rgb(101, 101, 101)">tives to aid in brushing and flossing.</span>
+</span></p>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 697px; top: 1479px; width: 413px; height: 84px;">
+<div class="footer_10">
+<p style="position: absolute; left: 12px; top: 9px; width: 381px; height: 63px; text-indent: 0px;"><span class="textFitted" style="display: inline-block; font-size: 14.1px;">Published with permission by the Academy of<br/>General Dentistry. © Copyright 2009 by the Academy<br/>of General Dentistry. All rights reserved.</span></p>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 70px; top: 768px; width: 336px; height: 52px;">
+<div class="question_11">
+<p style="position: absolute; left: 12px; top: 5px; width: 309px; height: 46px; text-indent: 1px;"><span class="textFitted" style="display: inline-block; font-size: 19.7px;"><b>Am I more prone to certain oral<br/>conditions as I age?</span></b></p>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 698px; top: 1385px; width: 175px; height: 31px;">
+<div class="contact-info_12">
+<p style="position: absolute; left: 15px; top: 12px; width: 127px; height: 13px; text-indent: 0px;"><span class="textFitted" style="display: inline-block; font-size: 11.3px;">1.877.2X.A.YEAR</span></p>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 71px; top: 492px; width: 350px; height: 53px;">
+<div class="question_13">
+<p style="position: absolute; left: 12px; top: 7px; width: 330px; height: 44px; text-indent: 0px;font-size:19px;"><b>How should I care for my teeth as<br/>I get older?</b></p>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 420px; top: 655px; width: 350px; height: 31px;">
+<div class="title_14">
+<p style="position: absolute; left: 0px; top: 0px; width: 350px; height: 31px; text-indent: 10px;"><span class="textFitted" style="display: inline-block; font-size: 19px;">What are the signs of oral cancer?</span></p>
+</div>
+</div>
+<div class="picture" style="position: absolute; left: 66px; top: 1392px; width: 158px; height: 133px;">
+<div class="logo_15">
+<img src="region_image.png" style="position: absolute; left: 0px; top: 0px; width: 158px; height: 133px;"/>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 95px; top: 32px; width: 261px; height: 155px;">
+<div class="contact-info_16">
+<p style="position: absolute; left: 19px; top: 11px; width: 195px; height: 20px; text-indent: 0px;"><span class="textFitted" style="display: inline-block; font-size: 17.7px; color: rgb(179, 209, 167);">From the office of:</span></p>
+<p style="position: absolute; left: 18px; top: 37px; width: 221px; height: 108px; text-indent: 2px;"><span class="textFitted" style="display: inline-block; font-size: 18.8px;"><b>Angela S. Miller, DDS<br/>888 Prospect Street<br/>Suite 200<br/>La Jolla, CA 92037<br/>(858) 263-2763</b></span></p>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 427px; top: 1117px; width: 337px; height: 29px;">
+<div class="title_17">
+<p style="position: absolute; left: 0px; top: 0px; width: 337px; height: 29px; text-indent: 7px;"><span class="textFitted" style="display: inline-block; font-size: 19px;"><b>What can I do about dry mouth?</b></span></p>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 788px; top: 743px; width: 353px; height: 200px;">
+<div class="paragraph_18">
+<p style="color:rgb(104, 104, 104); position: absolute; left: 10px; top: 11px; width: 328px; height: 178px; text-indent: 1px;"><span class="textFitted" style="display: inline-block; font-size: 16.2px;">certain medications, or cancer treatment. The condition can make it hard to eat, <br/>swallow, taste, and speak. Drinking lots <br/>of water and avoiding sweets, tobacco, <br/>alcohol, and caffeine are some ways to <br/>fight dry mouth. Your dentist also can <br/>prescribe medications to ease the symp- <br/>toms of severe dry mouth. <br/></span></p>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 427px; top: 706px; width: 357px; height: 514px;">
+<div class="paragraph_19">
+<p style="position: absolute; left: 12px; top: -23px; width: 338px; height: 526px; text-indent: 2px;"><span class="textFitted" style="display: inline-block; font-size: 16.6px;"><span style="color:rgb(101, 101, 101)">Oral </span><span style="color:rgb(103, 103, 103)">cancer </span><span style="color:rgb(106, 106, 106)">is </span><span style="color:rgb(101, 101, 101)">one </span><span style="color:rgb(103, 103, 103)">of </span><span style="color:rgb(106, 106, 106)">the </span><span style="color:rgb(101, 101, 101)">most </span><span style="color:rgb(103, 103, 103)">common<br/></span><span style="color:rgb(106, 106, 106)">cancers, </span><span style="color:rgb(101, 101, 101)">with </span><span style="color:rgb(103, 103, 103)">roughly </span><span style="color:rgb(106, 106, 106)">35,000 </span><span style="color:rgb(101, 101, 101)">new </span><span style="color:rgb(103, 103, 103)">cases<br/></span><span style="color:rgb(106, 106, 106)">reported </span><span style="color:rgb(101, 101, 101)">annually </span><span style="color:rgb(103, 103, 103)">in </span><span style="color:rgb(106, 106, 106)">the </span><span style="color:rgb(101, 101, 101)">United </span><span style="color:rgb(103, 103, 103)">States.<br/></span><span style="color:rgb(106, 106, 106)">Oral </span><span style="color:rgb(101, 101, 101)">cancer </span><span style="color:rgb(103, 103, 103)">most </span><span style="color:rgb(106, 106, 106)">often </span><span style="color:rgb(101, 101, 101)">occurs </span><span style="color:rgb(103, 103, 103)">in </span><span style="color:rgb(106, 106, 106)">people<br/></span><span style="color:rgb(101, 101, 101)">who </span><span style="color:rgb(103, 103, 103)">are </span><span style="color:rgb(106, 106, 106)">older </span><span style="color:rgb(101, 101, 101)">than </span><span style="color:rgb(103, 103, 103)">age </span><span style="color:rgb(106, 106, 106)">40. </span><span style="color:rgb(101, 101, 101)">Oral </span><span style="color:rgb(103, 103, 103)">cancer<br/></span><span style="color:rgb(106, 106, 106)">can </span><span style="color:rgb(101, 101, 101)">form </span><span style="color:rgb(103, 103, 103)">in </span><span style="color:rgb(106, 106, 106)">any </span><span style="color:rgb(101, 101, 101)">part </span><span style="color:rgb(103, 103, 103)">of </span><span style="color:rgb(106, 106, 106)">the </span><span style="color:rgb(101, 101, 101)">mouth </span><span style="color:rgb(103, 103, 103)">or<br/></span><span style="color:rgb(106, 106, 106)">throat. </span><span style="color:rgb(101, 101, 101)">If </span><span style="color:rgb(103, 103, 103)">not </span><span style="color:rgb(106, 106, 106)">diagnosed </span><span style="color:rgb(101, 101, 101)">and </span><span style="color:rgb(103, 103, 103)">treated </span><span style="color:rgb(106, 106, 106)">in<br/></span><span style="color:rgb(101, 101, 101)">its </span><span style="color:rgb(103, 103, 103)">early </span><span style="color:rgb(106, 106, 106)">stages, </span><span style="color:rgb(101, 101, 101)">oral </span><span style="color:rgb(103, 103, 103)">cancer </span><span style="color:rgb(106, 106, 106)">can </span><span style="color:rgb(101, 101, 101)">spread,<br/></span><span style="color:rgb(103, 103, 103)">leading </span><span style="color:rgb(106, 106, 106)">to </span><span style="color:rgb(101, 101, 101)">chronic </span><span style="color:rgb(103, 103, 103)">pain, </span><span style="color:rgb(106, 106, 106)">loss </span><span style="color:rgb(101, 101, 101)">of </span><span style="color:rgb(103, 103, 103)">function,<br/></span><span style="color:rgb(106, 106, 106)">irreparable </span><span style="color:rgb(101, 101, 101)">facial </span><span style="color:rgb(103, 103, 103)">and </span><span style="color:rgb(106, 106, 106)">oral </span><span style="color:rgb(101, 101, 101)">disfigurement<br/></span><span style="color:rgb(103, 103, 103)">following </span><span style="color:rgb(106, 106, 106)">surgery, </span><span style="color:rgb(101, 101, 101)">and </span><span style="color:rgb(103, 103, 103)">even </span><span style="color:rgb(106, 106, 106)">death. </span><span style="color:rgb(101, 101, 101)">Oral<br/></span><span style="color:rgb(103, 103, 103)">cancer </span><span style="color:rgb(106, 106, 106)">has </span><span style="color:rgb(101, 101, 101)">one </span><span style="color:rgb(103, 103, 103)">of </span><span style="color:rgb(106, 106, 106)">the </span><span style="color:rgb(101, 101, 101)">lowest </span><span style="color:rgb(103, 103, 103)">five-year<br/></span><span style="color:rgb(106, 106, 106)">survival </span><span style="color:rgb(101, 101, 101)">rates </span><span style="color:rgb(103, 103, 103)">of </span><span style="color:rgb(106, 106, 106)">all </span><span style="color:rgb(101, 101, 101)">cancers; </span><span style="color:rgb(103, 103, 103)">this </span><span style="color:rgb(106, 106, 106)">is </span><span style="color:rgb(101, 101, 101)">primar-<br/></span><span style="color:rgb(103, 103, 103)">ily </span><span style="color:rgb(106, 106, 106)">due </span><span style="color:rgb(101, 101, 101)">to </span><span style="color:rgb(103, 103, 103)">late </span><span style="color:rgb(106, 106, 106)">diagnosis. </span><span style="color:rgb(101, 101, 101)">See </span><span style="color:rgb(103, 103, 103)">a </span><span style="color:rgb(106, 106, 106)">dentist </span><span style="color:rgb(101, 101, 101)">im-<br/></span><span style="color:rgb(103, 103, 103)">mediately </span><span style="color:rgb(106, 106, 106)">if </span><span style="color:rgb(101, 101, 101)">you </span><span style="color:rgb(103, 103, 103)">notice </span><span style="color:rgb(106, 106, 106)">any </span><span style="color:rgb(101, 101, 101)">of </span><span style="color:rgb(103, 103, 103)">the </span><span style="color:rgb(106, 106, 106)">follow-<br/></span><span style="color:rgb(101, 101, 101)">ing: </span><span style="color:rgb(103, 103, 103)">red </span><span style="color:rgb(106, 106, 106)">or </span><span style="color:rgb(101, 101, 101)">white </span><span style="color:rgb(103, 103, 103)">patches </span><span style="color:rgb(106, 106, 106)">on </span><span style="color:rgb(101, 101, 101)">your </span><span style="color:rgb(103, 103, 103)">gums<br/></span><span style="color:rgb(106, 106, 106)">or </span><span style="color:rgb(101, 101, 101)">tongue, </span><span style="color:rgb(103, 103, 103)">a </span><span style="color:rgb(106, 106, 106)">sore </span><span style="color:rgb(101, 101, 101)">that </span><span style="color:rgb(103, 103, 103)">fails </span><span style="color:rgb(106, 106, 106)">to </span><span style="color:rgb(101, 101, 101)">heal </span><span style="color:rgb(103, 103, 103)">within<br/></span><span style="color:rgb(106, 106, 106)">two </span><span style="color:rgb(101, 101, 101)">weeks, </span><span style="color:rgb(103, 103, 103)">bleeding </span><span style="color:rgb(106, 106, 106)">in </span><span style="color:rgb(101, 101, 101)">your </span><span style="color:rgb(103, 103, 103)">mouth, </span><span style="color:rgb(106, 106, 106)">loose<br/></span><span style="color:rgb(101, 101, 101)">teeth, </span><span style="color:rgb(103, 103, 103)">problems </span><span style="color:rgb(106, 106, 106)">or </span><span style="color:rgb(101, 101, 101)">pain </span><span style="color:rgb(103, 103, 103)">swallowing, </span><span style="color:rgb(106, 106, 106)">or<br/></span><span style="color:rgb(101, 101, 101)">a </span><span style="color:rgb(103, 103, 103)">lump </span><span style="color:rgb(106, 106, 106)">in </span><span style="color:rgb(101, 101, 101)">your </span><span style="color:rgb(103, 103, 103)">neck. </span><span style="color:rgb(106, 106, 106)">Your </span><span style="color:rgb(101, 101, 101)">dentist </span><span style="color:rgb(103, 103, 103)">should<br/></span><span style="color:rgb(106, 106, 106)">perform </span><span style="color:rgb(101, 101, 101)">a </span><span style="color:rgb(103, 103, 103)">head </span><span style="color:rgb(106, 106, 106)">and </span><span style="color:rgb(101, 101, 101)">neck </span><span style="color:rgb(103, 103, 103)">exam </span><span style="color:rgb(106, 106, 106)">to </span><span style="color:rgb(101, 101, 101)">screen<br/></span><span style="color:rgb(103, 103, 103)">for </span><span style="color:rgb(106, 106, 106)">oral </span><span style="color:rgb(101, 101, 101)">cancer </span><span style="color:rgb(103, 103, 103)">during </span><span style="color:rgb(103, 103, 103)">routine </span><span style="color:rgb(103, 103, 103)">checkups. </span></p></div>
+</div>
+<div class="text" style="position: absolute; left: 45px; top: 953px; width: 351px; height: 161px;">
+<div class="paragraph_20">
+<p style="color:rgb(101, 101, 101); position: absolute; left: 8px; top: 1px; width: 336px; height: 157px; text-indent: 27px;"><span class="textFitted" style="display: inline-block; font-size: 16.5px;"><span style="color:rgb(103, 103, 103)">Gingivitis </span>can lead to periodontal<br/>disease if problems persist. In the worst<br/>cases, bacteria form in pockets between<br/>the teeth and gums, weakening the bone<br/>and causing the gums to recede, pulling<br/>back from teeth. This can lead to tooth<br/>loss if left untreated.</span></p>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 431px; top: 379px; width: 336px; height: 50px;">
+<div class="question_21">
+<p style="position: absolute; left: 10px; top: 5px; width: 318px; height: 43px; text-indent: 0px;"><span class="textFitted" style="display: inline-block; font-size: 18.8px;"><b>What if arthritis makes brushing<br/>too difficult?</b></span></p>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 68px; top: 544px; width: 356px; height: 216px;">
+<div class="paragraph_22">
+<p style="position: absolute; left: 12px; top: 2px; width: 337px; height: 203px; text-indent: 2px;"><span class="textFitted" style="display: inline-block; font-size: 16.3px;">Maintaining good oral health is not only<br/>vital to your systemic health—it can keep<br/>you smiling well into retirement. Brush-<br/>ing at least twice a day with fluoridated<br/>toothpaste and a soft-bristle brush is as<br/>important as ever. Flossing is very impor-<br/>tant, too—it helps to remove plaque from<br/>between teeth and below the gumline<br/>that your toothbrush cannot reach.</span></p>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 430px; top: 429px; width: 344px; height: 239px;">
+<div class="paragraph_23">
+<p style="color:rgb(101, 101, 101); position: absolute; left: 9px; top: 2px; width: 326px; height: 228px; text-indent: 0px;"><span class="textFitted" style="display: inline-block; font-size: 16.5px;">Certain <span style="color:rgb(104, 103, 104)">dental</span> products are designed to<br/>make dental care less painful for people<br/>who have arthritis. It is sometimes<br/>recommended that people with arthritis<br/>try securing their toothbrush to a wider<br/>object, such as a ruler, to ease arthritic<br/>hand pain while brushing. Electric tooth-<br/>brushes also can help by doing some of<br/>the work for you. Ask your dentist for<br/>other suggestions.</span></p>
+</div>
+</div>
+<div class="header" style="position: absolute; left: 252px; top: 1385px; width: 137px; height: 30px; text-indent: 10px;">
+<h2 class="heading_24" style="position: absolute; left: 10px; top: 8px; width: 107px; height: 17px; text-indent: 0px;"><span class="textFitted" style="display: inline-block; font-size: 14.8px;">Resources</span></h2>
+</div>
+<div class="text" style="position: absolute; left: 789px; top: 900px; width: 326px; height: 52px;">
+<div class="question_25">
+<p style="position: absolute; left: 10px; top: 7px; width: 300px; height: 45px; text-indent: 0px;font-size:19px;"><b>What else can I do to maintain<br/>good oral health?</b></p>
+</div>
+</div>
+<div class="text" style="position: absolute; left: 431px; top: 1156px; width: 353px; height: 78px;">
+<div class="paragraph_26">
+<p style="color:rgb(101, 101, 101); position: absolute; left: 10px; top: 10px; width: 290px; height: 60px; text-indent: 1px;"><span class="textFitted" style="display: inline-block; font-size: 16.5px;">As you age, you may develop dry mouth. Dry mouth (xerostomia) happens when salivary glands fail to work due to disease, </span></p>
+</div>
+</div>
+<div class="picture" style="position: absolute; left: 787px; top: 184px; width: 378px; height: 537px;">
+<figure class="figure_27">
+<img class="picture_27" src="region_image.png" style="position: absolute; left: 0px; top: 0px; width: 378px; height: 537px;"/>
+</figure>
+</div>
 </body>`;
 
   // ---- FID-HTML vs other formats (two-level header) ------------------
@@ -1792,6 +1953,24 @@
     { id: 'F', label: 'Position-Aware Retrieval', emoji: '📍',
       img: 'static/images/downstream/app_F_retrieval.png',
       desc: 'Preserved spatial coordinates support position-aware queries over document collections.' },
+    { id: 'G', label: 'Accessibility Remediation', emoji: '♿',
+      img: 'static/images/downstream/app_G_accessibility.png',
+      desc: 'Scanned pages become WCAG-conformant, screen-reader-navigable HTML — semantic tags and reading order give assistive tech a real DOM to traverse.' },
+    { id: 'H', label: 'Scan-to-Editable Documents', emoji: '✏️',
+      img: 'static/images/downstream/app_H_editable.png',
+      desc: 'Reconstruction turns static scans into living documents: correct a typo, update a figure, or rebrand a legacy report in place — the layout never breaks.' },
+    { id: 'I', label: 'Fillable Form Digitization', emoji: '📝',
+      img: 'static/images/downstream/app_I_forms.png',
+      desc: 'Paper forms are reborn as pixel-identical fillable HTML — field positions and official appearance preserved, as e-government workflows require.' },
+    { id: 'J', label: 'Legal E-Discovery & Redaction', emoji: '⚖️',
+      img: 'static/images/downstream/app_J_legal.png',
+      desc: 'Court workflows demand faithful renditions: selectable text with provenance, plus DOM-level redaction that removes content without disturbing the page.' },
+    { id: 'K', label: 'Synthetic Training-Data Engine', emoji: '🏭',
+      img: 'static/images/downstream/app_K_synthdata.png',
+      desc: 'FID-HTML is programmable ground truth — perturb layout, fonts, or language and re-render to mass-produce annotated corpora for document-AI models.' },
+    { id: 'L', label: 'Visual Document Diffing', emoji: '🔀',
+      img: 'static/images/downstream/app_L_diffing.png',
+      desc: 'Two reconstructions of contract versions diff at the DOM level — every changed clause is localized on the page, not just in a text dump.' },
   ];
 
   // ---- BibTeX --------------------------------------------------------
@@ -2345,8 +2524,13 @@
   function buildAssemble() {
     clearCanvas(); ensureArrowLayer(); const bts = [];
     const doc = RO_DATA[PIPELINE_PRESETS[currentDoc].id];
-    const frags = slotEl("S3_fragments", 1, 16, 20, 68, "Collection of sub-HTML fragments (from Localize)");
-    // Populate fragment stack with sub-HTML snippets from Localize stage.
+    // Native slot (no loadImage): the stack is rendered from LOCALIZE_DATA, and
+    // an async image-404 handler must never clobber it with a placeholder.
+    const frags = el("div", "pdemo-slot");
+    frags.style.left = "1%"; frags.style.top = "16%"; frags.style.width = "20%"; frags.style.height = "68%";
+    frags.dataset.key = "S3_fragments";
+    arrowRectsByKey["S3_fragments"] = { x: 1, y: 16, w: 20, h: 68 };
+    CV().appendChild(frags);
     renderFragmentStack(frags, PIPELINE_PRESETS[currentDoc].id);
     // Always show the fragments immediately (don't wait for animation).
     reveal(frags);
@@ -2537,7 +2721,32 @@
     });
     $("#qualPrev").addEventListener("click", () => showQual((qualIdx - 1 + QUAL_EXAMPLES.length) % QUAL_EXAMPLES.length));
     $("#qualNext").addEventListener("click", () => showQual((qualIdx + 1) % QUAL_EXAMPLES.length));
+    $$("#qualFlip button").forEach(b => b.addEventListener("click", () => setQualView(b.dataset.v)));
     showQual(0);
+  }
+  let qualView = "render";
+  const qualSrcCache = {};
+  // Show the raw Fid-HTML source (base64 page background stripped) as
+  // syntax-highlighted code — proof the reconstruction is real markup.
+  function renderQualCode(rep, q) {
+    rep.classList.add("loading");
+    rep.style.height = "";
+    rep.dataset.want = q.html;
+    const done = txt => {
+      if (rep.dataset.want !== q.html) return;   // user already switched example
+      let s = txt.replace(/data:image\/[a-z]+;base64,[A-Za-z0-9+\/=]+/g, "page_background.png");
+      let note = "";
+      if (s.length > 42000) { s = s.slice(0, 42000); note = "\n\n… (source truncated for display — full file ships with the page)"; }
+      rep.classList.remove("loading");
+      rep.innerHTML = `<pre class="fid-code qualcode">${highlightFidHtml(s)}${note ? `<span class="c-punc">${fidEsc(note)}</span>` : ""}</pre>`;
+    };
+    if (qualSrcCache[q.html]) done(qualSrcCache[q.html]);
+    else fetch(q.html).then(r => r.text()).then(t => { qualSrcCache[q.html] = t; done(t); });
+  }
+  function setQualView(v) {
+    qualView = v;
+    $$("#qualFlip button").forEach(b => b.classList.toggle("on", b.dataset.v === v));
+    showQual(qualIdx);
   }
   function showQual(i) {
     qualIdx = i;
@@ -2545,8 +2754,14 @@
     loadImage($("#qualOriginal"), q.original, `${q.type} — original`);
     const rep = $("#qualReplica");
     const liveTag = $("#qualLiveTag");
-    if (q.html) {
+    const flip = $("#qualFlip");
+    if (flip) flip.style.display = q.html ? "" : "none";
+    if (q.html && qualView === "code") {
+      if (liveTag) liveTag.style.display = "none";
+      renderQualCode(rep, q);
+    } else if (q.html) {
       if (liveTag) liveTag.style.display = "";
+      rep.dataset.want = q.html;
       rep.classList.add("loading");
       rep.innerHTML = `<iframe title="${q.type} — REPLICA FID-HTML" loading="lazy" scrolling="no" src="${q.html}" style="width:${q.w}px;height:${q.h}px;"></iframe>`;
       const iframe = rep.querySelector("iframe");
@@ -2562,7 +2777,12 @@
     $("#qualCounter").textContent = `${i + 1} / ${QUAL_EXAMPLES.length}`;
     $$("#qualThumbs .tsi").forEach((t, j) => t.classList.toggle("active", j === i));
     const activeThumb = $(`#qualThumbs .tsi[data-qi="${i}"]`);
-    if (activeThumb) activeThumb.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    // Scroll the strip horizontally only — scrollIntoView would scroll the
+    // whole page to this section on initial load.
+    if (activeThumb) {
+      const strip = $("#qualThumbs");
+      strip.scrollTo({ left: activeThumb.offsetLeft - strip.clientWidth / 2 + activeThumb.clientWidth / 2, behavior: "smooth" });
+    }
   }
   // Scale the live FID-HTML iframe to the column width, preserving aspect.
   function fitQualReplica() {
@@ -2792,12 +3012,38 @@
     $("#fidChips").innerHTML = FIDHTML_CALLOUTS.map(c => `
       <button class="fid-chip" data-fc="${c.id}">
         <span class="fc-num d${c.id}">${c.id}</span>
-        <span><span class="fc-name">${circled(c.id)} ${c.label}</span><span class="fc-desc">${c.desc}</span></span>
+        <span><span class="fc-name">${c.label}</span><span class="fc-desc">${c.desc}</span></span>
       </button>`).join("");
     $$("#fidChips .fid-chip").forEach(ch => ch.addEventListener("click", () => toggleFid(parseInt(ch.dataset.fc, 10))));
     const code = $("#fidCode");
     if (code) code.innerHTML = highlightFidHtml(FIDHTML_SRC);
+    loadImage($("#fidOrigImg"), "static/images/qual/20005.png", "Facts of Life — original document");
+    $$("#fidFlip button").forEach(b => b.addEventListener("click", () => setFidView(b.dataset.v)));
     renderFidFormatTable();
+  }
+  // Flip the middle panel between annotated Fid-HTML code and the same file
+  // rendered live in a scaled iframe. Dimension chips only apply to code view.
+  const FID_RENDER = { src: "static/images/qual/20005_html.html", w: 1219, h: 1594 };
+  function setFidView(v) {
+    $("#fidFigure").classList.toggle("rendered", v === "render");
+    $("#fidCode").style.display = v === "render" ? "none" : "";
+    const rp = $("#fidRender");
+    rp.hidden = v !== "render";
+    if (v === "render" && !rp.dataset.loaded) {
+      rp.dataset.loaded = "1";
+      rp.innerHTML = `<iframe title="Facts of Life — rendered Fid-HTML" scrolling="no" src="${FID_RENDER.src}" style="width:${FID_RENDER.w}px;height:${FID_RENDER.h}px;"></iframe>`;
+    }
+    if (v === "render") {
+      const f = rp.querySelector("iframe");
+      const scale = rp.clientWidth / FID_RENDER.w;
+      f.style.transform = `scale(${scale})`;
+      // wrapper scrolls the remainder of the scaled page
+      f.style.marginBottom = (FID_RENDER.h * scale - FID_RENDER.h) + "px";
+    }
+    $$("#fidFlip button").forEach(b => b.classList.toggle("on", b.dataset.v === v));
+    $("#fidFigcap").innerHTML = v === "render"
+      ? `This is the Fid-HTML you just saw, <b>rendered natively by your browser</b> — try selecting the text. Flip back to <b>Fid-HTML</b> to inspect the source.`
+      : `This is the <b>real Fid-HTML source</b> of the page on the left. Click a dimension to spotlight exactly where it lives in the code — flip to <b>Rendered</b> to see this exact markup drawn by your browser (the text is real and selectable).`;
   }
   function toggleFid(id) {
     const code = $("#fidCode");
