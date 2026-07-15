@@ -155,15 +155,32 @@
       background: radial-gradient(60% 60% at 50% 0%, var(--accent-soft) 0%, transparent 70%);
     }
     .venue-badge {
-      display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 700;
-      color: var(--accent); background: var(--accent-soft); border: 1px solid var(--accent-soft-2);
-      padding: 6px 14px; border-radius: 999px; margin-bottom: 22px;
+      display: inline-flex; align-items: center; gap: 12px; font-size: clamp(16px, 2vw, 19px); font-weight: 800;
+      color: var(--accent); background: var(--accent-soft); border: 1.5px solid var(--accent-soft-2);
+      padding: 10px 22px; border-radius: 999px; margin-bottom: 26px;
+      box-shadow: 0 4px 18px var(--accent-soft), var(--shadow-sm);
     }
+    .venue-badge > i { font-size: 20px; }
     .venue-badge .oral {
+      position: relative; overflow: hidden;
       color: #fff; background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      font-weight: 800; padding: 2px 9px; border-radius: 999px; letter-spacing: .01em;
-      box-shadow: var(--shadow-sm);
+      font-weight: 900; padding: 5px 16px; border-radius: 999px; letter-spacing: .02em;
+      text-transform: uppercase; font-size: .85em;
+      box-shadow: 0 3px 12px color-mix(in srgb, var(--accent) 45%, transparent);
+      animation: oral-pulse 2.6s ease-in-out infinite;
     }
+    /* shine sweep across the oral pill */
+    .venue-badge .oral::after {
+      content: ""; position: absolute; top: 0; bottom: 0; width: 40%; left: -60%;
+      background: linear-gradient(105deg, transparent, rgba(255,255,255,.55), transparent);
+      animation: oral-shine 3.2s ease-in-out infinite;
+    }
+    @keyframes oral-shine { 0%, 55% { left: -60%; } 85%, 100% { left: 130%; } }
+    @keyframes oral-pulse {
+      0%, 100% { box-shadow: 0 3px 12px color-mix(in srgb, var(--accent) 45%, transparent); }
+      50% { box-shadow: 0 3px 20px color-mix(in srgb, var(--accent) 70%, transparent); }
+    }
+    @media (prefers-reduced-motion: reduce) { .venue-badge .oral, .venue-badge .oral::after { animation: none; } }
     .hero h1 {
       font-size: clamp(30px, 5.4vw, 54px); font-weight: 900; letter-spacing: -0.035em;
       max-width: 15ch; margin: 0 auto; background: linear-gradient(180deg, var(--text), var(--text-2));
@@ -584,6 +601,12 @@
       font-size: 12.5px; border-bottom: 2px solid var(--border-strong); z-index: 2;
     }
     table.data td:first-child, table.data th:first-child { text-align: left; font-weight: 600; }
+    table.data td.td-group { vertical-align: middle; text-align: left; font-weight: 700; color: var(--text); background: var(--bg-alt); border-right: 1px solid var(--border); }
+    /* ablation chart ⇄ table hover link */
+    #ablationTable tbody tr { transition: background .12s; }
+    #ablationTable tbody tr.abl-hl td { background: var(--accent-soft); }
+    .step-dot { transition: r .15s, stroke-width .15s; }
+    .step-dot.hl { fill: var(--accent); stroke-width: 3.5; r: 6; }
     table.data tbody tr:hover { background: var(--accent-soft); }
     table.data tr.ours { background: var(--accent-soft) !important; }
     table.data tr.ours td { font-weight: 800; color: var(--text); border-top: 2px solid var(--accent); border-bottom: 2px solid var(--accent); }
@@ -673,12 +696,14 @@
     @keyframes tfade { from { opacity: 0; transform: scale(.985); } to { opacity: 1; transform: none; } }
 
     /* ==================== FID-HTML ==================== */
-    .fid-figure { display: grid; grid-template-columns: .85fr 1.75fr .95fr; gap: 24px; align-items: start; }
+    .fid-figure { display: grid; grid-template-columns: 1.1fr 1.55fr .8fr; gap: 24px; align-items: start; }
     @media (max-width: 1100px) { .fid-figure { grid-template-columns: 1fr 1.6fr; } .fid-orig { display: none; } }
     @media (max-width: 900px) { .fid-figure { grid-template-columns: 1fr; } .fid-orig { display: block; } }
-    /* rendered mode: the six dimension chips only apply to the code view */
-    .fid-figure.rendered { grid-template-columns: .85fr 2.7fr; }
+    /* rendered mode: original and rendered panels take equal width; the six
+       dimension chips only apply to the code view */
+    .fid-figure.rendered { grid-template-columns: 1fr 1fr; }
     .fid-figure.rendered .fid-chips { display: none; }
+    .fid-orig .frame { max-height: 640px; overflow-y: auto; }
     .fid-codecol, .fid-orig { min-width: 0; }
     .fid-orig-head { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 10px; color: var(--text-2); }
     .fid-orig-head .badge-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--text-3); }
@@ -762,20 +787,24 @@
     .philo .pt { font-weight: 700; font-size: 14px; }
 
     /* ==================== INTERACTIVE DOWNSTREAM ==================== */
-    .down-i { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; align-items: start; }
-    @media (max-width: 900px) { .down-i { grid-template-columns: 1fr; } }
-    .down-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    @media (max-width: 480px) { .down-cards { grid-template-columns: 1fr; } }
-    .dapp { display: flex; flex-direction: column; gap: 6px; border: 1px solid var(--border); background: var(--card); border-radius: 14px; padding: 16px; cursor: pointer; transition: all .18s; box-shadow: var(--shadow-sm); }
-    .dapp:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    /* one row of app cards on top; the master figure fills the width below
+       and zooms into an application's panel when its card is hovered */
+    .down-i { display: block; }
+    .down-cards { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 18px; }
+    @media (max-width: 1000px) { .down-cards { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 560px) { .down-cards { grid-template-columns: repeat(2, 1fr); } }
+    .dapp { display: flex; flex-direction: column; gap: 6px; border: 1px solid var(--border); background: var(--card); border-radius: 14px; padding: 14px; cursor: pointer; transition: all .18s; box-shadow: var(--shadow-sm); }
+    .dapp:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--accent-soft-2); }
     .dapp.active { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
     .dapp .dapp-top { display: flex; align-items: center; gap: 10px; }
-    .dapp .dapp-emoji { font-size: 22px; }
+    .dapp .dapp-emoji { font-size: 20px; }
     .dapp .dapp-id { font-size: 11px; font-weight: 800; color: var(--accent); background: var(--accent-soft); border-radius: 6px; width: 20px; height: 20px; display: grid; place-items: center; flex-shrink: 0; }
-    .dapp .dapp-name { font-weight: 700; font-size: 14px; }
-    .down-display { position: sticky; top: 80px; }
-    .down-detail-cap { margin-top: 14px; color: var(--text-2); font-size: 15px; }
+    .dapp .dapp-name { font-weight: 700; font-size: 13.5px; }
+    .down-figwrap { position: relative; overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius); background: #fff; box-shadow: var(--shadow-md); aspect-ratio: 14250 / 5420; }
+    .down-figwrap img { display: block; width: 100%; height: auto; transform-origin: 0 0; transition: transform .55s cubic-bezier(.4,0,.2,1); will-change: transform; }
+    .down-detail-cap { margin-top: 14px; color: var(--text-2); font-size: 15px; text-align: center; max-width: 900px; margin-left: auto; margin-right: auto; min-height: 48px; }
     .down-detail-cap .dc-name { font-weight: 800; color: var(--text); display: block; margin-bottom: 4px; }
+    .down-detail-cap a { color: var(--accent); font-weight: 600; }
     .vfdr-note { text-align: center; margin-top: 18px; font-size: 14.5px; color: var(--text-2); background: var(--accent-soft); border: 1px solid var(--accent-soft-2); border-radius: 12px; padding: 13px 18px; max-width: 760px; margin-left: auto; margin-right: auto; }
     .vfdr-note b { color: var(--accent); }
 
@@ -1142,16 +1171,16 @@
 
   <!-- ====================== DOWNSTREAM ====================== -->
   <section id="downstream">
-    <div class="container">
+    <div class="container wide">
       <div class="section-head reveal">
         <span class="eyebrow">Applications</span>
         <h2>Downstream Applications</h2>
-        <p>FID-HTML unlocks layout-aware document intelligence. Click an application to explore it.</p>
+        <p>FID-HTML unlocks layout-aware document intelligence. Hover an application to zoom into it — click to pin.</p>
       </div>
       <div class="down-i reveal">
         <div class="down-cards" id="downCards"><!-- injected --></div>
         <div class="down-display">
-          <div class="frame" id="downDisplay"></div>
+          <div class="down-figwrap" id="downFig"><img id="downFigImg" alt="REPLICA downstream applications overview"></div>
           <div class="down-detail-cap" id="downCap"></div>
         </div>
       </div>
@@ -1953,25 +1982,20 @@
     { id: 'F', label: 'Position-Aware Retrieval', emoji: '📍',
       img: 'static/images/downstream/app_F_retrieval.png',
       desc: 'Preserved spatial coordinates support position-aware queries over document collections.' },
-    { id: 'G', label: 'Accessibility Remediation', emoji: '♿',
-      img: 'static/images/downstream/app_G_accessibility.png',
-      desc: 'Scanned pages become WCAG-conformant, screen-reader-navigable HTML — semantic tags and reading order give assistive tech a real DOM to traverse.' },
-    { id: 'H', label: 'Scan-to-Editable Documents', emoji: '✏️',
-      img: 'static/images/downstream/app_H_editable.png',
-      desc: 'Reconstruction turns static scans into living documents: correct a typo, update a figure, or rebrand a legacy report in place — the layout never breaks.' },
-    { id: 'I', label: 'Fillable Form Digitization', emoji: '📝',
-      img: 'static/images/downstream/app_I_forms.png',
-      desc: 'Paper forms are reborn as pixel-identical fillable HTML — field positions and official appearance preserved, as e-government workflows require.' },
-    { id: 'J', label: 'Legal E-Discovery & Redaction', emoji: '⚖️',
-      img: 'static/images/downstream/app_J_legal.png',
-      desc: 'Court workflows demand faithful renditions: selectable text with provenance, plus DOM-level redaction that removes content without disturbing the page.' },
-    { id: 'K', label: 'Synthetic Training-Data Engine', emoji: '🏭',
-      img: 'static/images/downstream/app_K_synthdata.png',
-      desc: 'FID-HTML is programmable ground truth — perturb layout, fonts, or language and re-render to mass-produce annotated corpora for document-AI models.' },
-    { id: 'L', label: 'Visual Document Diffing', emoji: '🔀',
-      img: 'static/images/downstream/app_L_diffing.png',
-      desc: 'Two reconstructions of contract versions diff at the DOM level — every changed clause is localized on the page, not just in a text dump.' },
   ];
+  // Master downstream figure + per-application regions (fractions x,y,w,h)
+  // used by the hover-zoom viewer. Regions map A–F panels on applications.png.
+  const DOWNSTREAM_FIG = {
+    src: "static/images/applications.png",
+    regions: {
+      A: [0.000, 0.020, 0.260, 0.310],
+      B: [0.000, 0.340, 0.245, 0.300],
+      C: [0.000, 0.650, 0.260, 0.345],
+      D: [0.620, 0.690, 0.380, 0.305],
+      E: [0.670, 0.340, 0.330, 0.330],
+      F: [0.620, 0.000, 0.380, 0.345],
+    },
+  };
 
   // ---- BibTeX --------------------------------------------------------
   const BIBTEX = `@inproceedings{replica2026,
@@ -2887,17 +2911,39 @@
   }
   function renderAblationTable() {
     let html = "<thead><tr>" + ABLATION.columns.map(c => `<th>${c}</th>`).join("") + "</tr></thead><tbody>";
-    ABLATION.rows.forEach(r => {
-      html += `<tr class="${r.ours ? "ours" : ""}"><td style="white-space:normal;">${r.c}</td>` +
+    ABLATION.rows.forEach((r, i) => {
+      html += `<tr data-ri="${i}" class="${r.ours ? "ours" : ""}"><td style="white-space:normal;">${r.c}</td>` +
         r.v.map(v => `<td>${v.toFixed(2)}</td>`).join("") + "</tr>";
     });
     html += "</tbody>";
     $("#ablationTable").innerHTML = html;
   }
+  // Chart ⇄ table linkage: hovering a chart point highlights its ablation
+  // row, and hovering a row lights up its point on the chart.
+  function setAblHl(i, on) {
+    $$("#ablationTable tbody tr").forEach((r, j) => r.classList.toggle("abl-hl", on && j === i));
+    $$("#stepChart .step-dot").forEach((d, j) => d.classList.toggle("hl", on && j === i));
+  }
+  function syncAblationHover() {
+    $$("#ablationTable tbody tr").forEach((r, i) => {
+      r.addEventListener("mouseenter", () => setAblHl(i, true));
+      r.addEventListener("mouseleave", () => setAblHl(i, false));
+    });
+    $$("#stepChart .step-hit").forEach((d, i) => {
+      d.addEventListener("mouseenter", () => setAblHl(i, true));
+      d.addEventListener("mouseleave", () => setAblHl(i, false));
+    });
+  }
   function renderReliabilityTable() {
     let html = "<thead><tr>" + RELIABILITY.columns.map(c => `<th>${c}</th>`).join("") + "</tr></thead><tbody>";
-    RELIABILITY.rows.forEach(r => {
-      html += `<tr><td>${r.cat}</td><td style="white-space:normal;">${r.metric}</td><td class="cell-best">${r.score}</td></tr>`;
+    // group consecutive rows sharing a category into one rowspanned cell
+    RELIABILITY.rows.forEach((r, i) => {
+      const first = i === 0 || RELIABILITY.rows[i - 1].cat !== r.cat;
+      let span = 0;
+      if (first) { for (let j = i; j < RELIABILITY.rows.length && RELIABILITY.rows[j].cat === r.cat; j++) span++; }
+      html += "<tr>" +
+        (first ? `<td rowspan="${span}" class="td-group">${r.cat}</td>` : "") +
+        `<td style="white-space:normal;">${r.metric}</td><td class="cell-best">${r.score}</td></tr>`;
     });
     html += "</tbody>";
     $("#reliabilityTable").innerHTML = html;
@@ -3067,8 +3113,14 @@
     html += "</tr><tr>";
     F.sub.forEach(s => { html += `<th>${s}</th>`; });
     html += "</tr></thead><tbody>";
-    F.rows.forEach(r => {
-      html += `<tr class="${r.ours ? "ours" : ""}"><td>${r.fmt}</td><td>${r.sub}</td>` +
+    // group consecutive rows sharing a format into one rowspanned cell
+    F.rows.forEach((r, i) => {
+      const first = i === 0 || F.rows[i - 1].fmt !== r.fmt;
+      let span = 0;
+      if (first) { for (let j = i; j < F.rows.length && F.rows[j].fmt === r.fmt; j++) span++; }
+      html += `<tr class="${r.ours ? "ours" : ""}">` +
+        (first ? `<td rowspan="${span}" class="td-group">${r.fmt}</td>` : "") +
+        `<td>${r.sub}</td>` +
         r.v.map(v => `<td>${mark(v)}</td>`).join("") + "</tr>";
     });
     html += "</tbody>";
@@ -3113,7 +3165,9 @@
     area = `M${x(0)},${y(minV)} ` + rows.map((r, i) => `L${x(i)},${y(r.v[0])}`).join(" ") + ` L${x(n-1)},${y(minV)} Z`;
     const dots = rows.map((r, i) => {
       const isLast = i === n - 1;
-      return `<circle cx="${x(i)}" cy="${y(r.v[0])}" r="${isLast ? 5 : 3.2}" fill="${isLast ? "var(--accent)" : "var(--bg)"}" stroke="var(--accent)" stroke-width="2"><title>${r.c}: ${r.v[0].toFixed(2)}</title></circle>`;
+      return `<circle class="step-dot" cx="${x(i)}" cy="${y(r.v[0])}" r="${isLast ? 5 : 3.2}" fill="${isLast ? "var(--accent)" : "var(--bg)"}" stroke="var(--accent)" stroke-width="2"></circle>` +
+        // invisible, larger hit-target so the point is easy to hover
+        `<circle class="step-hit" cx="${x(i)}" cy="${y(r.v[0])}" r="11" fill="transparent" style="cursor:pointer"><title>${r.c}: ${r.v[0].toFixed(2)}</title></circle>`;
     }).join("");
     // y gridlines
     let grid = "";
@@ -3145,22 +3199,50 @@
   }
 
   /* ===================== DOWNSTREAM (interactive) ===================== */
-  let downIdx = 0;
+  // Hover a card → the master applications figure zooms into that panel.
+  // Click a card → pin/unpin the zoom. Mouse leaving the cards row returns
+  // to the overview unless a card is pinned.
+  let downPinned = null;
+  function downZoomTo(id) {
+    const img = $("#downFigImg");
+    const wrap = $("#downFig");
+    const rg = DOWNSTREAM_FIG.regions[id];
+    if (!img || !wrap) return;
+    if (!rg) { img.style.transform = "none"; return; }
+    const [rx, ry, rw, rh] = rg;
+    const W = wrap.clientWidth, H = wrap.clientHeight;
+    const s = Math.min(1 / rw, 1 / rh) * 0.97;
+    const tx = W * (0.5 - s * (rx + rw / 2));
+    const ty = H * (0.5 - s * (ry + rh / 2));
+    img.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${s.toFixed(3)})`;
+  }
+  function downSetCaption(d) {
+    $("#downCap").innerHTML = d
+      ? `<span class="dc-name">${d.emoji} ${d.label}</span>${d.desc} <a href="${d.img}" target="_blank" rel="noopener">View detailed figure <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:11px"></i></a>`
+      : `<span class="dc-name">🗺️ Six applications, one representation</span>Hover an application card to zoom into its panel — click to pin it while you read.`;
+  }
   function renderDownstream() {
+    $("#downFigImg").src = DOWNSTREAM_FIG.src;
     $("#downCards").innerHTML = DOWNSTREAM_APPS.map((d, i) => `
       <div class="dapp" data-di="${i}">
         <div class="dapp-top"><span class="dapp-emoji">${d.emoji}</span><span class="dapp-id">${d.id}</span></div>
         <div class="dapp-name">${d.label}</div>
       </div>`).join("");
-    $$("#downCards .dapp").forEach(c => c.addEventListener("click", () => showDownstream(parseInt(c.dataset.di, 10))));
-    showDownstream(0);
-  }
-  function showDownstream(i) {
-    downIdx = i;
-    const d = DOWNSTREAM_APPS[i];
-    loadImage($("#downDisplay"), d.img, `${d.id} · ${d.label}`);
-    $("#downCap").innerHTML = `<span class="dc-name">${d.emoji} ${d.label}</span>${d.desc}`;
-    $$("#downCards .dapp").forEach((c, j) => c.classList.toggle("active", j === i));
+    $$("#downCards .dapp").forEach(c => {
+      const i = parseInt(c.dataset.di, 10);
+      const d = DOWNSTREAM_APPS[i];
+      c.addEventListener("mouseenter", () => { if (downPinned === null) { downZoomTo(d.id); downSetCaption(d); } });
+      c.addEventListener("click", () => {
+        downPinned = downPinned === i ? null : i;
+        $$("#downCards .dapp").forEach((cc, j) => cc.classList.toggle("active", j === downPinned));
+        if (downPinned === null) { downZoomTo(null); downSetCaption(null); }
+        else { downZoomTo(d.id); downSetCaption(d); }
+      });
+    });
+    $("#downCards").addEventListener("mouseleave", () => {
+      if (downPinned === null) { downZoomTo(null); downSetCaption(null); }
+    });
+    downSetCaption(null);
   }
 
   /* ===================== BIBTEX ===================== */
@@ -3283,6 +3365,7 @@
     renderReliabilityTable();
     renderBenchTable();
     renderStepChart();
+    syncAblationHover();
     renderDownstream();
     initBibtex();
     initReveal();
