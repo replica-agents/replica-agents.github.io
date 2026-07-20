@@ -269,6 +269,7 @@
 
     /* ====================== PIPELINE DEMO ====================== */
     .pdemo-wrap {
+      position: relative;
       background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
       box-shadow: var(--shadow-md); overflow: hidden;
     }
@@ -337,8 +338,228 @@
     .pdemo-body { position: relative; }
     /* Height driven by the viewport so the whole demo (picker, stages, canvas,
        caption, transport) fits on one screen with the canvas as large as possible. */
-    .pdemo-canvas { position: relative; width: 100%; height: clamp(520px, calc(100vh - 400px), 1020px); }
+    .pdemo-canvas { position: relative; width: 100%; height: clamp(480px, calc(100vh - 430px), 900px); }
     @media (max-width: 700px) { .pdemo-canvas { height: auto; aspect-ratio: 4 / 5; } }
+
+    /* ---- two-pane: Figure-4 context reference (left) + stage story (right) */
+    .pdemo-duo { display: grid; grid-template-columns: minmax(280px, 27%) minmax(0, 1fr); gap: 14px; align-items: stretch; }
+    @media (max-width: 1000px) { .pdemo-duo { grid-template-columns: 1fr; } .pdemo-figpane { height: 240px; } }
+    .pdemo-figpane { position: relative; border: 1px solid var(--border); border-radius: var(--radius-sm); background: #fdfdfd; overflow: hidden; min-height: 0; }
+    .fig-viewport { position: absolute; inset: 0; overflow: hidden; cursor: grab; touch-action: none; }
+    .fig-viewport.grabbing { cursor: grabbing; }
+    .fig-stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; transition: transform 1.1s cubic-bezier(.22,.9,.28,1); }
+    .fig-stage.nocam { transition: none; }
+    .fig-stage img { display: block; width: 100%; height: 100%; user-select: none; -webkit-user-drag: none; }
+    /* spotlight: one box; the giant box-shadow dims everything around it */
+    .fig-spot { position: absolute; border: 2.5px solid var(--accent); border-radius: 8px;
+      box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 25%, transparent), 0 0 0 4000px rgba(15, 18, 40, .48);
+      opacity: 0; transition: all .9s cubic-bezier(.22,.9,.28,1); pointer-events: none; }
+    .fig-spot.on { opacity: 1; }
+    .fig-spot.pulse { animation: figspot-pulse 1.6s ease-in-out infinite; }
+    @keyframes figspot-pulse { 0%,100% { border-color: var(--accent); } 50% { border-color: var(--accent-2); } }
+    .fig-marker { position: absolute; width: 14px; height: 14px; border-radius: 50%; background: var(--accent);
+      box-shadow: 0 0 10px 3px color-mix(in srgb, var(--accent) 60%, transparent); opacity: 0; pointer-events: none; z-index: 5; }
+    .fig-ripple { position: absolute; border: 3px solid var(--accent); border-radius: 10px; opacity: 0; pointer-events: none;
+      animation: figripple 1s ease; }
+    @keyframes figripple { 0% { opacity: 0; transform: scale(.85); } 30% { opacity: 1; } 100% { opacity: 0; transform: scale(1.12); } }
+    .fig-tools { position: absolute; right: 8px; top: 8px; display: flex; gap: 5px; z-index: 10; }
+    .fig-tools button { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border-strong); background: color-mix(in srgb, var(--card) 88%, transparent); color: var(--text); cursor: pointer; font-size: 13px; display: grid; place-items: center; }
+    .fig-tools button:hover { border-color: var(--accent); color: var(--accent); }
+    .fig-tools button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .fig-lbl { position: absolute; left: 10px; top: 9px; z-index: 10; font-size: 10.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--text-3); background: color-mix(in srgb, var(--card) 85%, transparent); padding: 3px 9px; border-radius: 7px; pointer-events: none; }
+
+    /* journey rail */
+    .pdemo-rail { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; padding: 12px 24px 0; }
+    .rp { padding: 4px 13px; border-radius: 999px; background: var(--bg-alt); color: var(--text-3); font-size: 12.5px; font-weight: 800; transition: all .35s; white-space: nowrap; }
+    .rp.clickable { cursor: pointer; }
+    .rp.act { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; transform: scale(1.08); box-shadow: 0 2px 10px color-mix(in srgb, var(--accent) 35%, transparent); }
+    .rp.done { background: var(--accent-soft); color: var(--accent); }
+    .rsep { color: var(--border-strong); font-weight: 800; font-size: 12px; }
+
+    /* narrator card — its own row between the panes and the caption, so it
+       can never cover the canvas, the map, the chips, or the progress bar */
+    .pdemo-story { display: block; margin: 12px auto 0; max-width: min(760px, 94%); min-height: 46px;
+      background: rgba(24, 26, 35, .93); color: #fff;
+      border-radius: 14px; padding: 11px 20px; font-size: 14.5px; font-weight: 600; line-height: 1.5; text-align: center;
+      box-shadow: 0 8px 24px rgba(15, 17, 28, .25); opacity: 0; transform: translateY(6px); transition: opacity .5s, transform .5s; }
+    .pdemo-story.in { opacity: 1; transform: none; }
+    .pdemo-story b { color: #ffd479; }
+    [data-theme="dark"] .pdemo-story { background: rgba(240, 242, 250, .95); color: #16181f; }
+    [data-theme="dark"] .pdemo-story b { color: #7c5800; }
+
+    /* agentic "thinking" treatment — agents glow & shimmer vs. fixed tools */
+    .agent-think { animation: agent-think 1.5s ease-in-out infinite; }
+    @keyframes agent-think {
+      0%,100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+      50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--accent) 34%, transparent); }
+    }
+    /* scan-line sweep over the input document */
+    .scanline { position: absolute; left: 0; right: 0; height: 26%; pointer-events: none; border-radius: 4px;
+      background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--accent) 26%, transparent) 45%, var(--accent-soft-2) 50%, color-mix(in srgb, var(--accent) 26%, transparent) 55%, transparent);
+      animation: scansweep 2.1s ease-in-out; opacity: 0; }
+    @keyframes scansweep { 0% { top: -26%; opacity: 1; } 92% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+    /* SoM prompt snippet card */
+    .som-card { position: absolute; background: var(--code-bg); border: 1px solid var(--border-strong); border-radius: 10px; box-shadow: var(--shadow-md);
+      font-family: 'JetBrains Mono', monospace; font-size: 10px; line-height: 1.55; color: var(--text-2); padding: 8px 10px; overflow: hidden;
+      opacity: 0; transform: translateY(8px); transition: opacity .5s, transform .5s; z-index: 6; }
+    .som-card.show { opacity: 1; transform: none; }
+    .som-card .sc-t { font-weight: 700; color: var(--accent); font-size: 10px; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; font-family: 'Inter', sans-serif; }
+    .som-card .mark { color: #1f9d7c; font-weight: 700; }
+    /* semantic label chips (Labeling Agent output) */
+    .lab-chips { position: absolute; display: flex; flex-wrap: wrap; gap: 5px; align-content: flex-start; z-index: 6; }
+    .lab-chip { font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--border-strong);
+      background: var(--card); color: var(--text); opacity: 0; transform: scale(.6); transition: all .35s cubic-bezier(.34,1.56,.64,1); }
+    .lab-chip.show { opacity: 1; transform: scale(1); }
+    /* specialist typing streams */
+    .sb-stream { position: absolute; font-family: 'JetBrains Mono', monospace; font-size: 9px; line-height: 1.5; color: var(--text-2);
+      background: var(--code-bg); border: 1px solid var(--border); border-radius: 7px; padding: 4px 7px; overflow: hidden; white-space: nowrap;
+      opacity: 0; transition: opacity .4s; z-index: 6; }
+    .sb-stream.show { opacity: 1; }
+    .sb-stream .cur { display: inline-block; width: 5px; height: 10px; background: var(--accent); vertical-align: -1px; animation: curblink .8s steps(1) infinite; }
+    @keyframes curblink { 50% { opacity: 0; } }
+    /* aux tool badges (OCR / font attributes) */
+    .aux-badge { position: absolute; display: flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 700; color: var(--text-2);
+      border: 1.5px dashed var(--border-strong); border-radius: 9px; padding: 4px 9px; background: var(--bg-elev);
+      opacity: 0; transform: translateY(6px); transition: all .45s; z-index: 6; }
+    .aux-badge.show { opacity: 1; transform: none; }
+    .aux-badge i { color: var(--accent); font-size: 11px; }
+    /* reading-order candidate scores */
+    .ro-scores { position: absolute; display: flex; flex-direction: column; gap: 6px; z-index: 7; }
+    .ro-cand { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--text-2);
+      background: var(--card); border: 1.5px solid var(--border); border-radius: 9px; padding: 5px 10px;
+      opacity: 0; transform: translateX(-8px); transition: all .4s; }
+    .ro-cand.show { opacity: 1; transform: none; }
+    .ro-cand .bar { flex: 1 1 auto; height: 7px; border-radius: 4px; background: var(--bg-alt); overflow: hidden; min-width: 60px; }
+    .ro-cand .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width 1s ease; border-radius: 4px; }
+    .ro-cand.win { border-color: #1f9d7c; color: var(--text); }
+    .ro-cand.win .bar i { background: #1f9d7c; }
+    .ro-cand.lose { opacity: .55; }
+    /* font-size binary search widget */
+    .fs-widget { position: absolute; background: var(--card); border: 1px solid var(--border-strong); border-radius: 12px; box-shadow: var(--shadow-md);
+      padding: 10px 12px; z-index: 7; opacity: 0; transform: translateY(8px); transition: all .5s; overflow: hidden; }
+    .fs-widget.show { opacity: 1; transform: none; }
+    .fs-widget .fsw-t { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--accent); margin-bottom: 6px; }
+    .fs-target { position: relative; border: 2px dashed var(--accent-soft-2); border-radius: 6px; background: var(--bg-alt); overflow: hidden; }
+    .fs-target span { display: block; padding: 2px 4px; font-weight: 600; color: var(--text); line-height: 1.25; transition: font-size .28s ease; }
+    .fs-track { position: relative; height: 8px; border-radius: 4px; background: var(--bg-alt); margin: 10px 2px 2px; }
+    .fs-track .lo, .fs-track .hi { position: absolute; top: -3px; width: 3px; height: 14px; border-radius: 2px; background: var(--text-3); transition: left .3s; }
+    .fs-track .mid { position: absolute; top: -5px; width: 9px; height: 18px; border-radius: 5px; background: var(--accent); transition: left .3s; }
+    .fs-readout { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-2); margin-top: 7px; }
+    .fs-readout b { color: var(--accent); }
+    /* background-restoration wipe */
+    .wipe-cover { position: absolute; inset: 0; background: var(--bg-alt); pointer-events: none;
+      clip-path: inset(0 0 0 0); transition: clip-path 2.2s ease; display: grid; place-items: center; color: var(--text-3); font-size: 11px; font-weight: 700; }
+    .wipe-cover.gone { clip-path: inset(0 0 0 100%); }
+    /* reflection loop meter */
+    .refl-meter { position: absolute; background: var(--card); border: 1px solid var(--border-strong); border-radius: 12px; box-shadow: var(--shadow-md);
+      padding: 10px 12px; z-index: 7; opacity: 0; transform: translateY(8px); transition: all .5s; }
+    .refl-meter.show { opacity: 1; transform: none; }
+    .refl-meter .rm-t { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--accent); margin-bottom: 7px; }
+    .refl-pass { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--text-2); margin-bottom: 5px; opacity: .3; transition: opacity .3s; }
+    .refl-pass.on { opacity: 1; }
+    .refl-pass .diffbar { flex: 1; height: 7px; background: var(--bg-alt); border-radius: 4px; overflow: hidden; min-width: 70px; }
+    .refl-pass .diffbar i { display: block; height: 100%; background: #e0574a; border-radius: 4px; transition: width .8s ease; }
+    .refl-pass.ok .diffbar i { background: #1f9d7c; }
+    /* outviewer fragment view toggle */
+    .ov-flip { display: inline-flex; margin-left: auto; border: 1px solid var(--border-strong); border-radius: 7px; overflow: hidden; }
+    .ov-flip button { font-family: inherit; font-size: 10px; font-weight: 700; padding: 3px 8px; border: none; background: transparent; color: var(--text-2); cursor: pointer; }
+    .ov-flip button.on { background: var(--accent); color: #fff; }
+    .ov-render { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 10px; color: #111; font-size: 12px; overflow: auto; max-height: 300px; }
+    .ov-render img { max-width: 100%; }
+    /* compact agent/tool nodes — small, so document images stay the heroes */
+    .pdemo-anode { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+      border: 1.5px solid var(--border-strong); border-radius: 11px; background: var(--card); box-shadow: var(--shadow-sm);
+      font-size: 10px; font-weight: 700; color: var(--text-2); text-align: center; padding: 5px 6px; line-height: 1.15;
+      opacity: 0; transform: translateY(8px); transition: opacity .5s, transform .5s, box-shadow .3s; z-index: 5; }
+    .pdemo-anode.show { opacity: 1; transform: none; }
+    .pdemo-anode i { font-size: 15px; color: var(--anc, var(--accent)); }
+    .pdemo-anode.tool i { color: var(--text-3); }
+    .pdemo-anode.lit { border-color: var(--anc, var(--accent)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--anc, var(--accent)) 22%, transparent); color: var(--text); }
+    .pdemo-anode.dimmed { opacity: .38 !important; }
+    /* message token traveling between blocks (inter-agent communication) */
+    .pdemo-token { position: absolute; width: 11px; height: 11px; border-radius: 50%; background: var(--tkc, var(--accent));
+      box-shadow: 0 0 8px 2px color-mix(in srgb, var(--tkc, var(--accent)) 55%, transparent); z-index: 9; pointer-events: none; }
+    .pdemo-token.sq { border-radius: 3px; }
+    /* large intermediate-output viewer */
+    .interm-panel { position: absolute; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--bg-elev);
+      box-shadow: var(--shadow-md); opacity: 0; transform: translateY(8px); transition: opacity .5s, transform .5s; }
+    .interm-panel.show { opacity: 1; transform: none; }
+    .interm-panel .ip-tag { position: absolute; left: 8px; top: 8px; z-index: 3; font-size: 10px; font-weight: 800; letter-spacing: .04em;
+      text-transform: uppercase; color: #fff; background: color-mix(in srgb, var(--accent) 88%, black); padding: 3px 10px; border-radius: 999px; box-shadow: var(--shadow-sm); }
+    .interm-panel .ip-img { position: absolute; inset: 0; }
+    .interm-panel .ip-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .interm-panel .ip-img { opacity: 0; transition: opacity .55s ease; }
+    .interm-panel .ip-img.on { opacity: 1; }
+    /* full-source parallel typing terminals */
+    .term-grid { position: absolute; display: grid; gap: 8px; z-index: 8; }
+    .term { border: 1px solid var(--border-strong); border-radius: 9px; background: var(--code-bg); overflow: hidden;
+      display: flex; flex-direction: column; opacity: 0; transform: translateY(8px); transition: opacity .45s, transform .45s; min-height: 0; }
+    .term.show { opacity: 1; transform: none; }
+    .term .t-head { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; font-size: 9.5px; font-weight: 800; color: var(--text-2);
+      padding: 3px 8px; border-bottom: 1px solid var(--border); background: var(--bg-elev); }
+    .term .t-head i { color: var(--agc, var(--accent)); font-size: 10px; }
+    .term .t-body { flex: 1 1 auto; overflow: hidden; padding: 5px 7px; font-family: 'JetBrains Mono', monospace; font-size: 8.5px;
+      line-height: 1.45; color: var(--text-2); white-space: pre-wrap; word-break: break-all; }
+    .term .t-body .cur { display: inline-block; width: 5px; height: 9px; background: var(--agc, var(--accent)); animation: curblink .8s steps(1) infinite; }
+    /* reading-order source strip: chips the agent physically reorders */
+    .ro-strip { position: absolute; display: flex; flex-direction: column; gap: 5px; z-index: 7; }
+    .ro-strip .rs-t { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--text-3); margin-bottom: 2px; }
+    .rs-chip { position: relative; display: flex; align-items: center; gap: 7px; font-size: 10.5px; font-weight: 700; color: var(--text);
+      border: 1.5px solid var(--border-strong); border-left-width: 5px; border-radius: 8px; padding: 3px 9px; background: var(--card);
+      transition: transform .8s cubic-bezier(.4,0,.2,1), border-color .3s, opacity .4s; opacity: 0; }
+    .rs-chip.show { opacity: 1; }
+    .rs-chip .rs-n { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--text-3); }
+    .rs-chip .rs-flag { margin-left: auto; font-size: 11px; }
+    .rs-chip.bad { border-color: #e0574a; }
+    .rs-chip.good { border-color: #1f9d7c; }
+    .rs-scan { position: absolute; left: -4px; right: -4px; height: 26px; border-radius: 8px; background: color-mix(in srgb, var(--accent) 14%, transparent);
+      border: 1.5px solid var(--accent); opacity: 0; transition: top .45s ease, opacity .3s; z-index: -1; }
+    /* page-overlay panel: real page + real-bbox overlays (SoM / labels / groups) */
+    .pv-ov { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+    .pv-box { position: absolute; border: 2px solid; border-radius: 3px; opacity: 0; transition: opacity .35s; }
+    .pv-box.show { opacity: 1; }
+    .pv-mark { position: absolute; left: 0; top: 0; transform: translate(-45%, -45%); min-width: 17px; height: 17px;
+      border-radius: 50%; color: #fff; font-size: 9.5px; font-weight: 800; display: grid; place-items: center; padding: 0 3px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+    .pv-lab { position: absolute; left: 14px; top: 0; transform: translateY(-55%); font-size: 8.5px; font-weight: 800;
+      color: #fff; padding: 1px 7px; border-radius: 4px; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,.25); }
+    .pv-union { position: absolute; border: 2.5px dashed var(--accent); border-radius: 8px; opacity: 0; transition: opacity .45s; }
+    .pv-union.show { opacity: 1; }
+    /* background peel-and-merge (4B) */
+    .peel-card { position: absolute; border-radius: 9px; overflow: hidden; background: #fff;
+      border: 1.5px solid var(--border-strong); box-shadow: var(--shadow-lg); z-index: 5;
+      transition: transform 1.1s cubic-bezier(.4,0,.2,1), opacity .6s, box-shadow .4s; }
+    .peel-card .pc-tag { position: absolute; left: 6px; top: 6px; z-index: 3; font-size: 9px; font-weight: 800;
+      letter-spacing: .04em; text-transform: uppercase; color: #fff; padding: 2px 8px; border-radius: 999px;
+      background: color-mix(in srgb, var(--accent) 88%, black); box-shadow: var(--shadow-sm); }
+    .peel-card img { display: block; }
+    .peel-card.bgcard { border-color: #1f9d7c; }
+    .peel-card.bgcard .pc-tag { background: #1f9d7c; }
+    .peel-tile { position: absolute; background-repeat: no-repeat; }
+    /* background extraction: real-region masks + healing */
+    .bg-mask { position: absolute; background: rgba(224, 87, 74, .38); border: 1.5px solid #e0574a; border-radius: 2px;
+      opacity: 0; transition: opacity .4s; z-index: 4; }
+    .bg-mask.show { opacity: 1; }
+    .bg-mask.heal { background: rgba(252, 251, 248, .72); border-color: transparent; backdrop-filter: blur(9px) saturate(.85); opacity: 1; transition: background 1.1s, border-color 1.1s, backdrop-filter 1.2s; }
+    /* font-search queue + applied sizes */
+    .fs-queue { display: flex; gap: 5px; margin-bottom: 6px; }
+    .fs-qitem { flex: 1; font-size: 9px; font-weight: 700; text-align: center; padding: 2px 4px; border-radius: 6px;
+      background: var(--bg-alt); color: var(--text-3); border: 1px solid var(--border); }
+    .fs-qitem.on { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-soft-2); }
+    .fs-qitem.done { background: #e2f7e9; color: #1f9d7c; border-color: #b7e4c7; }
+    [data-theme="dark"] .fs-qitem.done { background: rgba(31,157,124,.18); }
+    .apply-page { position: absolute; border: 1px solid var(--border-strong); border-radius: 8px; background: #fff; overflow: hidden; z-index: 6;
+      opacity: 0; transform: translateY(8px); transition: opacity .5s, transform .5s; box-shadow: var(--shadow-md); }
+    .apply-page.show { opacity: 1; transform: none; }
+    .apply-page .ap-t { position: absolute; left: 6px; top: 4px; font-size: 8.5px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: .04em; }
+    .ap-box { position: absolute; border: 1px dashed #c9ceda; border-radius: 3px; overflow: hidden; color: #1c1e26; }
+    .ap-box span { display: block; padding: 1px 3px; line-height: 1.2; font-weight: 600; transition: font-size .45s ease; white-space: nowrap; }
+    .ap-box.flash { animation: apflash 1s ease; }
+    @keyframes apflash { 0% { background: transparent; } 35% { background: rgba(31,157,124,.25); } 100% { background: transparent; } }
+    @media (prefers-reduced-motion: reduce) {
+      .fig-stage, .fig-spot { transition: none !important; }
+      .agent-think, .fig-spot.pulse, .scanline { animation: none !important; }
+    }
     .pdemo-arrows { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
     .pdemo-arrow { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; opacity: 0; transition: opacity .45s ease; }
     .pdemo-arrow.show { opacity: .55; }
@@ -1036,8 +1257,8 @@
         </div>
 
         <div class="pdemo-main">
-        <!-- stage progress -->
-        <div class="pdemo-stagebar" id="pdemoStagebar"><!-- injected --></div>
+        <!-- journey rail: Input › Segment › Localize › Assemble › Refine › FID-HTML -->
+        <div class="pdemo-rail" id="pdemoRail"><!-- injected --></div>
 
         <!-- stage viewer -->
         <div class="pdemo-stage-wrap">
@@ -1046,16 +1267,41 @@
             <h3 id="pdemoTitle">Segment</h3>
             <span class="pdemo-sub" id="pdemoSub">Hierarchical semantic layout detection</span>
           </div>
-          <div class="pdemo-body">
-            <div class="pdemo-canvas" id="pdemoCanvas"></div>
-            <div class="pdemo-outviewer" id="pdemoOutviewer">
-              <div class="ov-head">
-                <span class="t" id="pdemoOvTitle">Sub-HTML output</span>
-                <button class="x" id="pdemoOvClose" aria-label="Close">×</button>
+          <div class="pdemo-duo">
+            <!-- Figure-4: the living context reference with a cinematic camera -->
+            <div class="pdemo-figpane" id="pdemoFigPane">
+              <span class="fig-lbl">Fig. 4 · pipeline map</span>
+              <div class="fig-tools">
+                <button id="figZin" title="Zoom in">＋</button>
+                <button id="figZout" title="Zoom out">－</button>
+                <button id="figFit" title="Fit (F)"><i class="fa-solid fa-expand"></i></button>
+                <button id="figFollow" class="on" title="Camera follows the walkthrough"><i class="fa-solid fa-video"></i></button>
               </div>
-              <div class="ov-body" id="pdemoOvBody"></div>
+              <div class="fig-viewport" id="figViewport">
+                <div class="fig-stage" id="figStage">
+                  <img id="figImg" src="static/images/replica_maindiag.png" alt="REPLICA pipeline overview (Figure 4)">
+                  <div class="fig-spot" id="figSpot"></div>
+                  <div class="fig-marker" id="figMarker"></div>
+                </div>
+              </div>
+            </div>
+            <div class="pdemo-body">
+              <div class="pdemo-canvas" id="pdemoCanvas"></div>
+              <div class="pdemo-outviewer" id="pdemoOutviewer">
+                <div class="ov-head">
+                  <span class="t" id="pdemoOvTitle">Sub-HTML output</span>
+                  <span class="ov-flip" id="pdemoOvFlip" style="display:none">
+                    <button data-v="code" class="on">Source</button>
+                    <button data-v="render">Rendered</button>
+                  </span>
+                  <button class="x" id="pdemoOvClose" aria-label="Close">×</button>
+                </div>
+                <div class="ov-body" id="pdemoOvBody"></div>
+              </div>
             </div>
           </div>
+          <!-- narrator subtitle card — its own row, blocks nothing -->
+          <div class="pdemo-story" id="pdemoStory"></div>
           <div class="pdemo-caption" id="pdemoCaption"></div>
           <div class="chips" id="pdemoChips"><!-- agent/tool chips --></div>
         </div>
@@ -1079,7 +1325,7 @@
         </div>
         </div><!-- /.pdemo-main -->
         </div><!-- /.pdemo-layout -->
-        <div class="pdemo-hint">Use <b>Step</b> to advance one beat, or <b>Play</b> to run a stage. In <b>Localize</b>, agent outputs auto-cycle — click one to pin it. Keyboard (while hovering the demo): space = play/pause, arrows = step.</div>
+        <div class="pdemo-hint">Use <b>Step</b> to advance one beat, or <b>Play</b> for the cinematic auto-walkthrough. The left map follows the story — drag/scroll it to explore (📷 re-enables auto-follow). Keyboard (while hovering): space = play/pause, ←/→ = step, R = restart, F = fit map.</div>
       </div>
     </div>
   </section>
@@ -1598,10 +1844,10 @@
         { id:"nb",   c:"ftr", tag:"NOTES",   text:"N.B. — selection provisional; published on website; offer subject to funds; WL preferred if selectee declines.", x:.04, y:.73, w:.92, h:.16 },
         { id:"sig",  c:"ftr", tag:"SIGN",    text:"Sd/- Director",                                                  x:.80, y:.92, w:.17, h:.05 },
       ],
-      naive:  ["logo","ttl","meta","in1","in2","hs","hw","ts","tw","nb","sig"],
+      naive:  ["meta","logo","ts","ttl","hs","tw","in1","hw","in2","nb","sig"],
       correct:["logo","ttl","meta","in1","hs","ts","in2","hw","tw","nb","sig"],
       cap:{
-        naive:"Even a single-column notice breaks: a raster scan groups the two centred headings and both tables together, <b>detaching each list from the sentence that introduces it.</b>",
+        naive:"The fragments landed in <b>completion order</b> — tables before their headings, intros after their lists. <b>The rendered page is already perfect</b> (positions are absolute); only the <b>HTML source order</b> is scrambled — follow the zig-zag path.",
         think:"The <b>Reading-Order Agent</b> re-associates each heading and table with its introducing sentence using vertical adjacency &amp; text cues…",
         correct:"…restoring the intended flow — <b>intro → Select List → table</b>, then <b>intro → Waiting List → table</b>, notes, signature.",
       },
@@ -2104,8 +2350,183 @@
   // captions) one "beat" at a time via Play/Step. Ported from the
   // InteractiveDemov2 prototype and re-skinned to the site's design tokens.
   let currentDoc = 0;
-  let stageIdx = 0, beatIdx = 0, beats = [], playing = false, timer = null, speed = 1150, doneStages = new Set();
+  let stageIdx = 0, beatIdx = 0, beats = [], playing = false, timer = null, speedMult = 1, doneStages = new Set();
   let cycleTimer = null;
+  const REDUCED_MOTION = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Per-stage animation timers — cleared whenever the canvas rebuilds so
+  // replay/step-back can never stack typing loops or search animations.
+  let demoTimers = [];
+  function addT(fn, ms) { const t = setTimeout(() => { try { fn(); } catch (e) { console.error("demo beat anim:", e); } }, ms); demoTimers.push(t); return t; }
+  function clearTimers() { demoTimers.forEach(clearTimeout); demoTimers = []; }
+
+  // Beat = one documentary scene: right-pane action + Figure-4 focus + narration.
+  const B = (fn, fig, story, dur) => ({ fn, fig, story, dur: dur || 3.4 });
+
+  /* ================= FIGURE-4: the living context reference =================
+     Regions are FRACTIONS of the figure image (x, y, w, h in 0–1), measured
+     against static/images/replica_maindiag.png (2600×820 export of Fig. 4)
+     and verified visually with an overlay calibration page. */
+  const FIG4_REGIONS = {
+    stage1_panel:      { x: 0.004, y: 0.015, w: 0.318, h: 0.92 },
+    input_doc:         { x: 0.012, y: 0.03,  w: 0.09,  h: 0.17 },
+    "1A_doctype":      { x: 0.008, y: 0.33,  w: 0.075, h: 0.32 },
+    "1E_pdf_extract":  { x: 0.115, y: 0.22,  w: 0.075, h: 0.27 },
+    "1E_pdf_objects":  { x: 0.214, y: 0.218, w: 0.048, h: 0.26 },
+    "1B_proposal":     { x: 0.105, y: 0.52,  w: 0.072, h: 0.37 },
+    "1C_labeling":     { x: 0.167, y: 0.5,   w: 0.052, h: 0.35 },
+    "1D_grouping":     { x: 0.212, y: 0.5,   w: 0.06,  h: 0.35 },
+    layout_tree:       { x: 0.273, y: 0.40,  w: 0.062, h: 0.50 },
+    stage2_panel:      { x: 0.344, y: 0.02,  w: 0.254, h: 0.945 },
+    "2A_router":       { x: 0.42,  y: 0.155, w: 0.09,  h: 0.24 },
+    "2B_text_agent":   { x: 0.3515, y: 0.395, w: 0.0435, h: 0.235 },
+    "2B_table_agent":  { x: 0.3995, y: 0.395, w: 0.0435, h: 0.235 },
+    "2B_image_agent":  { x: 0.4475, y: 0.395, w: 0.0435, h: 0.235 },
+    "2B_form_agent":   { x: 0.4955, y: 0.395, w: 0.0435, h: 0.235 },
+    "2B_list_agent":   { x: 0.5435, y: 0.395, w: 0.0435, h: 0.235 },
+    subhtml_fragments: { x: 0.3515, y: 0.615, w: 0.2355, h: 0.19 },
+    auxiliary_context: { x: 0.3455, y: 0.79,  w: 0.043, h: 0.12 },
+    "2C_collection":   { x: 0.3925, y: 0.82,  w: 0.16,  h: 0.14 },
+    stage3_panel:      { x: 0.60,  y: 0.02,  w: 0.136, h: 0.945 },
+    "3B_reading_order":{ x: 0.607, y: 0.158, w: 0.098, h: 0.175 },
+    "3A_position_merge":{ x: 0.611, y: 0.40, w: 0.0715, h: 0.29 },
+    initial_html:      { x: 0.688, y: 0.40,  w: 0.054, h: 0.32 },
+    stage4_panel:      { x: 0.761, y: 0.02,  w: 0.235, h: 0.945 },
+    "4A_font_size":    { x: 0.776, y: 0.166, w: 0.047, h: 0.31 },
+    "4B_background":   { x: 0.776, y: 0.54,  w: 0.047, h: 0.34 },
+    "4C_reflection":   { x: 0.825, y: 0.166, w: 0.115, h: 0.665 },
+    final_html:        { x: 0.94,  y: 0.357, w: 0.0575, h: 0.34 },
+  };
+  // Pipeline badge order for the finale recap ripple.
+  const FIG4_BADGE_ORDER = ["1A_doctype", "1B_proposal", "1C_labeling", "1D_grouping",
+    "2A_router", "2B_text_agent", "2B_table_agent", "2B_image_agent", "2B_form_agent", "2B_list_agent",
+    "2C_collection", "3A_position_merge", "3B_reading_order", "4A_font_size", "4B_background", "4C_reflection", "final_html"];
+  // Localize specialist → Figure-4 badge (equation has no dedicated badge in
+  // Fig. 4 — the five-specialist row is spotlighted as a whole for it).
+  const FIG4_SPECIALIST = { text: "2B_text_agent", table: "2B_table_agent", image: "2B_image_agent",
+    form: "2B_form_agent", list: "2B_list_agent", equation: "subhtml_fragments" };
+
+  /* ---- camera ---- */
+  const FIG_SW = 1300, FIG_SH = 1300 * (820 / 2600);   // stage px space (matches 2600×820 asset ratio)
+  let figS = 1, figX = 0, figY = 0, figFollow = true, figLastKey = null;
+
+  function figVP() { return $("#figViewport"); }
+  function figSetCam(x, y, s, animate = true) {
+    figX = x; figY = y; figS = s;
+    const st = $("#figStage");
+    st.classList.toggle("nocam", !animate || REDUCED_MOTION);
+    st.style.transform = `translate(${x}px, ${y}px) scale(${s})`;
+  }
+  function figFocusRect(r, animate = true, maxZoom = 3.4) {
+    const vp = figVP(); if (!vp) return;
+    const vw = vp.clientWidth, vh = vp.clientHeight, pad = 26;
+    if (!vw || !vh) return;
+    const s = Math.min((vw - 2 * pad) / r.w, (vh - 2 * pad) / r.h, maxZoom);
+    figSetCam(vw / 2 - s * (r.x + r.w / 2), vh / 2 - s * (r.y + r.h / 2), s, animate);
+  }
+  function figFitAll(animate = true) { figFocusRect({ x: 0, y: 0, w: FIG_SW, h: FIG_SH }, animate, 10); }
+  function regionPx(key) {
+    const r = FIG4_REGIONS[key]; if (!r) return null;
+    return { x: r.x * FIG_SW, y: r.y * FIG_SH, w: r.w * FIG_SW, h: r.h * FIG_SH };
+  }
+  function unionPx(keys) {
+    const rs = keys.map(regionPx).filter(Boolean);
+    if (!rs.length) return null;
+    const x0 = Math.min(...rs.map(r => r.x)), y0 = Math.min(...rs.map(r => r.y));
+    const x1 = Math.max(...rs.map(r => r.x + r.w)), y1 = Math.max(...rs.map(r => r.y + r.h));
+    return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+  }
+  // Spotlight a region (or union), auto-pan the camera, and run a traveling
+  // marker from the previous sub-step to this one along the pipeline flow.
+  function figGo(figKey) {
+    const spot = $("#figSpot"); if (!spot) return;
+    if (!figKey) {           // overview: pull back, clear spotlight
+      spot.classList.remove("on", "pulse");
+      if (figFollow) figFitAll();
+      figLastKey = null;
+      return;
+    }
+    const keys = Array.isArray(figKey) ? figKey : [figKey];
+    const u = unionPx(keys); if (!u) return;
+    spot.style.left = u.x + "px"; spot.style.top = u.y + "px";
+    spot.style.width = u.w + "px"; spot.style.height = u.h + "px";
+    spot.classList.add("on", "pulse");
+    // camera frames the region with generous context (2.6× the box)
+    if (figFollow) {
+      const cx = u.x + u.w / 2, cy = u.y + u.h / 2;
+      const fw = Math.max(u.w * 2.6, 300), fh = Math.max(u.h * 2.6, 170);
+      figFocusRect({ x: cx - fw / 2, y: cy - fh / 2, w: fw, h: fh });
+    }
+    // traveling marker between consecutive sub-steps
+    const prev = figLastKey && unionPx(Array.isArray(figLastKey) ? figLastKey : [figLastKey]);
+    if (prev && !REDUCED_MOTION) {
+      const m = $("#figMarker");
+      const p0 = { x: prev.x + prev.w / 2, y: prev.y + prev.h / 2 };
+      const p1 = { x: u.x + u.w / 2, y: u.y + u.h / 2 };
+      try {
+        m.animate([
+          { left: p0.x - 7 + "px", top: p0.y - 7 + "px", opacity: 1 },
+          { left: p1.x - 7 + "px", top: p1.y - 7 + "px", opacity: 0 },
+        ], { duration: 750, easing: "ease-in-out" });
+      } catch (e) { /* WAAPI unavailable — marker is decorative */ }
+    }
+    figLastKey = figKey;
+  }
+  // Finale: ripple a glow through every badge in pipeline order.
+  function figRipple() {
+    const st = $("#figStage");
+    FIG4_BADGE_ORDER.forEach((k, i) => {
+      addT(() => {
+        const r = regionPx(k); if (!r) return;
+        const d = el("div", "fig-ripple");
+        d.style.left = r.x + "px"; d.style.top = r.y + "px";
+        d.style.width = r.w + "px"; d.style.height = r.h + "px";
+        st.appendChild(d);
+        addT(() => d.remove(), 1050);
+      }, i * 150);
+    });
+  }
+
+  /* ---- narrator (viewport-anchored, bottom-center of the demo module) ---- */
+  let storyTimer = null;
+  function story(html) {
+    clearTimeout(storyTimer);
+    const s = $("#pdemoStory"); if (!s) return;
+    if (!html) { s.classList.remove("in"); return; }
+    s.innerHTML = html; s.classList.add("in");
+  }
+  // camera cue → settle → narration: the card appears only after the camera
+  // eases in (~1.05s while playing; near-instant when the user steps manually)
+  function storyAfterSettle(html, settleMs) {
+    clearTimeout(storyTimer);
+    if (!html) { story(null); return; }
+    const s = $("#pdemoStory"); s.classList.remove("in");
+    storyTimer = setTimeout(() => story(html), REDUCED_MOTION ? 0 : settleMs);
+  }
+
+  /* ---- journey rail ---- */
+  const RAIL = [["input", "Input"], ["s0", "Segment"], ["s1", "Localize"], ["s2", "Assemble"], ["s3", "Refine"], ["out", "FID-HTML"]];
+  function buildRail() {
+    const wrap = $("#pdemoRail"); wrap.innerHTML = "";
+    RAIL.forEach(([k, label], i) => {
+      if (i) wrap.appendChild(el("span", "rsep", "›"));
+      const p = el("span", "rp" + (/^s\d/.test(k) ? " clickable" : ""), label);
+      p.id = "rp_" + k;
+      if (/^s\d/.test(k)) {
+        const si = +k.slice(1);
+        p.addEventListener("click", () => { stop(); doneStages = new Set([...Array(si).keys()]); loadStage(si); doBeat(); });
+      }
+      wrap.appendChild(p);
+    });
+  }
+  function railSet(key) {
+    let passed = true;
+    RAIL.forEach(([k]) => {
+      const p = $("#rp_" + k); if (!p) return;
+      if (k === key) { p.classList.add("act"); p.classList.remove("done"); passed = false; }
+      else { p.classList.toggle("done", passed); p.classList.remove("act"); if (!passed) p.classList.remove("done"); }
+    });
+  }
 
   function CV() { return $("#pdemoCanvas"); }
 
@@ -2176,7 +2597,7 @@
   function clearCanvas() {
     CV().innerHTML = "";
     arrowSvgEl = null; arrowRectsByKey = {}; arrowPairs = []; arrowElsByTarget = {};
-    stopCycle(); closeViewer();
+    stopCycle(); closeViewer(); clearTimers();
   }
 
   function slotEl(key, x, y, w, h, label, cls) {
@@ -2197,6 +2618,162 @@
     const c = $("#pdemoCaption");
     c.className = "pdemo-caption show" + (kind ? " " + kind : "");
     c.innerHTML = text;
+  }
+
+  // ---- inter-agent communication: a message token travels the computed
+  // arrow between two blocks (endpoints from live block edges, never eyeballed)
+  function travelToken(fromKey, toKey, opts) {
+    opts = opts || {};
+    const rf = arrowRectsByKey[fromKey], rt = arrowRectsByKey[toKey];
+    if (!rf || !rt || REDUCED_MOTION) return;
+    const box = CV().getBoundingClientRect();
+    const W = box.width || 1, H = box.height || 1;
+    const toPx = r => ({ x: r.x / 100 * W, y: r.y / 100 * H, w: r.w / 100 * W, h: r.h / 100 * H });
+    const pf = toPx(rf), pt = toPx(rt);
+    const p1 = rectExit(pf, pt.x + pt.w / 2, pt.y + pt.h / 2);
+    const p2 = rectExit(pt, pf.x + pf.w / 2, pf.y + pf.h / 2);
+    const n = el("div", "pdemo-token" + (opts.sq ? " sq" : ""));
+    if (opts.color) n.style.setProperty("--tkc", opts.color);
+    n.style.left = (p1.x - 5.5) + "px"; n.style.top = (p1.y - 5.5) + "px";
+    CV().appendChild(n);
+    const go = () => {
+      try {
+        const a = n.animate(
+          [{ left: (p1.x - 5.5) + "px", top: (p1.y - 5.5) + "px", opacity: 0.2 },
+           { opacity: 1, offset: 0.15 },
+           { left: (p2.x - 5.5) + "px", top: (p2.y - 5.5) + "px", opacity: 0 }],
+          { duration: opts.dur || 750, easing: "ease-in-out" });
+        a.onfinish = () => n.remove();
+      } catch (e) { n.remove(); }
+    };
+    if (opts.delay) addT(go, opts.delay); else go();
+  }
+  // Convenience: a little burst of tokens along one wire.
+  function tokenBurst(fromKey, toKey, count, opts) {
+    for (let i = 0; i < (count || 3); i++) travelToken(fromKey, toKey, Object.assign({}, opts, { delay: (opts && opts.delay || 0) + i * 190 }));
+  }
+
+  // ---- compact agent/tool node (icons stay small; images stay the heroes)
+  function nodeEl(key, x, y, w, h, icon, label, kind, color) {
+    const n = el("div", "pdemo-anode" + (kind === "tool" ? " tool" : ""),
+      `<i class="fa-solid ${icon}"></i><span>${label}</span>`);
+    n.style.left = x + "%"; n.style.top = y + "%"; n.style.width = w + "%"; n.style.height = h + "%";
+    if (color) n.style.setProperty("--anc", color);
+    n.dataset.key = key;
+    arrowRectsByKey[key] = { x, y, w, h };
+    CV().appendChild(n);
+    return n;
+  }
+  // ---- large intermediate-output viewer: swaps document images per beat
+  function intermPanel(key, x, y, w, h) {
+    const p = el("div", "interm-panel", '<span class="ip-tag">intermediate output</span>');
+    p.style.left = x + "%"; p.style.top = y + "%"; p.style.width = w + "%"; p.style.height = h + "%";
+    p.dataset.key = key;
+    arrowRectsByKey[key] = { x, y, w, h };
+    CV().appendChild(p);
+    const layers = {};
+    return {
+      el: p,
+      show(imgKey, tag) {
+        p.classList.add("show");
+        (arrowElsByTarget[key] || []).forEach(a => a.classList.add("show"));
+        p.querySelector(".ip-tag").textContent = tag || "intermediate output";
+        Object.values(layers).forEach(l => l.classList.remove("on"));
+        if (!layers[imgKey]) {
+          const l = el("div", "ip-img");
+          loadImage(l, demoSrc(PIPELINE_PRESETS[currentDoc].id, imgKey), tag || imgKey);
+          p.appendChild(l);
+          layers[imgKey] = l;
+        }
+        requestAnimationFrame(() => layers[imgKey].classList.add("on"));
+        return layers[imgKey];
+      },
+    };
+  }
+
+  // ---- page-overlay panel: the REAL page with REAL region bboxes drawn on
+  // it (raw boxes → numbered SoM marks → semantic labels → nested groups),
+  // and image-swap for genuine intermediate assets (e.g. S1_tree).
+  const SOM_COLORS = ["#e0574a", "#2563eb", "#1f9d7c", "#ca8a04", "#7c3aed", "#db2777", "#0891b2", "#65a30d"];
+  // Resolve the document's page image: prefer LOCALIZE_DATA.page, fall back
+  // to S1_raw (always present) if that export hasn't been added yet.
+  const _pageKeyCache = {};
+  function resolveDocPage(docId, cb) {
+    if (_pageKeyCache[docId] !== undefined) { cb(_pageKeyCache[docId]); return; }
+    const ld = LOCALIZE_DATA[docId];
+    const cand = (ld && ld.page) || "S1_raw";
+    const im = new Image();
+    im.onload = () => { _pageKeyCache[docId] = cand; cb(cand); };
+    im.onerror = () => { _pageKeyCache[docId] = "S1_raw"; cb("S1_raw"); };
+    im.src = demoSrc(docId, cand);
+  }
+  function pageOverlayPanel(key, x, y, w, h) {
+    const p = el("div", "interm-panel", '<span class="ip-tag">intermediate output</span>');
+    p.style.left = x + "%"; p.style.top = y + "%"; p.style.width = w + "%"; p.style.height = h + "%";
+    p.dataset.key = key;
+    arrowRectsByKey[key] = { x, y, w, h };
+    CV().appendChild(p);
+    const imgWrap = el("div", "ip-img"); p.appendChild(imgWrap);
+    const ov = el("div", "pv-ov"); p.appendChild(ov);
+    const docId = PIPELINE_PRESETS[currentDoc].id;
+    const ldata = LOCALIZE_DATA[docId];
+    const crops = (ldata && ldata.crops) || [];
+    let curImg = null;
+    function activate(tag) {
+      p.classList.add("show");
+      (arrowElsByTarget[key] || []).forEach(a => a.classList.add("show"));
+      p.querySelector(".ip-tag").textContent = tag || "intermediate output";
+    }
+    function setImg(k, cb) {
+      if (curImg !== k) { curImg = k; imgWrap.innerHTML = ""; loadImage(imgWrap, demoSrc(docId, k), k); }
+      imgWrap.classList.add("on");
+      withPageSize(demoSrc(docId, k), sz => {
+        if (!sz) { if (cb) cb(null); return; }
+        const pw = p.clientWidth, ph = p.clientHeight;
+        const s = Math.min(pw / sz.w, ph / sz.h);   // object-fit: contain
+        if (cb) cb({ dx: (pw - sz.w * s) / 2, dy: (ph - sz.h * s) / 2, s, sz });
+      });
+    }
+    function drawBoxes(rect, mode) {
+      crops.forEach((c, i) => {
+        const [bx, by, bw, bh] = c.bbox;
+        const col = SOM_COLORS[i % SOM_COLORS.length];
+        const d = el("div", "pv-box");
+        d.style.left = (rect.dx + bx * rect.sz.w * rect.s) + "px";
+        d.style.top = (rect.dy + by * rect.sz.h * rect.s) + "px";
+        d.style.width = (bw * rect.sz.w * rect.s) + "px";
+        d.style.height = (bh * rect.sz.h * rect.s) + "px";
+        d.style.borderColor = mode === "boxes" ? "var(--accent)" : col;
+        if (mode !== "boxes") {
+          const m = el("span", "pv-mark", String(i + 1)); m.style.background = col; d.appendChild(m);
+        }
+        if (mode === "labels" || mode === "groups") {
+          const t = el("span", "pv-lab", c.label); t.style.background = col; d.appendChild(t);
+        }
+        ov.appendChild(d);
+        addT(() => d.classList.add("show"), i * 110);
+      });
+      if (mode === "groups" && crops.length) {
+        const xs = crops.map(c => c.bbox[0]), ys = crops.map(c => c.bbox[1]);
+        const x1 = Math.max(...crops.map(c => c.bbox[0] + c.bbox[2])), y1 = Math.max(...crops.map(c => c.bbox[1] + c.bbox[3]));
+        const x0 = Math.min(...xs), y0 = Math.min(...ys);
+        const u = el("div", "pv-union");
+        u.style.left = (rect.dx + x0 * rect.sz.w * rect.s - 6) + "px";
+        u.style.top = (rect.dy + y0 * rect.sz.h * rect.s - 6) + "px";
+        u.style.width = ((x1 - x0) * rect.sz.w * rect.s + 12) + "px";
+        u.style.height = ((y1 - y0) * rect.sz.h * rect.s + 12) + "px";
+        ov.appendChild(u);
+        addT(() => u.classList.add("show"), crops.length * 110 + 150);
+      }
+    }
+    return {
+      el: p,
+      mode(m, tag) {
+        activate(tag);
+        resolveDocPage(docId, pk => setImg(pk, rect => { ov.innerHTML = ""; if (rect && m !== "page") drawBoxes(rect, m); }));
+      },
+      img(k, tag) { activate(tag); ov.innerHTML = ""; setImg(k); },
+    };
   }
 
   // ---- Localize: Router-decision walkthrough state + helpers ----------
@@ -2232,16 +2809,35 @@
   }
   function closeViewer() { $("#pdemoOutviewer").classList.remove("open"); }
 
-  // Render one specialist's sub-HTML fragment as native, highlighted code.
+  // Fragment viewer: toggle any sub-HTML between highlighted SOURCE and a
+  // neutralized RENDERED preview (absolute positioning stripped for display).
+  let ovCrop = null, ovView = "code";
+  function fragmentPreviewHTML(subhtml) {
+    return subhtml
+      .replace(/position:\s*absolute;?/gi, "")
+      .replace(/(left|top):\s*[-\d.]+px;?/gi, "")
+      .replace(/(width|height):\s*[-\d.]+px;?/gi, "");
+  }
+  function setOvView(v) {
+    ovView = v;
+    $$("#pdemoOvFlip button").forEach(b => b.classList.toggle("on", b.dataset.v === v));
+    if (ovCrop) openCropViewer(ovCrop);
+  }
   function openCropViewer(crop) {
+    ovCrop = crop;
     const ag = LOCALIZE_AGENTS[crop.specialist] || { name: crop.specialist, icon: "fa-code", color: "var(--accent)" };
     $("#pdemoOutviewer").classList.add("open");
+    $("#pdemoOvFlip").style.display = "";
     $("#pdemoOvTitle").innerHTML = `<i class="fa-solid ${ag.icon}" style="color:${ag.color}"></i> ${ag.name} → sub-HTML`;
-    $("#pdemoOvBody").innerHTML =
+    const meta =
       `<div class="ov-meta"><span class="ov-tag" style="background:${ag.color}">${crop.label}</span>` +
-      `<span class="ov-chip">bbox [${crop.bbox.map(n => n.toFixed(2)).join(", ")}]</span></div>` +
-      `<pre class="fid-code ovcode">${highlightFidHtml(crop.subhtml)}</pre>` +
-      `<div class="ov-hint">Emitted by the ${ag.name} from crop + OCR + bbox.</div>`;
+      `<span class="ov-chip">bbox [${crop.bbox.map(n => n.toFixed(2)).join(", ")}]</span></div>`;
+    const body = ovView === "render"
+      ? `<div class="ov-render">${fragmentPreviewHTML(crop.subhtml)}</div>` +
+        `<div class="ov-hint">Rendered preview (absolute positioning neutralized for display).</div>`
+      : `<pre class="fid-code ovcode">${highlightFidHtml(crop.subhtml)}</pre>` +
+        `<div class="ov-hint">Emitted by the ${ag.name} from crop + OCR + bbox.</div>`;
+    $("#pdemoOvBody").innerHTML = meta + body;
   }
   // Update the crop+bbox+OCR "context packet" (no routing yet).
   function setPacket(crop) {
@@ -2281,31 +2877,99 @@
     Object.values(locBadges).forEach(b => b.classList.remove("cycling"));
   }
 
+  // ═══ EDIT ME: the SoM prompt snippet shown beside the Labeling Agent.
+  // Replace with the exact prompt string your Labeling Agent receives.
+  const SOM_PROMPT_SNIPPET =
+    'You are given a document image annotated with <span class="mark">numbered Set-of-Mark boxes</span>.\n' +
+    'For each mark [1..N], answer with its <span class="mark">semantic region type</span>\n' +
+    '(title, paragraph, table, figure, list, form-field, …)\n' +
+    'considering position, typography and neighbouring marks.';
+
   function buildSegment() {
     clearCanvas(); ensureArrowLayer(); const bts = [];
-    const raw      = slotEl("S1_raw",        1, 20, 15, 60, "Raw document (image or PDF)");
-    const analyzer = slotEl("S1_analyzer",  19, 38, 13, 22, "Document-Type Analyzer");
-    const digital  = slotEl("S1_digital",   36,  4, 14, 20, "Digital-PDF Parser");
-    const pdfobj   = slotEl("S1_pdfobjects",53,  4, 17, 22, "Structured PDF Objects");
-    const detect   = slotEl("S1_detect",    36, 34, 20, 46, "Detection Ensembles");
-    const labeling = slotEl("S1_labeling",  58, 52, 12, 22, "Labeling Agent");
-    const grouping = slotEl("S1_grouping",  71, 52, 12, 22, "Grouping Agent");
-    const tree     = slotEl("S1_tree",      85, 26, 14, 50, "Nested Hierarchical Layout Tree");
-    connect("S1_raw", "S1_analyzer");
-    connect("S1_analyzer", "S1_digital");
-    connect("S1_analyzer", "S1_detect");
-    connect("S1_digital", "S1_pdfobjects");
-    connect("S1_detect", "S1_labeling");
-    connect("S1_labeling", "S1_grouping");
-    connect("S1_pdfobjects", "S1_tree");
-    connect("S1_grouping", "S1_tree");
+    // LARGE panels for documents; SMALL nodes for agents & tools. The big
+    // right panel draws REAL region bboxes over the REAL page — never
+    // icon-card assets blown up large.
+    const raw = slotEl("S1_raw", 1, 8, 20, 84, "Raw document (image or PDF)");
+    const analyzer = nodeEl("N_analyzer", 23.5, 40, 9.5, 18, "fa-magnifying-glass", "Doc-Type<br>Analyzer", "tool");
+    const digital  = nodeEl("N_digital", 23.5, 6, 9.5, 15, "fa-file-pdf", "Digital PDF<br>Extraction", "tool");
+    const pdfobj   = nodeEl("N_pdfobj", 23.5, 25, 9.5, 11, "fa-cubes", "PDF Objects", "tool");
+    const detect   = nodeEl("N_detect", 23.5, 62, 9.5, 15, "fa-vector-square", "Proposal<br>Generation", "tool");
+    const labeling = nodeEl("N_labeling", 23.5, 81, 4.6, 13, "fa-robot", "Label", "");
+    const grouping = nodeEl("N_grouping", 28.6, 81, 4.4, 13, "fa-robot", "Group", "");
+    // The hero: real page + real-bbox overlay panel (also swaps to S1_tree)
+    const pv = pageOverlayPanel("S1_iv", 35.5, 8, 63.5, 84);
+    connect("S1_raw", "N_analyzer");
+    connect("N_analyzer", "N_digital");
+    connect("N_digital", "N_pdfobj");
+    connect("N_analyzer", "N_detect");
+    connect("N_detect", "N_labeling");
+    connect("N_labeling", "N_grouping");
+    connect("N_detect", "S1_iv");
     drawArrows();
-    bts.push(() => { reveal(raw); cap("A document enters — a <b>scanned image</b> or a <b>born-digital PDF</b>."); });
-    bts.push(() => { reveal(analyzer); cap("The <b>Document-Type Analyzer</b> decides which path to take."); });
-    bts.push(() => { reveal(digital); reveal(pdfobj); cap("<b>Digital path:</b> a born-digital PDF already carries text &amp; coordinates → it extracts <b>Structured PDF Objects</b> and <b>skips detection entirely</b>."); });
-    bts.push(() => { reveal(detect); cap("<b>Scanned path:</b> detection ensembles propose low- and high-level layout regions from the pixels."); });
-    bts.push(() => { reveal(labeling); reveal(grouping); cap("Two <b>agents</b> take over: the <b>Labeling Agent</b> names regions, and the <b>Grouping Agent</b> organizes them into a hierarchy."); });
-    bts.push(() => { reveal(tree); cap("Both paths converge on the <b>Nested Hierarchical Layout Tree</b> — the document, now segmented. → Localize."); });
+
+    // SoM prompt snippet card (over the panel during the labeling beat)
+    const som = el("div", "som-card");
+    som.style.left = "36.2%"; som.style.top = "11%"; som.style.width = "26%";
+    som.innerHTML = '<div class="sc-t"><i class="fa-solid fa-terminal"></i> SoM prompt → Labeling Agent</div>' +
+      SOM_PROMPT_SNIPPET.split("\n").join("<br>");
+    CV().appendChild(som);
+
+    const docLabel = PIPELINE_PRESETS[currentDoc].label;
+    bts.push(B(() => {
+      reveal(raw);
+      const sl = el("div", "scanline"); raw.appendChild(sl);
+      addT(() => sl.remove(), 2300);
+      cap(`A document enters — here, the <b>${docLabel}</b>. REPLICA will rebuild it as pixel-faithful, selectable HTML.`);
+    }, "input_doc", `📄 Our story starts with a single page — the <b>${docLabel}</b>. Watch the map on the left: it always shows where we are in the pipeline.`, 3.8));
+
+    bts.push(B(() => {
+      reveal(analyzer); analyzer.classList.add("lit", "agent-think");
+      tokenBurst("S1_raw", "N_analyzer", 3);
+      addT(() => analyzer.classList.remove("agent-think"), 2600);
+      cap("The page travels to the <b>Document-Type Analyzer (1A)</b>: born-digital, or scanned pixels?");
+    }, "1A_doctype", "🔀 First decision: <b>digital or scanned?</b> Watch the message tokens — every hand-off in this pipeline is real communication.", 3.4));
+
+    bts.push(B(() => {
+      reveal(digital); reveal(pdfobj); digital.classList.add("dimmed"); pdfobj.classList.add("dimmed");
+      cap("<b>Digital branch (1E)</b> exists — born-digital PDFs skip detection via Structured PDF Objects — but our page is <b>scanned</b>, so it stays dark.");
+    }, ["1E_pdf_extract", "1E_pdf_objects"], "💾 A born-digital PDF would take this shortcut. Ours is scanned — that branch stays <b>dimmed</b>.", 3));
+
+    bts.push(B(() => {
+      reveal(detect); detect.classList.add("lit");
+      tokenBurst("N_analyzer", "N_detect", 3);
+      pv.mode("boxes", "① raw geometric proposals (real bboxes)");
+      cap("<b>Geometric Proposal Generation (1B):</b> raw, unlabeled boxes appear on the page — this document's <b>real region geometry</b>, no meaning yet.");
+    }, "1B_proposal", "📐 The detection ensemble proposes <b>raw bounding boxes</b> — the page's real geometry, with no names attached yet.", 3.8));
+
+    bts.push(B(() => {
+      reveal(labeling); labeling.classList.add("lit", "agent-think");
+      tokenBurst("N_detect", "N_labeling", 3);
+      pv.mode("som", "② Set-of-Mark: numbered colored marks");
+      som.classList.add("show");
+      cap("<b>Set-of-Mark:</b> each box gets a colored, numbered mark; the marked image + this <b>prompt</b> go to the <b>Labeling Agent (1C)</b>.");
+    }, ["1B_proposal", "1C_labeling"], "🏷️ Every box gets a colored <b>Set-of-Mark</b> tag, and the Labeling Agent receives exactly this prompt. An agent judging — not a lookup table.", 4.2));
+
+    bts.push(B(() => {
+      som.classList.remove("show");
+      pv.mode("labels", "③ semantic labels (Labeling Agent output)");
+      cap("The Labeling Agent's <b>intermediate output</b>: every mark now carries its semantic name — these are the real labels for this document.");
+    }, "1C_labeling", "✨ The agent replies with a <b>semantic name on every region</b> — real labels from this document's ground truth.", 3.6));
+
+    bts.push(B(() => {
+      labeling.classList.remove("agent-think", "lit");
+      reveal(grouping); grouping.classList.add("lit", "agent-think");
+      tokenBurst("N_labeling", "N_grouping", 3);
+      pv.mode("groups", "④ nested groups (Grouping Agent output)");
+      addT(() => grouping.classList.remove("agent-think"), 2200);
+      cap("The <b>Grouping Agent (1D)</b> reasons about spatial &amp; semantic relations and <b>nests</b> the labeled regions — the dashed outline is the parent group forming.");
+    }, "1D_grouping", "🧩 The Grouping Agent nests labeled regions into a hierarchy — watch the parent group close around them.", 3.8));
+
+    bts.push(B(() => {
+      pv.img("S1_tree", "⑤ hierarchical layout tree (Stage 1 output)");
+      tokenBurst("N_grouping", "S1_iv", 3);
+      cap("Stage 1 output: the <b>Nested Hierarchical Layout Tree</b> — the real annotated page: geometry, types, hierarchy, order. → Localize.", "good");
+    }, "layout_tree", "🌳 Everything condenses into the <b>hierarchical layout tree</b> — the document's skeleton, and Stage 1's output.", 3.4));
     return bts;
   }
 
@@ -2321,6 +2985,7 @@
     };
     const data = LOCALIZE_DATA[PIPELINE_PRESETS[currentDoc].id];
     locCrops = data ? data.crops : []; locPage = data ? data.page : ""; locCropIdx = 0; locBadges = {}; locPacket = null;
+    let hideTermsFn = null;   // set once the typing terminals exist
 
     const tree = slotEl("S2_tree", 1, 12, 12, 78, "Nested Hierarchical Layout Tree (from Segment)");
 
@@ -2346,6 +3011,7 @@
       b.style.setProperty("--agc", ag.color);
       b.addEventListener("click", () => {
         stopCycle();
+        if (hideTermsFn) hideTermsFn();   // typing overlay must never sit behind the viewer
         Object.values(locBadges).forEach(x => x.classList.remove("pinned"));
         b.classList.add("pinned");
         const idx = locCrops.findIndex(c => c.specialist === k);
@@ -2369,19 +3035,108 @@
     connect("S2_agcol", "S2_collect");
     drawArrows();
 
+    // auxiliary external tools feeding side-channel context into specialists
+    const auxOcr = el("div", "aux-badge", '<i class="fa-solid fa-eye"></i> OCR engine');
+    auxOcr.style.left = "14%"; auxOcr.style.top = "83%";
+    const auxFont = el("div", "aux-badge", '<i class="fa-solid fa-bold"></i> Font attributes <span style="font-weight:400">(b/i/size)</span>');
+    auxFont.style.left = "23.5%"; auxFont.style.top = "83%";
+    CV().appendChild(auxOcr); CV().appendChild(auxFont);
+
+    // Full-source parallel terminals — each specialist types its ENTIRE
+    // sub-HTML fragment simultaneously (real strings from LOCALIZE_DATA).
+    const termGrid = el("div", "term-grid");
+    termGrid.style.left = "63.5%"; termGrid.style.top = "6%";
+    termGrid.style.width = "35.5%"; termGrid.style.height = "78%";
+    const owners = LOCALIZE_AGENT_ORDER.filter(k => locCrops.some(c => c.specialist === k));
+    termGrid.style.gridTemplateColumns = owners.length > 2 ? "1fr 1fr" : "1fr";
+    termGrid.style.gridAutoRows = "1fr";
+    const terms = {};
+    owners.forEach(k => {
+      const ag = LOCALIZE_AGENTS[k];
+      const crop = locCrops.find(c => c.specialist === k);
+      const t = el("div", "term",
+        `<div class="t-head"><i class="fa-solid ${ag.icon}"></i>${ag.name} · <span style="font-weight:600">${crop.label}</span></div>` +
+        `<div class="t-body"><span class="txt"></span><span class="cur"></span></div>`);
+      t.style.setProperty("--agc", ag.color);
+      termGrid.appendChild(t);
+      terms[k] = { el: t, txt: t.querySelector(".txt"), body: t.querySelector(".t-body"), src: crop.subhtml };
+    });
+    CV().appendChild(termGrid);
+    // parallel autoregressive typing — all terminals stream at once, and each
+    // one types its COMPLETE fragment (auto-scrolling as it grows)
+    function typeAll() {
+      Object.values(terms).forEach(t => { t.el.classList.add("show"); t.txt.textContent = ""; });
+      const t0 = performance.now();
+      const CPS = 120;                       // chars per second, per agent
+      const stepType = () => {
+        const n = Math.max(1, Math.floor((performance.now() - t0) / 1000 * CPS));
+        let more = false;
+        Object.values(terms).forEach(t => {
+          if (t.txt.textContent.length < t.src.length) {
+            t.txt.textContent = t.src.slice(0, Math.min(t.src.length, n));
+            t.body.scrollTop = t.body.scrollHeight;
+            if (n < t.src.length) more = true;
+          }
+        });
+        if (more) addT(stepType, 30);
+        else addT(hideTerms, 1100);   // generation done → overlay leaves the stage
+      };
+      stepType();
+    }
+    const hideTerms = () => Object.values(terms).forEach(t => t.el.classList.remove("show"));
+    hideTermsFn = hideTerms;
     const showBadges = () => Object.values(locBadges).forEach(b => b.classList.add("show"));
 
     if (!locCrops.length) {
-      bts.push(() => { reveal(tree); cap("Localize runs <b>region-by-region</b> over the layout tree from Segment."); });
-      bts.push(() => { reveal(router); showBadges(); reveal(collect); cap("The <b>Router Agent</b> routes each region — with its <b>crop + bbox + OCR</b> — to one of six specialists. The step-through walkthrough is populated for the <b>Government Notice</b> example; add a <span class='mono'>LOCALIZE_DATA</span> entry for this document to enable it here."); });
+      bts.push(B(() => { reveal(tree); cap("Localize runs <b>region-by-region</b> over the layout tree from Segment."); }, "layout_tree",
+        "🌳 The layout tree arrives from Segment.", 3));
+      bts.push(B(() => { reveal(router); showBadges(); reveal(collect); cap("The <b>Router Agent</b> routes each region — with its <b>crop + bbox + OCR</b> — to a specialist. Add a <span class='mono'>LOCALIZE_DATA</span> entry for this document to enable the full walkthrough."); }, "2A_router",
+        "🤖 The Router hands each region to a specialist agent.", 3));
       return bts;
     }
 
-    bts.push(() => { reveal(tree); cap("Localize runs <b>region-by-region</b>. This is the hierarchical layout tree from Segment."); });
-    bts.push(() => { reveal(packet); setPacket(locCrops[0]); cap("Each region is <b>lifted as a crop</b> and bundled with its <b>layout bbox</b> and the region's <b>OCR text</b> — this whole packet is what the Router sees."); });
-    bts.push(() => { reveal(router); showBadges(); cap("The packet — <b>crop + bbox + OCR together</b> — is handed to the <b>Router Agent</b>, which weighs all three signals."); });
-    bts.push(() => { showCrop(0); cap("The Router <b>decides the specialist</b> (highlighted, colored arrow), and that agent emits a styled <b>sub-HTML fragment</b> → shown on the right."); });
-    bts.push(() => { reveal(collect); startCropCycle(); cap("Every region is routed the same way; fragments gather into the <b>Collection of sub-HTML</b>. It <b>auto-cycles</b> the regions — <b>click any specialist to pin its output</b>. → Assemble."); });
+    bts.push(B(() => {
+      reveal(tree);
+      cap("The <b>layout tree</b> hands off from Segment — Localize now runs <b>region-by-region</b>.");
+    }, "layout_tree", "🤝 <b>Agent-to-agent hand-off:</b> Stage 1's tree crosses into Stage 2 — watch the marker travel on the map.", 3.2));
+
+    bts.push(B(() => {
+      reveal(packet); setPacket(locCrops[0]);
+      tokenBurst("S2_tree", "S2_packet", 3);
+      auxOcr.classList.add("show"); auxFont.classList.add("show");
+      cap("Each region is lifted as a <b>crop</b> + <b>bbox</b> + <b>OCR text</b>. Auxiliary tools — an <b>OCR engine</b> and <b>font-attribute detection</b> — feed side-channel context into the packet.");
+    }, "auxiliary_context", "🔧 Two external tools ride along: <b>OCR</b> and <b>font attributes</b> (bold, italics, size) — side-channel context for every specialist.", 4));
+
+    bts.push(B(() => {
+      reveal(router); router.classList.add("agent-think");
+      tokenBurst("S2_packet", "S2_router", 4, { sq: true });
+      addT(() => router.classList.remove("agent-think"), 2400);
+      showBadges();
+      cap("The full packet — <b>crop + bbox + OCR together</b> — travels to the <b>Router Agent (2A)</b>, which weighs all three signals.");
+    }, "2A_router", "🤖 The packet <b>travels</b> to the Router Agent — crop, coordinates and text, one message. The Router decides who owns this region.", 3.6));
+
+    bts.push(B(() => {
+      showCrop(0);
+      const spec0 = locCrops[0].specialist;
+      const ag0 = LOCALIZE_AGENTS[spec0];
+      tokenBurst("S2_router", "S2_ag_" + spec0, 3, { color: ag0 && ag0.color });
+      cap("Routing decision: the packet is <b>forwarded to the chosen specialist</b> (colored tokens + arrow), which emits a styled <b>sub-HTML fragment</b> → right.");
+    }, FIG4_SPECIALIST[locCrops[0].specialist] || "subhtml_fragments",
+      "🎯 Decision made — watch the colored message travel <b>Router → specialist</b>. On the right: the actual sub-HTML it emits.", 3.6));
+
+    bts.push(B(() => {
+      closeViewer();          // clear space for the terminals
+      typeAll();
+      cap("<b>Parallel autoregressive generation:</b> every specialist streams its <b>complete</b> sub-HTML simultaneously — real fragment source, typed token by token.");
+    }, "subhtml_fragments", "⌨️ Now the magic: <b>all specialists generate at once</b> — and each terminal types its <b>entire fragment</b>, not a teaser.", 6.5));
+
+    bts.push(B(() => {
+      hideTerms();
+      reveal(collect);
+      owners.forEach((k, i) => travelToken("S2_ag_" + k, "S2_collect", { color: (LOCALIZE_AGENTS[k] || {}).color, delay: i * 200, sq: true }));
+      startCropCycle();
+      cap("Fragments travel into the <b>Collection of Sub-HTML (2C)</b>. Auto-cycling regions — <b>click any specialist to pin</b>, and use the viewer's <b>Source ⇄ Rendered</b> flip. → Assemble.");
+    }, "2C_collection", "🧺 Every fragment lands in the collection — flip any between <b>source and rendered</b> in the viewer. Next: assembly.", 3.8));
     return bts;
   }
 
@@ -2556,54 +3311,404 @@
     arrowRectsByKey["S3_fragments"] = { x: 1, y: 16, w: 20, h: 68 };
     CV().appendChild(frags);
     renderFragmentStack(frags, PIPELINE_PRESETS[currentDoc].id);
-    // Always show the fragments immediately (don't wait for animation).
     reveal(frags);
-    const agent = slotEl("S3_agent", 77, 6,  21, 20, "Reading-Order Agent");
-    const merge = slotEl("S3_merge", 77, 34, 21, 18, "Position-Aware Merge");
-    const final = slotEl("S3_final", 77, 56, 21, 40, "Initial HTML document (output → Refine)");
-    connect("S3_fragments", "S3_agent");
-    connect("S3_agent", "S3_merge");
-    connect("S3_merge", "S3_final");
+    // ORDER MATTERS in the paper: merge (3A) first, then reading-order (3B).
+    const merge = slotEl("S3_merge", 77, 6,  21, 18, "Position-Aware Merge (3A)");
+    const agent = slotEl("S3_agent", 77, 28, 21, 20, "Reading-Order Agent (3B)");
+    const final = slotEl("S3_final", 77, 52, 21, 44, "Initial HTML document (output → Refine)");
+    connect("S3_fragments", "S3_merge");
+    connect("S3_merge", "S3_agent");
+    connect("S3_agent", "S3_final");
+
+    // candidate-ordering scores panel — plain-language labels: the agent
+    // compares "ways a human might read this page", it doesn't follow a rule.
+    const scores = el("div", "ro-scores");
+    scores.style.left = "23.5%"; scores.style.top = "1.5%"; scores.style.width = "31%";
+    const mkCand = (name, val, cls) => {
+      const c = el("div", "ro-cand " + cls,
+        `<span>${name}</span><span class="bar"><i data-v="${val}"></i></span><span class="sc">${val.toFixed(2)}</span>`);
+      scores.appendChild(c); return c;
+    };
+    const cand1 = mkCand("Candidate A — as merged (row by row)", 0.42, "lose");
+    const cand2 = mkCand("Candidate B — finish each column first", 0.91, "win");
+    CV().appendChild(scores);
+    const showCand = () => [cand1, cand2].forEach((c, i) => addT(() => {
+      c.classList.add("show");
+      c.querySelectorAll(".bar i").forEach(b => addT(() => b.style.width = (parseFloat(b.dataset.v) * 100) + "%", 150));
+    }, i * 320));
+
+    // Source-order strip: the merged document's DOM order as chips the
+    // Reading-Order Agent inspects, flags, and PHYSICALLY reorders.
+    function buildROStrip(doc) {
+      const strip = el("div", "ro-strip");
+      strip.style.left = "57%"; strip.style.top = "6%"; strip.style.width = "19%"; strip.style.height = "88%";
+      strip.innerHTML = '<div class="rs-t">HTML source order<br><span style="font-weight:600;text-transform:none;letter-spacing:0">(render unchanged — positions are absolute)</span></div>';
+      const scan = el("div", "rs-scan"); strip.appendChild(scan);
+      const CH = 29;  // chip slot height (px-ish via top offsets)
+      const byId = {}; doc.blocks.forEach(b => byId[b.id] = b);
+      const chips = {};
+      doc.naive.forEach((id, i) => {
+        const b = byId[id];
+        const c = el("div", "rs-chip",
+          `<span class="rs-n">${i + 1}</span><span>${b.tag}</span><span class="rs-flag"></span>`);
+        c.style.borderLeftColor = RO_RC[b.c] || "var(--accent)";
+        c.style.position = "absolute"; c.style.left = "0"; c.style.right = "0";
+        c.style.top = (46 + i * CH) + "px";
+        strip.appendChild(c);
+        chips[id] = c;
+      });
+      CV().appendChild(strip);
+      return {
+        el: strip,
+        show() { doc.naive.forEach((id, i) => addT(() => chips[id].classList.add("show"), 90 * i)); },
+        // agent pass: scan down the chips, flag continuity breaks in red
+        inspect() {
+          scan.style.opacity = 1;
+          doc.naive.forEach((id, i) => addT(() => {
+            scan.style.top = (44 + i * CH) + "px";
+            const nextNaive = doc.naive[i + 1];
+            const ci = doc.correct.indexOf(id);
+            const nextCorrect = doc.correct[ci + 1];
+            if (nextNaive && nextCorrect && nextNaive !== nextCorrect) {
+              chips[id].classList.add("bad");
+              chips[id].querySelector(".rs-flag").textContent = "✗";
+              chips[id].querySelector(".rs-flag").style.color = "#e0574a";
+            }
+          }, 380 * i));
+          addT(() => scan.style.opacity = 0, 380 * doc.naive.length + 200);
+        },
+        // the agent REWRITES the source order: chips fly to their correct slots
+        correct() {
+          strip.querySelector(".rs-t").textContent = "corrected source order";
+          doc.correct.forEach((id, i) => {
+            const c = chips[id];
+            c.style.top = (46 + i * CH) + "px";
+            c.classList.remove("bad"); c.classList.add("good");
+            c.querySelector(".rs-n").textContent = i + 1;
+            const f = c.querySelector(".rs-flag"); f.textContent = "✓"; f.style.color = "#1f9d7c";
+          });
+        },
+      };
+    }
 
     if (!doc) {
-      // presets without reading-order data fall back to the fragment story
-      const note = slotEl("S3_reading", 26, 6, 44, 88, "Reading-order figure (add S3_reading.png + RO_DATA entry)");
+      const note = slotEl("S3_reading", 26, 12, 44, 80, "Reading-order figure (add S3_reading.png + RO_DATA entry)");
       drawArrows();
-      bts.push(() => { cap("The Localize stage produced these <b>sub-HTML fragments</b> (one per region from each specialist). But they arrived <b>out of order</b> — we can't just concatenate them."); });
-      bts.push(() => { reveal(note); reveal(agent); cap("The <b>Reading-Order Agent</b> evaluates candidate sequences using spatial &amp; textual coherence for this document…"); });
-      bts.push(() => { cap("…and <b>locks onto the correct reading order</b> — the stream now reads coherently.", "good"); });
-      bts.push(() => { reveal(merge); reveal(final); cap("<b>Ordering first, then merging:</b> the Position-Aware Merge composes fragments by coordinates in that order → one <b>Initial HTML document</b>. → Refine."); });
+      bts.push(B(() => { cap("Sub-HTML fragments arrive from Localize — <b>mixed up</b>, in arrival order."); }, "2C_collection",
+        "🧺 The fragments arrive <b>out of order</b> — assembly has two jobs.", 3));
+      bts.push(B(() => { reveal(merge); cap("<b>Position-Aware Merge (3A)</b> composes them by coordinates into one document."); }, "3A_position_merge",
+        "🧩 First: merge by <b>coordinates</b>.", 3));
+      bts.push(B(() => { reveal(note); reveal(agent); showCand(); cap("The <b>Reading-Order Agent (3B)</b> judges whether the merged source order reads coherently — scoring candidate orderings."); }, "3B_reading_order",
+        "🧠 Then the <b>Reading-Order Agent</b> judges the sequence — no single rule works for every layout.", 3.6));
+      bts.push(B(() => { reveal(final); cap("Reordered where needed → one <b>Initial HTML document</b>. → Refine.", "good"); }, "initial_html",
+        "📄 One coherent <b>Initial HTML document</b> heads to Refine.", 3));
       return bts;
     }
 
-    const fig = buildROFigure(boxEl(23, 4, 32, 92), doc);
-    const rib = buildRORibbon(boxEl(57, 7, 18, 86), doc);
+    const fig = buildROFigure(boxEl(23, 10, 32, 86), doc);
+    const strip = buildROStrip(doc);
     drawArrows();
-    bts.push(() => { reveal(frags); cap("The Localize stage produced these <b>sub-HTML fragments</b> (one per region from each specialist). But they arrived <b>out of order</b> — we can't concatenate them yet. The page looks fine either way; the <b>HTML source order</b> is what breaks."); });
-    bts.push(() => { reveal(fig.el); reveal(rib.el); fig.set("naive"); rib.set("naive"); cap(doc.cap.naive, "warn"); });
-    bts.push(() => { reveal(agent); fig.set("think"); rib.set("think"); cap(doc.cap.think); });
-    bts.push(() => { fig.set("correct"); rib.set("correct"); cap(doc.cap.correct, "good"); });
-    bts.push(() => { reveal(merge); reveal(final); cap("<b>Ordering first, then merging:</b> the Position-Aware Merge composes fragments by coordinates in that order → one <b>Initial HTML document</b>. → Refine."); });
+
+    bts.push(B(() => {
+      cap("The fragments arrive <b>mixed up</b> — the specialists finished in parallel, so arrival order ≠ reading order.");
+    }, "2C_collection", "🧺 The parallel specialists finished at different times — the fragments arrive <b>shuffled</b>.", 3.2));
+
+    bts.push(B(() => {
+      reveal(merge);
+      tokenBurst("S3_fragments", "S3_merge", 4, { sq: true });
+      cap("<b>Position-Aware Merge (3A) runs first:</b> every fragment carries its bbox, so the tool composes them <b>by coordinates</b> into one page. <b>Visually</b> it's already right — the source order underneath isn't.");
+    }, "3A_position_merge", "🧩 <b>Merge first.</b> Coordinates put every fragment exactly where it belongs on the page — but the <b>source order</b> underneath is whatever order they arrived in.", 4));
+
+    bts.push(B(() => {
+      reveal(fig.el); strip.el.classList.add("show"); strip.show();
+      fig.set("naive");
+      cap(doc.cap.naive, "warn");
+    }, "3B_reading_order", "⚠️ Here's the problem, drawn on the page: follow the numbered path — reading the merged source top-to-bottom <b>jumps mid-sentence</b> between columns.", 4.2));
+
+    bts.push(B(() => {
+      reveal(agent); agent.classList.add("agent-think");
+      tokenBurst("S3_merge", "S3_agent", 3);
+      strip.inspect();
+      fig.set("think"); showCand();
+      cap("The <b>Reading-Order Agent (3B)</b> inspects the merged source: it scans the chip list, <b>flags every break in continuity (✗)</b>, and scores two ways a human might read this page. <b>It must judge — no single rule fits every layout.</b>");
+    }, "3B_reading_order", "🧠 The agent <b>checks</b> the merged order chip by chip — ✗ marks where the text flow breaks — then scores: <b>A</b> keep it as merged, or <b>B</b> read each column to the end first.", 5));
+
+    bts.push(B(() => {
+      agent.classList.remove("agent-think");
+      strip.correct();
+      fig.set("correct");
+      cap(doc.cap.correct + " Watch the chips <b>physically reorder</b> — the agent rewrites the <b>source script itself</b> into the winning order.", "good");
+    }, "3B_reading_order", "✅ Candidate B wins — and the agent <b>rewrites the source order</b>: watch every chip fly to its corrected position.", 4.2));
+
+    bts.push(B(() => {
+      reveal(final);
+      tokenBurst("S3_agent", "S3_final", 3);
+      cap("<b>Merged, then reordered:</b> one coherent <b>Initial HTML document</b>. → Refine.", "good");
+    }, "initial_html", "📄 Assembly done: one <b>Initial HTML document</b> — visually placed <i>and</i> reading like a human would.", 3));
     return bts;
   }
 
   function buildRefine() {
     clearCanvas(); ensureArrowLayer(); const bts = [];
-    const init  = slotEl("S4_initial",   1, 12, 20, 72, "Initial HTML rendered in browser (from Assemble)");
-    const font  = slotEl("S4_font",     25, 26, 15, 44, "Font-Size Optimization");
-    const bg    = slotEl("S4_bg",       42, 26, 15, 44, "Background Restoration");
-    const refl  = slotEl("S4_reflection",59,20, 18, 56, "Reflection Agent (VLM) — iterative verification");
-    const final = slotEl("S4_final",    79, 12, 20, 72, "High-fidelity final HTML (output)");
-    connect("S4_initial", "S4_font");
-    connect("S4_initial", "S4_bg");
-    connect("S4_font", "S4_reflection");
-    connect("S4_bg", "S4_reflection");
-    connect("S4_reflection", "S4_final");
+    // LARGE panels for documents; SMALL nodes for the tools + agent.
+    const init = slotEl("S4_initial", 1, 8, 19, 84, "Initial HTML rendered in browser (from Assemble)");
+    const font = nodeEl("N_font", 21.5, 12, 8.5, 17, "fa-text-height", "Font-Size<br>Optimization", "tool");
+    const bg   = nodeEl("N_bg",   21.5, 41, 8.5, 17, "fa-brush", "Background<br>Restoration", "tool");
+    const refl = nodeEl("N_refl", 21.5, 70, 8.5, 17, "fa-robot", "Reflection<br>Agent (VLM)");
+    const iv = intermPanel("S4_iv", 31.5, 8, 30, 84);
+    const final = slotEl("S4_final", 63, 6, 36, 88, "High-fidelity final HTML (output)");
+    connect("S4_initial", "N_font");
+    connect("S4_initial", "N_bg");
+    connect("N_font", "S4_iv");
+    connect("N_bg", "S4_iv");
+    connect("S4_iv", "N_refl");
+    connect("N_refl", "S4_final");
     drawArrows();
-    bts.push(() => { reveal(init); cap("The merged HTML renders — but fonts, spacing, and background may not yet match the source exactly."); });
-    bts.push(() => { reveal(font); reveal(bg); cap("<b>Tools</b> make deterministic fixes: Font-Size Optimization and Background Restoration."); });
-    bts.push(() => { reveal(refl); cap("The <b>Reflection Agent</b> (a VLM) compares render to source and <b>loops</b>: render → compare → repair — until they match."); });
-    bts.push(() => { reveal(final); cap("The output: <b>visually faithful HTML</b> that matches the original. Pipeline complete.", "good"); });
+
+    // ── 4A: LITERAL binary search, run for THREE real sub-HTML texts, then
+    //        the converged sizes are applied onto a mini "merged HTML" page.
+    const ldata = LOCALIZE_DATA[PIPELINE_PRESETS[currentDoc].id];
+    const allCrops = (ldata && ldata.crops) || [];
+    const samples = allCrops.filter(c => c.ocr && c.ocr.length > 15).slice(0, 3);
+    while (samples.length < 3 && samples.length) samples.push(samples[0]);
+    const fsw = el("div", "fs-widget");
+    fsw.style.left = "63%"; fsw.style.top = "6%"; fsw.style.width = "36%";
+    fsw.innerHTML =
+      '<div class="fsw-t"><i class="fa-solid fa-text-height"></i> 4A · binary search, fragment by fragment</div>' +
+      '<div class="fs-queue">' + samples.map((c, i) => `<span class="fs-qitem" data-q="${i}">${c.label}</span>`).join("") + '</div>' +
+      '<div class="fs-target"><span></span></div>' +
+      '<div class="fs-track"><span class="lo"></span><span class="mid"></span><span class="hi"></span></div>' +
+      '<div class="fs-readout">lo <b class="rlo">6.0</b> · mid <b class="rmid">—</b> · hi <b class="rhi">42.0</b> px — <span class="st">searching…</span></div>';
+    CV().appendChild(fsw);
+    const fsT = fsw.querySelector(".fs-target"), fsSpan = fsw.querySelector(".fs-target span");
+    fsT.style.height = "52px";
+    // mini merged page the optimized sizes get APPLIED to
+    const ap = el("div", "apply-page", '<span class="ap-t">applied to merged HTML</span>');
+    ap.style.left = "63%"; ap.style.top = "52%"; ap.style.width = "36%"; ap.style.height = "42%";
+    const apBoxes = samples.map((c, i) => {
+      const bx = el("div", "ap-box");
+      const [x, y, w, h] = c.bbox;
+      bx.style.left = (x * 92 + 4) + "%"; bx.style.top = (y * 78 + 14) + "%";
+      bx.style.width = Math.max(w * 92, 22) + "%"; bx.style.height = Math.max(h * 78, 9) + "%";
+      bx.innerHTML = `<span style="font-size:6px">${(c.ocr || "").slice(0, 40)}</span>`;
+      ap.appendChild(bx);
+      return bx;
+    });
+    CV().appendChild(ap);
+
+    function searchOne(text, done) {
+      const MINF = 6, MAXF = 42;
+      fsSpan.textContent = text.slice(0, 80);
+      fsSpan.style.transition = "none";     // measurements must be synchronous
+      const fits = px => { fsSpan.style.fontSize = px + "px"; void fsT.offsetHeight; return fsT.scrollHeight <= fsT.clientHeight + 1 && fsT.scrollWidth <= fsT.clientWidth + 1; };
+      let lo = MINF, hi = MAXF; const steps = [];
+      for (let it = 0; it < 12 && hi - lo > 0.5; it++) {
+        const mid = (lo + hi) / 2, ok = fits(mid);
+        steps.push({ lo, hi, mid, ok });
+        if (ok) lo = mid; else hi = mid;
+      }
+      const best = lo;
+      fsSpan.style.transition = ""; fsSpan.style.fontSize = "22px"; fsSpan.style.color = "";
+      const track = fsw.querySelector(".fs-track");
+      const [eLo, eMid, eHi] = [track.querySelector(".lo"), track.querySelector(".mid"), track.querySelector(".hi")];
+      const pos = v => ((v - MINF) / (MAXF - MINF) * 100) + "%";
+      steps.forEach((s, i) => addT(() => {
+        eLo.style.left = pos(s.lo); eHi.style.left = pos(s.hi); eMid.style.left = pos(s.mid);
+        fsw.querySelector(".rlo").textContent = s.lo.toFixed(1);
+        fsw.querySelector(".rhi").textContent = s.hi.toFixed(1);
+        fsw.querySelector(".rmid").textContent = s.mid.toFixed(1);
+        fsSpan.style.fontSize = s.mid + "px";
+        fsSpan.style.color = s.ok ? "" : "#e0574a";
+      }, 360 * i));
+      addT(() => {
+        fsSpan.style.fontSize = best + "px"; fsSpan.style.color = "#1f9d7c";
+        done(best, steps.length);
+      }, 360 * steps.length + 120);
+      return steps.length;
+    }
+    function runFontQueue() {
+      fsw.classList.add("show"); ap.classList.add("show");
+      const qItems = $$(".fs-qitem", fsw);
+      const next = i => {
+        if (i >= samples.length) { fsw.querySelector(".st").innerHTML = '<b style="color:#1f9d7c">all fragments optimized ✓</b>'; return; }
+        qItems.forEach((q, j) => q.classList.toggle("on", j === i));
+        fsw.querySelector(".st").textContent = `searching “${samples[i].label}”…`;
+        searchOne(samples[i].ocr, (best) => {
+          qItems[i].classList.add("done"); qItems[i].classList.remove("on");
+          // APPLY: the converged size lands on the merged-HTML mini page
+          const span = apBoxes[i].querySelector("span");
+          span.style.fontSize = Math.max(5, best * 0.42) + "px";
+          apBoxes[i].classList.remove("flash"); void apBoxes[i].offsetWidth; apBoxes[i].classList.add("flash");
+          addT(() => next(i + 1), 420);
+        });
+      };
+      next(0);
+    }
+
+    // ── 4B: background EXTRACTION animation on the real page, using the
+    //        document's real region bboxes: mask content → inpaint-heal →
+    //        restored background asset.
+    //        (EDIT ME: drop real intermediates as S4_bg_mask.png /
+    //        S4_bg_inpaint.png per doc and swap them in here if you want the
+    //        true tool outputs instead of this reconstruction.)
+    // Resolved lazily: LOCALIZE page image if it exists, else S1_raw.
+    let pageKey = "S1_raw";
+    let bgTagLock = false;   // reflection beat locks the panel tag against late peel timers
+    resolveDocPage(PIPELINE_PRESETS[currentDoc].id, pk => pageKey = pk);
+    // 4B — background PEEL-AND-MERGE:
+    //   ① content regions are marked on the page (real bboxes)
+    //   ② the page splits into two physical layers: the CONTENT layer (the
+    //      marked crops) lifts up, the clean BACKGROUND layer is extracted
+    //      beneath it (whole-page inpaint treatment — nothing left behind)
+    //   ③ the background card SLIDES INTO the merged-HTML mini page, which
+    //      visibly gains the preserved paper.
+    // EDIT ME: for the pipeline's true inpainted output, export
+    // static/images/demo/{doc}/S4_bg_clean.png — it is used automatically
+    // (the CSS clean-paper treatment is only the fallback).
+    function runBgExtraction() {
+      const docId = PIPELINE_PRESETS[currentDoc].id;
+      iv.show(pageKey, "① page with content");
+      const panel = iv.el;
+      const pageUrl = demoSrc(docId, pageKey);
+      // prefer the real inpainted background export when it exists
+      const probe = new Image();
+      let cleanUrl = null, probed = false;
+      probe.onload = () => { cleanUrl = probe.src; probed = true; };
+      probe.onerror = () => { probed = true; };
+      probe.src = demoSrc(docId, "S4_bg_clean");
+      withPageSize(pageUrl, sz => {
+        if (!sz) return;
+        const pw = panel.clientWidth, ph = panel.clientHeight;
+        const s = Math.min(pw / sz.w, ph / sz.h);              // object-fit: contain
+        const dx = (pw - sz.w * s) / 2, dy = (ph - sz.h * s) / 2;
+        const W = sz.w * s, H = sz.h * s;
+        // ① mark every content region (annotation of what gets lifted)
+        const masks = allCrops.map(c => {
+          const [x, y, w, h] = c.bbox;
+          const m = el("div", "bg-mask");
+          m.style.left = (dx + x * W) + "px"; m.style.top = (dy + y * H) + "px";
+          m.style.width = (w * W) + "px"; m.style.height = (h * H) + "px";
+          panel.appendChild(m);
+          return m;
+        });
+        masks.forEach((m, i) => addT(() => m.classList.add("show"), 90 * i));
+        addT(() => { if (!bgTagLock) iv.el.querySelector(".ip-tag").textContent = "② content regions marked (real bboxes)"; }, 90 * masks.length);
+
+        // ② PEEL: two physical layers separate
+        addT(() => {
+          masks.forEach(m => m.remove());
+          // content layer — the marked crops, lifted off the page
+          const cc = el("div", "peel-card", '<span class="pc-tag">content layer → HTML</span>');
+          cc.style.left = dx + "px"; cc.style.top = dy + "px";
+          cc.style.width = W + "px"; cc.style.height = H + "px";
+          cc.style.background = "transparent"; cc.style.border = "1.5px dashed var(--border-strong)";
+          allCrops.forEach(c => {
+            const [x, y, w, h] = c.bbox;
+            const t = el("div", "peel-tile");
+            t.style.left = (x * W) + "px"; t.style.top = (y * H) + "px";
+            t.style.width = (w * W) + "px"; t.style.height = (h * H) + "px";
+            t.style.backgroundImage = `url("${pageUrl}")`;
+            t.style.backgroundSize = `${W}px ${H}px`;
+            t.style.backgroundPosition = `-${x * W}px -${y * H}px`;
+            cc.appendChild(t);
+          });
+          // background layer — the WHOLE page, cleaned (real export if present)
+          const bc = el("div", "peel-card bgcard", '<span class="pc-tag">extracted background</span>');
+          bc.style.left = dx + "px"; bc.style.top = dy + "px";
+          bc.style.width = W + "px"; bc.style.height = H + "px";
+          const bimg = new Image();
+          bimg.src = (probed && cleanUrl) ? cleanUrl : pageUrl;
+          bimg.style.width = W + "px"; bimg.style.height = H + "px";
+          if (!(probed && cleanUrl)) bimg.style.filter = "blur(7px) saturate(.75) brightness(1.07) contrast(.85)";
+          bc.appendChild(bimg);
+          panel.appendChild(bc); panel.appendChild(cc);
+          if (!bgTagLock) iv.el.querySelector(".ip-tag").textContent = "③ peel: content lifts, clean background extracted";
+          // animate the separation (forced reflow — never depends on rAF)
+          void cc.offsetWidth;
+          cc.style.transform = "translate(-4%, -9%) scale(.94) rotate(-1.2deg)";
+          cc.style.opacity = ".92";
+          bc.style.transform = "translate(4%, 5%) scale(.97) rotate(1deg)";
+          // ③ MERGE: the background card slides into the merged-HTML page
+          addT(() => {
+            const apr = ap.getBoundingClientRect(), pr = panel.getBoundingClientRect();
+            const bcr = bc.getBoundingClientRect();
+            const tx = (apr.left + apr.width / 2) - (bcr.left + bcr.width / 2);
+            const ty = (apr.top + apr.height / 2) - (bcr.top + bcr.height / 2);
+            const sc = Math.min(apr.width / bcr.width, apr.height / bcr.height);
+            bc.style.transition = "transform 1.4s cubic-bezier(.5,0,.3,1), opacity .5s 1.1s";
+            bc.style.transform = `translate(${tx}px, ${ty}px) scale(${sc})`;
+            bc.style.opacity = "0";
+            if (!bgTagLock) iv.el.querySelector(".ip-tag").textContent = "④ background slides into the HTML…";
+            // the merged-HTML mini page RECEIVES the paper
+            addT(() => {
+              ap.style.backgroundImage = `linear-gradient(rgba(255,255,255,.55), rgba(255,255,255,.55)), url("${(probed && cleanUrl) ? cleanUrl : pageUrl}")`;
+              ap.style.backgroundSize = "cover";
+              ap.querySelector(".ap-t").textContent = "merged HTML + background preserved";
+              ap.classList.remove("show"); void ap.offsetWidth; ap.classList.add("show");
+              bc.remove();
+              // settle: content card returns to the page position
+              cc.style.transform = "none"; cc.style.opacity = "1"; cc.style.border = "none";
+              if (!bgTagLock) iv.el.querySelector(".ip-tag").textContent = "⑤ HTML now carries the original paper";
+            }, 1500);
+          }, 2200);
+        }, 90 * masks.length + 1300);
+      });
+    }
+
+    // ── 4C: reflection loop meter — up to 5 passes, diff shrinking
+    const rm = el("div", "refl-meter");
+    rm.style.left = "63%"; rm.style.top = "6%"; rm.style.width = "30%";
+    rm.innerHTML = '<div class="rm-t"><i class="fa-solid fa-rotate"></i> 4C · render → compare → patch CSS</div>' +
+      [68, 41, 22, 9, 2].map((d, i) =>
+        `<div class="refl-pass" data-p="${i}"><span>pass ${i + 1}</span><span class="diffbar"><i data-d="${d}"></i></span><span class="dv">${d}%</span></div>`).join("");
+    CV().appendChild(rm);
+    function runReflection() {
+      rm.classList.add("show");
+      $$(".refl-pass", rm).forEach((p, i) => addT(() => {
+        p.classList.add("on");
+        const bar = p.querySelector(".diffbar i");
+        addT(() => bar.style.width = bar.dataset.d + "%", 80);
+        if (+bar.dataset.d < 10) p.classList.add("ok");
+      }, 620 * i));
+    }
+
+    bts.push(B(() => {
+      reveal(init);
+      iv.show(pageKey, "the target — original page");
+      cap("The merged HTML <b>renders</b> (left) — close, but fonts overflow their boxes and the page background is missing. The center panel shows the <b>target</b>: the original page.");
+    }, "stage4_panel", "🎬 Stage 4 is where <i>close</i> becomes <i>faithful</i>. Left: our render so far. Center: the target. Three fixes close the gap.", 3.4));
+
+    bts.push(B(() => {
+      reveal(font); font.classList.add("lit");
+      tokenBurst("S4_initial", "N_font", 3);
+      runFontQueue();
+      cap("<b>Font-Size Optimization (4A):</b> a live <b>binary search per fragment</b> — three real texts from this document, each converging on the largest size that fits its Stage-1 bbox, then <b>applied to the merged HTML</b> below.");
+    }, "4A_font_size", "🔠 The <b>binary search</b> runs fragment after fragment — and every converged size <b>lands on the merged page</b>, box by box. Watch them flash green as they're applied.", 10));
+
+    bts.push(B(() => {
+      reveal(bg); bg.classList.add("lit"); font.classList.remove("lit");
+      tokenBurst("S4_initial", "N_bg", 3);
+      runBgExtraction();
+      cap("<b>Background Restoration (4B):</b> the page <b>peels into two layers</b> — the content lifts off, <b>OpenCV Telea inpainting</b> extracts the whole clean paper beneath, and the background card <b>slides into the merged HTML</b>, which keeps the original's skin.");
+    }, "4B_background", "🎨 Watch the page <b>split into two layers</b>: content up, clean paper out — then the extracted background <b>slides into the HTML</b>. Reconstruction with the original's skin.", 9.5));
+
+    bts.push(B(() => {
+      reveal(refl); refl.classList.add("lit", "agent-think"); bg.classList.remove("lit");
+      fsw.classList.remove("show"); ap.classList.remove("show");
+      bgTagLock = true;
+      iv.el.querySelector(".ip-tag").textContent = "render ⇄ source — VLM visual alignment";
+      tokenBurst("S4_iv", "N_refl", 3);
+      addT(() => refl.classList.remove("agent-think"), 3400);
+      runReflection();
+      cap("<b>Reflection Agent (4C):</b> a VLM <b>closes the loop</b> — render → compare to source → inject a CSS fix → re-render. Up to <b>5 passes</b>; the visual diff shrinks every time.");
+    }, "4C_reflection", "🪞 The <b>Reflection Agent</b> critiques its own output: compare, patch the CSS, re-render — five passes, and the diff melts away.", 5));
+
+    bts.push(B(() => {
+      rm.classList.remove("show");
+      reveal(final);
+      tokenBurst("N_refl", "S4_final", 3);
+      cap("<b>High-fidelity Final HTML</b> — visually faithful to the source, text fully selectable. Pipeline complete.", "good");
+    }, "final_html", "🏁 And that's the output: a page you can <b>select, search and edit</b> — visually indistinguishable from the scan.", 3.6));
     return bts;
   }
 
@@ -2624,29 +3729,64 @@
     $("#pdemoCaption").className = "pdemo-caption";
     renderChips(s);
     beats = PDEMO_BUILDERS[i]();
-    updateStagebar();
+    railSet("s" + i);
     updateScrub();
   }
-  function doBeat() { if (beatIdx < beats.length) { beats[beatIdx](); beatIdx++; updateScrub(); return true; } return false; }
+  // Execute one beat: right-pane action + Figure-4 spotlight/camera + narration.
+  // quiet = replaying history (no camera move / narration until the last one).
+  function doBeat(quiet) {
+    if (beatIdx >= beats.length) return false;
+    const bt = beats[beatIdx];
+    const fn = bt.fn || bt;
+    try { fn(); } catch (e) { console.error("demo beat failed:", e); }
+    if (!quiet) {
+      figGo(bt.fig || null);
+      // camera cue fires first; the narration card appears after it settles
+      storyAfterSettle(bt.story || null, playing ? 1100 * Math.min(speedMult, 1.2) : 260);
+    }
+    beatIdx++; updateScrub();
+    return true;
+  }
+  let finaleDone = false;
+  function finale() {
+    finaleDone = true;
+    doneStages.add(PIPELINE_STAGES.length - 1);
+    railSet("out");
+    figGo(null);                      // pull back to the full diagram
+    figRipple();                      // recap glow through every badge in order
+    storyAfterSettle("🏆 <b>The full journey</b> — Segment → Localize → Assemble → Refine — one scanned page in, one <b>visually faithful FID-HTML</b> out.", 1150);
+    cap("Walkthrough complete — press <b>Reset</b> or pick another document to replay.", "good");
+    stop();
+  }
   function stepForward() {
     if (beatIdx < beats.length) doBeat();
     else if (stageIdx < PIPELINE_STAGES.length - 1) { doneStages.add(stageIdx); loadStage(stageIdx + 1); doBeat(); }
+    else if (!finaleDone) finale();
     updateScrub();
   }
-  function replayTo(target) { loadStage(stageIdx); for (let k = 0; k < target; k++) doBeat(); }
+  function replayTo(target) {
+    loadStage(stageIdx);
+    for (let k = 0; k < target; k++) doBeat(k < target - 1); // only the last beat drives camera+story
+  }
   function stepBack() {
+    finaleDone = false;
     if (beatIdx > 1) replayTo(beatIdx - 1);
-    else if (beatIdx === 1) loadStage(stageIdx);
-    else if (stageIdx > 0) { doneStages.delete(stageIdx - 1); loadStage(stageIdx - 1); for (let k = 0; k < beats.length; k++) doBeat(); }
+    else if (beatIdx === 1) { loadStage(stageIdx); figGo(null); story(null); }
+    else if (stageIdx > 0) { doneStages.delete(stageIdx - 1); loadStage(stageIdx - 1); replayTo(beats.length); }
     updateScrub();
   }
   function play() {
+    if (finaleDone) reset();
     playing = true; setPlayBtn();
     const tick = () => {
       if (!playing) return;
-      if (beatIdx < beats.length) { doBeat(); timer = setTimeout(tick, speed); }
-      else if (stageIdx < PIPELINE_STAGES.length - 1) { doneStages.add(stageIdx); loadStage(stageIdx + 1); timer = setTimeout(tick, speed * 0.6); }
-      else stop();
+      if (beatIdx < beats.length) {
+        const bt = beats[beatIdx];
+        doBeat();
+        timer = setTimeout(tick, (bt.dur || 3.4) * 1000 * speedMult * (REDUCED_MOTION ? 0.35 : 1));
+      }
+      else if (stageIdx < PIPELINE_STAGES.length - 1) { doneStages.add(stageIdx); loadStage(stageIdx + 1); timer = setTimeout(tick, 700 * speedMult); }
+      else finale();
     };
     tick();
   }
@@ -2656,24 +3796,8 @@
       ? '<i class="fa-solid fa-pause"></i> Pause'
       : '<i class="fa-solid fa-play"></i> Play';
   }
-  function reset() { stop(); doneStages = new Set(); loadStage(0); }
+  function reset() { stop(); finaleDone = false; doneStages = new Set(); story(null); figGo(null); loadStage(0); }
 
-  function buildStagebar() {
-    const bar = $("#pdemoStagebar"); bar.innerHTML = "";
-    PIPELINE_STAGES.forEach((s, i) => {
-      const n = el("div", "pdemo-snode", `<div class="num">${s.id}</div><div class="nm">${s.name}</div>`);
-      n.addEventListener("click", () => { stop(); doneStages = new Set([...Array(i).keys()]); loadStage(i); });
-      bar.appendChild(n);
-      if (i < PIPELINE_STAGES.length - 1) bar.appendChild(el("div", "pdemo-sline", '<div class="fill"></div>'));
-    });
-  }
-  function updateStagebar() {
-    $$(".pdemo-snode").forEach((n, i) => {
-      n.classList.toggle("on", i === stageIdx);
-      n.classList.toggle("done", doneStages.has(i));
-    });
-    $$(".pdemo-sline .fill").forEach((f, i) => { f.style.width = (doneStages.has(i) || i < stageIdx) ? "100%" : "0"; });
-  }
   function updateScrub() {
     $("#pdemoStepCount").textContent = `Stage ${stageIdx + 1} · ${beatIdx}/${beats.length}`;
     const frac = (stageIdx + beatIdx / (beats.length || 1)) / PIPELINE_STAGES.length;
@@ -2697,23 +3821,62 @@
 
   function initDemo() {
     buildPicker();
-    buildStagebar();
+    buildRail();
+    // Figure-4 stage: fixed internal px space matching the asset's ratio
+    const fst = $("#figStage");
+    fst.style.width = FIG_SW + "px"; fst.style.height = FIG_SH + "px";
+    railSet("input");
     loadStage(0);
+    figFitAll(false);
     $("#pdemoPlay").addEventListener("click", () => (playing ? stop() : play()));
     $("#pdemoFwd").addEventListener("click", () => { stop(); stepForward(); });
     $("#pdemoBack").addEventListener("click", () => { stop(); stepBack(); });
     $("#pdemoReset").addEventListener("click", reset);
     $("#pdemoOvClose").addEventListener("click", closeViewer);
+    $$("#pdemoOvFlip button").forEach(b => b.addEventListener("click", () => setOvView(b.dataset.v)));
     $$("#pdemoSpeed button").forEach(b => b.addEventListener("click", () => {
       $$("#pdemoSpeed button").forEach(x => x.classList.remove("on"));
-      b.classList.add("on"); speed = +b.dataset.s;
+      b.classList.add("on"); speedMult = (+b.dataset.s) / 1150;
     }));
     $("#pdemoTrack").addEventListener("click", (e) => {
       const r = e.currentTarget.getBoundingClientRect();
       const frac = (e.clientX - r.left) / r.width;
       const t = Math.min(PIPELINE_STAGES.length - 1, Math.max(0, Math.floor(frac * PIPELINE_STAGES.length)));
-      stop(); doneStages = new Set([...Array(t).keys()]); loadStage(t);
+      stop(); finaleDone = false; doneStages = new Set([...Array(t).keys()]); loadStage(t); doBeat();
     });
+
+    /* ---- Figure-4 manual camera: wheel zoom, drag pan, buttons, follow ---- */
+    const vp = figVP();
+    function figManual() {
+      if (figFollow) { figFollow = false; $("#figFollow").classList.remove("on"); }
+    }
+    function figZoomAt(mx, my, f) {
+      const ns = Math.min(6, Math.max(0.15, figS * f));
+      const k = ns / figS;
+      figSetCam(mx - (mx - figX) * k, my - (my - figY) * k, ns, true);
+    }
+    $("#figZin").addEventListener("click", () => { figManual(); figZoomAt(vp.clientWidth / 2, vp.clientHeight / 2, 1.3); });
+    $("#figZout").addEventListener("click", () => { figManual(); figZoomAt(vp.clientWidth / 2, vp.clientHeight / 2, 0.77); });
+    $("#figFit").addEventListener("click", () => { figManual(); figFitAll(); });
+    $("#figFollow").addEventListener("click", () => {
+      figFollow = !figFollow;
+      $("#figFollow").classList.toggle("on", figFollow);
+      if (figFollow) (figLastKey ? figGo(figLastKey) : figFitAll());
+    });
+    vp.addEventListener("wheel", (e) => {
+      e.preventDefault(); figManual();
+      const r = vp.getBoundingClientRect();
+      figZoomAt(e.clientX - r.left, e.clientY - r.top, e.deltaY < 0 ? 1.12 : 0.9);
+    }, { passive: false });
+    let figDrag = null;
+    vp.addEventListener("pointerdown", (e) => { figDrag = { x: e.clientX, y: e.clientY, cx: figX, cy: figY }; vp.setPointerCapture(e.pointerId); vp.classList.add("grabbing"); });
+    vp.addEventListener("pointermove", (e) => {
+      if (!figDrag) return;
+      if (Math.abs(e.clientX - figDrag.x) + Math.abs(e.clientY - figDrag.y) > 4) figManual();
+      figSetCam(figDrag.cx + e.clientX - figDrag.x, figDrag.cy + e.clientY - figDrag.y, figS, false);
+    });
+    vp.addEventListener("pointerup", () => { figDrag = null; vp.classList.remove("grabbing"); });
+
     // keyboard shortcuts only fire while the pointer is over the demo,
     // so space/arrow keys don't hijack page scrolling elsewhere
     let pdemoHover = false;
@@ -2721,15 +3884,18 @@
     $(".pdemo-wrap").addEventListener("mouseleave", () => pdemoHover = false);
     window.addEventListener("keydown", (e) => {
       if (!pdemoHover) return;
+      if (/select|input|textarea/i.test(e.target.tagName)) return;
       if (e.key === " ") { e.preventDefault(); playing ? stop() : play(); }
       else if (e.key === "ArrowRight") { stop(); stepForward(); }
       else if (e.key === "ArrowLeft") { stop(); stepBack(); }
+      else if (e.key === "r" || e.key === "R") { reset(); play(); }
+      else if (e.key === "f" || e.key === "F") { figManual(); figFitAll(); }
     });
     // redraw arrow geometry (in live pixel space) when the canvas resizes
     let arrowResizeTimer = null;
     window.addEventListener("resize", () => {
       clearTimeout(arrowResizeTimer);
-      arrowResizeTimer = setTimeout(() => { drawArrows(); fitQualReplica(); }, 120);
+      arrowResizeTimer = setTimeout(() => { drawArrows(); fitQualReplica(); if (figFollow) (figLastKey ? figGo(figLastKey) : figFitAll(false)); }, 120);
     });
   }
 
