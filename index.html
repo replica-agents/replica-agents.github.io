@@ -128,6 +128,18 @@
     }
     .nav-links a:hover { color: var(--text); background: var(--accent-soft); text-decoration: none; }
     .nav-links a.active { color: var(--accent); }
+    .nav-links a.nav-slides { color: var(--accent); font-weight: 800; }
+    .nav-links a.nav-slides i { font-size: 12px; margin-right: 4px; }
+
+    /* ---- embed mode (?embed=demo): bare demo section for iframing in slides ---- */
+    body.embed-mode nav.topnav,
+    body.embed-mode header.hero,
+    body.embed-mode footer,
+    body.embed-mode section:not(#demo) { display: none !important; }
+    body.embed-mode section#demo { padding: 10px 0 0 !important; background: transparent !important; }
+    body.embed-mode section#demo .section-head { display: none !important; }
+    body.embed-mode .pdemo-wrap { margin: 0 !important; }
+    body.embed-mode .reveal { opacity: 1 !important; transform: none !important; }
     .nav-right { display: flex; align-items: center; gap: 8px; }
     .icon-btn {
       width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border);
@@ -1057,6 +1069,7 @@
         <a href="#results">Results</a>
         <a href="#qualitative">Qualitative</a>
         <a href="#bibtex">BibTeX</a>
+        <a href="slides.html" target="_blank" rel="noopener" class="nav-slides"><i class="fa-solid fa-display"></i> Slides</a>
       </div>
       <div class="nav-right">
         <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
@@ -1939,7 +1952,7 @@
 `<div class="paragraph_5" style="position: absolute; left: 31px; top: 703px; width: 890px; height: 51px;">
   <p style="font-size: 14px; line-height: 1.45;">The following candidate(s) is /are found suitable as Wait Listed (WL) candidates in order of<br>merit for the above project.</p>
 </div>` },
-        { label: "Table", bbox: [0.0388, 0.5670, 0.9182, 0.1387], specialist: "table",
+        { label: "Table", bbox: [0.0377, 0.5635, 0.9224, 0.1477], specialist: "table",
           ocr: "Project S1. Application Monthly Name of the Category Position Duration Candidate Emoluments No. No. up to Project Birupa…",
           subhtml:
 `<table class="table_6" style="position: absolute; left: 39px; top: 802px; width: 918px; height: 196px; border-collapse: collapse; font-size: 13px;">
@@ -1953,29 +1966,29 @@
     magazine: {
       page: "M6_1",
       crops: [
-        { label: "Figure", bbox: [0.3944, 0.0448, 0.2100, 0.0392], specialist: "image",
+        { label: "Figure", bbox: [0.3944, 0.0288, 0.2100, 0.0512], specialist: "image",
           ocr: "",
           subhtml:
 `<figure class="picture_1" style="position: absolute; left: 394px; top: 63px; width: 210px; height: 55px;">
   <img src="region_1.png" alt="figure">
 </figure>` },
-        { label: "Section Title", bbox: [0.3200, 0.1463, 0.3667, 0.0168], specialist: "text",
+        { label: "Section Title", bbox: [0.3333, 0.1407, 0.3889, 0.0224], specialist: "text",
           ocr: "● 〔美〕F.S.菲茨杰拉德 ◎陈 欣译",
           subhtml:
 `<h2 class="title_2" style="position: absolute; left: 320px; top: 207px; width: 367px; height: 24px; font-size: 18px; font-weight: 700; color: rgb(20,20,20);">● 〔美〕F.S.菲茨杰拉德 ◎陈<br>欣译</h2>` },
-        { label: "Paragraph", bbox: [0.1144, 0.2190, 0.2356, 0.2094], specialist: "text",
+        { label: "Paragraph", bbox: [0.0822, 0.2142, 0.2644, 0.2206], specialist: "text",
           ocr: "早在1860年,在家生孩 子还是件合情合理的事。而如 今,据说医学界高高在上的 “众神”早已定下规约,新生 儿的第一声啼哭应该在空气中 飘荡着消毒液气味的医院里发 出。因此, 当年轻的罗杰·巴 顿先生和他的妻子在 1860 年 的一个夏日决…",
           subhtml:
 `<div class="paragraph_3" style="position: absolute; left: 114px; top: 310px; width: 236px; height: 296px;">
   <p style="font-size: 14px; line-height: 1.45;">早在1860年,在家生孩<br>子还是件合情合理的事。而如<br>今,据说医学界高高在上的<br>“众神”早已定下规约,新生<br>儿的第一声啼哭应该在空气中<br>飘荡着消毒液气味的医院里发<br>出。因此, 当年轻的罗杰·巴<br>顿先生和他的妻子在 1860 年<br>的一个夏日决定让他们的第一<br>个孩子在医院出生时，他们已<br>经领先潮流整整 50 年。</p>
 </div>` },
-        { label: "Paragraph", bbox: [0.6511, 0.2750, 0.2356, 0.2694], specialist: "text",
+        { label: "Paragraph", bbox: [0.6467, 0.2718, 0.2756, 0.2734], specialist: "text",
           ocr: "甚至当巴顿家的这位新丁 剪短了头发,并将那稀疏的头 发染成不自然的黑色, 把胡子 刮得干干净净,穿上裁缝为其 量身定做的小男孩样式的衣 服, 巴顿先生还是无法忽视这 样一个事实: 他的第一个孩子 长得实在不太像样。尽管佝偻 着背, 本杰明·…",
           subhtml:
 `<div class="paragraph_4" style="position: absolute; left: 651px; top: 389px; width: 236px; height: 381px;">
   <p style="font-size: 14px; line-height: 1.45;">甚至当巴顿家的这位新丁<br>剪短了头发,并将那稀疏的头<br>发染成不自然的黑色, 把胡子<br>刮得干干净净,穿上裁缝为其<br>量身定做的小男孩样式的衣<br>服, 巴顿先生还是无法忽视这<br>样一个事实: 他的第一个孩子<br>长得实在不太像样。尽管佝偻<br>着背, 本杰明·巴顿——他们<br>给他起了这个名字——仍有<br>1.7 米高。他的眉毛即使已修<br>理过并染过色, 仍无法提亮下<br>面那双暗淡无光、无精打采的<br>眼睛。</p>
 </div>` },
-        { label: "Paragraph", bbox: [0.6511, 0.5524, 0.2356, 0.2462], specialist: "text",
+        { label: "Paragraph", bbox: [0.6467, 0.5468, 0.2756, 0.2446], specialist: "text",
           ocr: "但巴顿先生还是坚持认 为, 本杰明既是个婴儿, 就该 像个婴儿的样子。起初,他声 称,如果本杰明不肯喝热牛 奶,那就什么东西也别吃了; 但最终他还是让了步, 同意让 儿子吃面包、黄油甚至燕麦 片。一天, 巴顿先生给本杰明 带回来一个拨浪鼓,…",
           subhtml:
 `<div class="paragraph_5" style="position: absolute; left: 651px; top: 781px; width: 236px; height: 348px;">
@@ -1992,29 +2005,29 @@
 `<figure class="picture_1" style="position: absolute; left: 500px; top: 162px; width: 297px; height: 170px;">
   <img src="region_1.png" alt="obgoti somo Q34 - ಮಿದಕ ಕನಿಂದ ಕರ್ಯಾಕಕ್ಕಂ RETURNIN DEFICES 034 - Med sse…">
 </figure>` },
-        { label: "List", bbox: [0.2856, 0.1357, 0.1826, 0.0077], specialist: "list",
+        { label: "List", bbox: [0.2832, 0.1377, 0.1568, 0.0122], specialist: "list",
           ocr: "🕨 అభివృద్ధి చేస్తామనే నినాదంతో ముందుకు వెళ్తా",
           subhtml:
 `<ul class="list_2" style="position: absolute; left: 286px; top: 192px; width: 183px; height: 11px; padding-left: 18px;">
     <li>🕨 అభివృద్ధి చేస్తామనే నినాదంతో ముందుకు వెళ్తా</li>
   </ul>` },
-        { label: "Paragraph", bbox: [0.5122, 0.4637, 0.2177, 0.1349], specialist: "text",
+        { label: "Paragraph", bbox: [0.5056, 0.4689, 0.2247, 0.1309], specialist: "text",
           ocr: "అభివృద్ధి పనులు చేశారని అన్నారు తెలంగాణ రాష్ట్రం రాకముందు ఎ(రవల్లి గ్రామం గురించి రాష్ట్రంలో దేశంలో ఎవరికి తెలియదని ముఖ్…",
           subhtml:
 `<div class="paragraph_3" style="position: absolute; left: 512px; top: 656px; width: 218px; height: 191px;">
   <p style="font-size: 14px; line-height: 1.45;">అభివృద్ధి పనులు చేశారని అన్నారు తెలంగాణ రాష్ట్రం రాకముందు ఎ(రవల్లి<br>గ్రామం గురించి రాష్ట్రంలో దేశంలో ఎవరికి తెలియదని ముఖ్యమంత్రి నేతృ<br>త్వంలో ఎగ్రవల్లి గ్రామం అభివృద్ధి చెంది దేశ స్థాయిలో అవార్మలు దక్కిం<br>చుకుందని అన్నారు. మేనిఫెస్ట్రోలో మరియు ఈ తొమ్మిది ఏళ్లలో ప్రవేశపె<br>ట్టిన సంక్షేమ పథకాల గురించి గడపగడపకు ప్రచారం చేశారు. మరోసారి<br>గెలిపించుకొని మరింత అభివృద్ధి పసులు చేపించుకుందామని అన్నారు.<br>గ్రామం మొత్తం గులాబీ జెందాలతో నిండిపోయి మందల ప్రజా ప్రతిని<br>ధులు గ్రామ సర్పంచ్ వార్డ్ మెంబర్లు (పచారం చేస్తూఎమ్మెల్యేగా లక్ష్మ భారీ…</p>
 </div>` },
-        { label: "Paragraph", bbox: [0.0323, 0.5605, 0.2219, 0.1522], specialist: "text",
+        { label: "Paragraph", bbox: [0.0150, 0.5548, 0.2402, 0.1422], specialist: "text",
           ocr: "మనతెలంగాణ/సంగారెడ్డి బ్యూరో: సంగారెడ్డి నియోజకవర్గంలో రాష్ట్ర ఐటి, పురపాలక శాఖ మంత్రి కేటీఆర్ బుధవారం పర్యటిస్తున్నారు.…",
           subhtml:
 `<div class="paragraph_4" style="position: absolute; left: 32px; top: 793px; width: 222px; height: 215px;">
   <p style="font-size: 14px; line-height: 1.45;">మనతెలంగాణ/సంగారెడ్డి బ్యూరో: సంగారెడ్డి నియోజకవర్గంలో రాష్ట్ర ఐటి,<br>పురపాలక శాఖ మంత్రి కేటీఆర్ బుధవారం పర్యటిస్తున్నారు. యువ నేత<br>ప్రచారాన్ని ఇక్కడి బిఆర్ఎస్ నాయకులు ప్రతిష్ఠాత్మకంగా తీసుకున్నారు.<br>దీంతో కేటీఆర్ (పచారానికి ప్రాధాన్యత ఏర్పడింది. ముంబయి హైవేపై ఉన్న<br>రుద్రారం గణేష్గద్ద దగ్గర నుంచి కేటీఆర్ పర్యటన ఉంటుంది.సుమారుగా<br>ఐదు వేల బెక్ల ర్యాలీతో కౌలంపేట, కంది, పోతిరెడ్డిపల్లి చౌరస్తా, కలెక్టరేట్,<br>ఐబి, కొత్త బస్టాండ్, పాతబస్టాండ్ మీదుగా గంజ్మమైదాన్ కు ఈ ర్యాలీ చేరు<br>కుంటుంది. అనంతరం గంజ్మేదాన్లో సభ జరుగుతుందని పార్టీ…</p>
 </div>` },
-        { label: "Section Title", bbox: [0.2879, 0.6097, 0.4396, 0.0304], specialist: "text",
+        { label: "Section Title", bbox: [0.2846, 0.5960, 0.4354, 0.0450], specialist: "text",
           ocr: "ත්වර් අම්ව සිද්දුවේ ප්රියුද්ධ සේ ප්රියුද්ධ සේව සේව සේව සේව සේව සේව සේව සේව සේව සේව",
           subhtml:
 `<h2 class="title_5" style="position: absolute; left: 288px; top: 862px; width: 440px; height: 43px; font-size: 18px; font-weight: 700; color: rgb(20,20,20);">ත්වර් අම්ව සිද්දුවේ ප්රියුද්ධ සේ ප්රියුද්ධ සේව සේව සේව සේව සේව සේව සේව සේව සේව සේව</h2>` },
-        { label: "Paragraph", bbox: [0.5117, 0.6472, 0.2186, 0.1425], specialist: "text",
+        { label: "Paragraph", bbox: [0.5033, 0.6415, 0.2261, 0.1545], specialist: "text",
           ocr: "ణి ప్రియదర్శిని మాట్లాడుతూ... నవంబర్ 30న ఎన్నికల కమిషన్ నియమ నిబంధనల మకారం పండగ వాతవరణంలో ఓటర్లందరు తమ ఓటు హక్కును వినియ…",
           subhtml:
 `<div class="paragraph_6" style="position: absolute; left: 512px; top: 915px; width: 219px; height: 201px;">
@@ -2025,29 +2038,29 @@
     financial: {
       page: "SROIE_2",
       crops: [
-        { label: "Section Title", bbox: [0.0363, 0.0419, 0.8558, 0.0154], specialist: "text",
+        { label: "Section Title", bbox: [0.0321, 0.0439, 0.8782, 0.0151], specialist: "text",
           ocr: "VIVOPAC MARKETING SDN BHD (1070687-M)",
           subhtml:
 `<h2 class="title_1" style="position: absolute; left: 36px; top: 59px; width: 856px; height: 22px; font-size: 18px; font-weight: 700; color: rgb(20,20,20);">VIVOPAC MARKETING SDN BHD (1070687-M)</h2>` },
-        { label: "Paragraph", bbox: [0.0363, 0.0659, 0.7735, 0.0127], specialist: "text",
+        { label: "Paragraph", bbox: [0.0321, 0.0638, 0.7885, 0.0144], specialist: "text",
           ocr: "14 JALAN MANIS 4 TAMAN SEGAR 56100 KL",
           subhtml:
 `<div class="paragraph_2" style="position: absolute; left: 36px; top: 93px; width: 774px; height: 18px;">
   <p style="font-size: 14px; line-height: 1.45;">14 JALAN MANIS 4 TAMAN SEGAR 56100 KL</p>
 </div>` },
-        { label: "Paragraph", bbox: [0.0972, 0.9396, 0.7382, 0.0110], specialist: "text",
+        { label: "Paragraph", bbox: [0.0684, 0.9392, 0.7597, 0.0144], specialist: "text",
           ocr: "For exchange of goods sold the following apply:",
           subhtml:
 `<div class="paragraph_3" style="position: absolute; left: 97px; top: 1329px; width: 738px; height: 16px;">
   <p style="font-size: 14px; line-height: 1.45;">For exchange of goods sold the following apply:</p>
 </div>` },
-        { label: "List", bbox: [0.0759, 0.9633, 0.8397, 0.0106], specialist: "list",
+        { label: "List", bbox: [0.0684, 0.9640, 0.8675, 0.0144], specialist: "list",
           ocr: "Exchange is done within 7 days from date of receipt",
           subhtml:
 `<ul class="list_4" style="position: absolute; left: 76px; top: 1362px; width: 840px; height: 15px; padding-left: 18px;">
     <li>Exchange is done within 7 days from date of receipt</li>
   </ul>` },
-        { label: "Paragraph", bbox: [0.0759, 0.9750, 0.7382, 0.0106], specialist: "text",
+        { label: "Paragraph", bbox: [0.0684, 0.9780, 0.7276, 0.0141], specialist: "text",
           ocr: "2. In good condition and in it's original pakeing",
           subhtml:
 `<div class="paragraph_5" style="position: absolute; left: 76px; top: 1379px; width: 738px; height: 15px;">
@@ -3808,6 +3821,7 @@
     PIPELINE_PRESETS.forEach((d, i) => {
       const b = el("div", "pdemo-doc" + (i === 0 ? " active" : ""),
         `<span class="dtag">${d.tag}</span><div class="thumb"></div><div class="dname">${d.label}</div>`);
+      b.dataset.doc = d.id;
       p.appendChild(b);
       loadImage($(".thumb", b), d.thumb, d.label);
       b.addEventListener("click", () => {
@@ -4458,6 +4472,27 @@
     $("#themeToggle").addEventListener("click", () => setTheme(currentTheme() === "dark" ? "light" : "dark"));
   }
 
+  /* ===================== EMBED MODE (?embed=demo) =====================
+     Strips the page down to the pipeline demo so slides.html can iframe it,
+     and accepts postMessage commands so a presenter remote can drive it. */
+  function initEmbedMode() {
+    const params = new URLSearchParams(location.search);
+    if (params.get("embed") !== "demo") return;
+    document.body.classList.add("embed-mode");
+    const doc = params.get("doc");
+    if (doc) {
+      const btn = document.querySelector(`#pdemoDocRow [data-doc="${doc}"]`);
+      if (btn) btn.click();
+    }
+    window.addEventListener("message", (e) => {
+      const d = e.data;
+      if (!d || d.type !== "replica:demo") return;
+      const map = { step: "#pdemoFwd", back: "#pdemoBack", play: "#pdemoPlay", reset: "#pdemoReset" };
+      const sel = map[d.action];
+      if (sel) { const b = $(sel); if (b) b.click(); }
+    });
+  }
+
   /* ===================== NAV ===================== */
   function initNav() {
     $("#hamburger").addEventListener("click", () => $("#navLinks").classList.toggle("open"));
@@ -4535,6 +4570,7 @@
     renderDownstream();
     initBibtex();
     initReveal();
+    initEmbedMode();
     window.addEventListener("load", initKatex);
   });
   </script>
