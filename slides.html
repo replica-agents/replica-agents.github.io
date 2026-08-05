@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REPLICA — ICDAR 2026 Oral</title>
+<style>
+  :root{
+    --navy:#1e3a5f;
+    --navy-deep:#16293f;
+    --navy-soft:#2f5480;
+    --gold:#d4a437;
+    --gold-soft:#f7ead0;
+    --bg:#f5f3ee;
+    --paper:#ffffff;
+    --ink:#22303f;
+    --ink-2:#4f5d6b;
+    --ink-3:#8a93a0;
+    --line:#ddd8cc;
+    --red:#c0392b;
+    --green:#1f7a5c;
+    --serif: Georgia, "Times New Roman", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: "SFMono-Regular", Menlo, Consolas, "Courier New", monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#0d1016;}
+  body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased;}
+
+  /* ===== deck viewport: fixed 1920x1080 stage, scaled to fit ===== */
+  #deck{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;}
+  #stage{
+    width:1920px;height:1080px;flex:none;position:relative;
+    background:var(--bg);overflow:hidden;transform-origin:center center;
+    box-shadow:0 0 60px rgba(0,0,0,.5);
+  }
+
+  /* ===== slide ===== */
+  .slide{
+    position:absolute;inset:0;padding:96px 88px 78px;
+    display:none;flex-direction:column;
+  }
+  .slide.current{display:flex;}
+
+  /* chrome: eyebrow + counter + progress */
+  .eyebrow{
+    position:absolute;left:88px;top:40px;
+    font-family:var(--mono);font-size:15px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--gold);font-weight:700;
+  }
+  .counter{
+    position:absolute;right:88px;top:40px;
+    font-family:var(--mono);font-size:15px;letter-spacing:.08em;color:var(--ink-3);
+  }
+  #progress{position:absolute;left:0;bottom:0;height:4px;background:var(--gold);z-index:20;transition:width .3s ease;}
+
+  /* headings */
+  .kicker{
+    font-family:var(--mono);font-size:16px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--navy-soft);font-weight:700;margin-bottom:12px;
+  }
+  h1{font-family:var(--serif);font-size:76px;line-height:1.06;color:var(--navy);margin:0 0 18px;font-weight:700;letter-spacing:-.015em;}
+  h2{font-family:var(--serif);font-size:52px;line-height:1.12;color:var(--navy);margin:0 0 14px;font-weight:700;letter-spacing:-.01em;}
+  h2 em{font-style:normal;color:var(--gold);}
+  h2 .red{color:var(--red);}
+  .lede{font-size:24px;line-height:1.5;color:var(--ink-2);max-width:1450px;margin:0 0 30px;}
+  .lede b{color:var(--navy);}
+  .slide-body{flex:1;min-height:0;display:flex;flex-direction:column;}
+  /* content-light slides read better optically centred; auto-margin takeaways
+     still win, so slides that end in a takeaway bar are unaffected. */
+  .slide.vcenter .slide-body{justify-content:center;}
+
+  /* footnote / takeaway bar */
+  .takeaway{
+    margin-top:auto;background:var(--gold-soft);border-left:5px solid var(--gold);
+    padding:16px 24px;font-size:23px;color:#5f4a12;line-height:1.4;border-radius:0 8px 8px 0;
+  }
+  .takeaway b{color:var(--navy);}
+
+  /* ===== fragments ===== */
+  .frag{opacity:0;transition:opacity .4s ease, transform .4s ease;transform:translateY(10px);}
+  .frag.on{opacity:1;transform:none;}
+  .frag.dim{opacity:.28;}
+
+  /* ===== title slide ===== */
+  .title-slide{align-items:center;justify-content:center;text-align:center;padding:70px 120px;}
+  .venue-chip{
+    display:inline-flex;align-items:center;gap:14px;background:var(--navy);color:#fff;
+    padding:11px 26px;border-radius:999px;font-family:var(--mono);font-size:16px;
+    letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-bottom:34px;
+  }
+  .venue-chip .oral{background:var(--gold);color:var(--navy-deep);padding:4px 13px;border-radius:999px;}
+  .title-slide h1{font-size:112px;letter-spacing:.02em;margin-bottom:10px;}
+  .title-slide .subtitle{font-family:var(--serif);font-size:38px;color:var(--ink-2);margin-bottom:40px;line-height:1.3;}
+  .authors{font-size:23px;color:var(--ink);line-height:1.8;max-width:1400px;}
+  .authors sup{color:var(--gold);font-weight:700;}
+  .affil{font-size:19px;color:var(--ink-3);margin-top:10px;}
+  .title-logos{display:flex;gap:52px;align-items:center;justify-content:center;margin-top:44px;}
+  .title-logos img{height:64px;width:auto;object-fit:contain;}
+
+  /* ===== section divider ===== */
+  .section-slide{align-items:flex-start;justify-content:center;background:var(--navy);}
+  .section-slide .eyebrow{color:var(--gold);}
+  .section-slide .counter{color:rgba(255,255,255,.45);}
+  .section-slide .num{font-family:var(--mono);font-size:22px;color:var(--gold);letter-spacing:.2em;margin-bottom:18px;}
+  .section-slide h1{color:#fff;font-size:92px;}
+  .section-slide .q{
+    margin-top:26px;font-family:var(--serif);font-style:italic;font-size:31px;color:rgba(255,255,255,.82);
+    max-width:1300px;line-height:1.45;border-left:4px solid var(--gold);padding-left:26px;
+  }
+
+  /* ===== generic layout helpers ===== */
+  .cols{display:flex;gap:40px;flex:1;min-height:0;}
+  .col{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:26px;}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+
+  .card{
+    background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:24px 26px;
+    box-shadow:0 3px 14px rgba(30,58,95,.07);
+  }
+  .card h3{margin:0 0 10px;font-size:25px;color:var(--navy);font-family:var(--serif);font-weight:700;}
+  .card p{margin:0;font-size:19.5px;line-height:1.5;color:var(--ink-2);}
+  .card .tag{
+    display:inline-block;font-family:var(--mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--gold);font-weight:700;margin-bottom:8px;
+  }
+  .card.accent{border-color:var(--gold);background:var(--gold-soft);}
+  .card.dark{background:var(--navy);border-color:var(--navy);}
+  .card.dark h3,.card.dark p{color:#fff;}
+  .card.dark p{color:rgba(255,255,255,.82);}
+
+  .num-badge{
+    width:44px;height:44px;border-radius:50%;background:var(--navy);color:#fff;
+    display:grid;place-items:center;font-family:var(--mono);font-size:19px;font-weight:700;flex:none;
+  }
+  .num-badge.gold{background:var(--gold);color:var(--navy-deep);}
+
+  /* image frames */
+  .imgbox{
+    flex:1;min-height:0;display:flex;align-items:center;justify-content:center;
+    background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;overflow:hidden;
+  }
+  .imgbox img{max-width:100%;max-height:100%;object-fit:contain;display:block;}
+  .imgbox.plain{background:transparent;border:0;padding:0;}
+  .cap{font-size:17px;color:var(--ink-3);text-align:center;margin-top:8px;font-style:italic;}
+
+  /* iframe embeds */
+  .embed{
+    flex:1;min-height:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;
+    background:var(--paper);position:relative;
+  }
+  .embed iframe{position:absolute;top:0;left:0;border:0;transform-origin:top left;background:var(--bg);}
+
+  /* demo slides: shrink the header so the embed gets maximum height */
+  .slide.demo{padding:88px 66px 56px;}
+  .slide.demo h2{font-size:40px;margin-bottom:8px;}
+  .slide.demo .kicker{font-size:14px;margin-bottom:6px;}
+  /* bleed: title collapses onto one compact line, embed takes the rest */
+  .slide.demo.bleed{padding:74px 52px 40px;}
+  .slide.demo.bleed h2{font-size:32px;margin-bottom:10px;}
+  .slide.demo.bleed .kicker{display:none;}
+  /* letterbox gutters blend with the embedded page instead of flashing white */
+  .slide.demo .embed{background:var(--bg);}
+
+  /* ===== fidelity ladder ===== */
+  .ladder{display:flex;flex-direction:column;gap:14px;flex:1;justify-content:center;}
+  .rung{
+    display:flex;align-items:center;gap:24px;background:var(--paper);border:1px solid var(--line);
+    border-radius:12px;padding:18px 24px;position:relative;overflow:hidden;
+  }
+  .rung .bar{
+    position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--gold-soft),rgba(212,164,55,.32));
+    width:0;transition:width .8s cubic-bezier(.4,0,.2,1);z-index:0;
+  }
+  .rung.on .bar{width:var(--w);}
+  .rung > *{position:relative;z-index:1;}
+  .rung .rname{font-family:var(--serif);font-size:27px;color:var(--navy);font-weight:700;width:340px;flex:none;}
+  .rung .rdesc{font-size:19px;color:var(--ink-2);flex:1;line-height:1.4;}
+  .rung .rpct{font-family:var(--mono);font-size:26px;font-weight:700;color:var(--gold);width:210px;text-align:right;flex:none;white-space:nowrap;}
+  .rung.final{border-color:var(--gold);border-width:2px;}
+  .rung.final .rpct{color:var(--navy);}
+
+  /* ===== comparison table ===== */
+  table.cmp{width:100%;border-collapse:collapse;font-size:19px;}
+  table.cmp th{
+    background:var(--navy);color:#fff;padding:12px 10px;font-family:var(--mono);
+    font-size:14px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;text-align:center;
+  }
+  table.cmp th:first-child{text-align:left;}
+  table.cmp td{padding:10px;border-bottom:1px solid var(--line);text-align:center;color:var(--ink-2);}
+  table.cmp td:first-child{text-align:left;font-weight:600;color:var(--ink);}
+  table.cmp tr.ours{background:var(--gold-soft);}
+  table.cmp tr.ours td{color:var(--navy);font-weight:700;border-bottom:2px solid var(--gold);}
+  .yes{color:var(--green);font-weight:800;}
+  .no{color:var(--red);font-weight:800;}
+  .part{color:var(--ink-3);font-weight:700;}
+
+  /* results table */
+  table.res{width:100%;border-collapse:collapse;font-size:20px;}
+  table.res th{
+    background:var(--navy);color:#fff;padding:12px 12px;font-family:var(--mono);font-size:14px;
+    letter-spacing:.05em;text-transform:uppercase;font-weight:600;
+  }
+  table.res th:first-child{text-align:left;}
+  table.res th:not(:first-child){text-align:right;}
+  table.res td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2);}
+  table.res td:first-child{text-align:left;color:var(--ink);font-weight:600;}
+  table.res tr.cat td{
+    background:#eeeae1;font-family:var(--mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink-3);font-weight:700;padding:6px 12px;
+  }
+  table.res tr.ours td{background:var(--gold-soft);color:var(--navy);font-weight:800;font-size:22px;border-bottom:2px solid var(--gold);}
+
+  /* stat callouts */
+  .stats{display:flex;gap:30px;justify-content:center;}
+  .stat{text-align:center;flex:1;}
+  .stat .v{font-family:var(--serif);font-size:82px;font-weight:700;color:var(--navy);line-height:1;}
+  .stat .v.gold{color:var(--gold);}
+  .stat .k{font-family:var(--mono);font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-top:10px;}
+
+  /* pipeline stage strip (breadcrumb on stage slides) */
+  .stage-strip{display:flex;gap:12px;margin-bottom:24px;}
+  .st{
+    flex:1;background:var(--paper);border:1.5px solid var(--line);border-radius:10px;padding:12px 16px;
+    display:flex;align-items:center;gap:12px;transition:all .3s;
+  }
+  .st .n{font-family:var(--mono);font-size:15px;color:var(--ink-3);font-weight:700;}
+  .st .t{font-family:var(--serif);font-size:23px;color:var(--ink-3);font-weight:700;}
+  .st.active{background:var(--navy);border-color:var(--navy);}
+  .st.active .n{color:var(--gold);}
+  .st.active .t{color:#fff;}
+  .st.done{border-color:var(--navy-soft);}
+  .st.done .t,.st.done .n{color:var(--navy-soft);}
+
+  .bullets{list-style:none;padding:0;margin:0;}
+  .bullets li{
+    display:flex;gap:16px;align-items:flex-start;font-size:22px;line-height:1.45;color:var(--ink-2);
+    margin-bottom:16px;
+  }
+  .bullets li b{color:var(--navy);}
+  .bullets li .dot{
+    width:11px;height:11px;border-radius:50%;background:var(--gold);flex:none;margin-top:9px;
+  }
+  .bullets.tight li{font-size:20px;margin-bottom:11px;}
+
+  /* agent vs tool */
+  .vs{display:grid;grid-template-columns:1fr auto 1fr;gap:30px;align-items:center;flex:1;}
+  .vs .vs-mid{font-family:var(--serif);font-size:34px;color:var(--ink-3);font-style:italic;}
+
+  /* QR / thanks */
+  .thanks{align-items:center;justify-content:center;text-align:center;background:var(--navy);}
+  .thanks h1{color:#fff;font-size:96px;}
+  .thanks .sub{font-family:var(--serif);font-size:34px;color:rgba(255,255,255,.8);margin-bottom:36px;}
+  .thanks .qr{background:#fff;padding:16px;border-radius:14px;display:inline-block;}
+  .thanks .qr img{width:190px;height:190px;display:block;}
+  .thanks .url{font-family:var(--mono);font-size:20px;color:var(--gold);margin-top:16px;letter-spacing:.04em;}
+  .thanks .mail{font-family:var(--mono);font-size:18px;color:rgba(255,255,255,.62);margin-top:8px;}
+
+  /* limitations */
+  .lim{display:grid;grid-template-columns:1fr 1fr;gap:24px;flex:1;align-content:center;}
+  .lim .card{border-left:5px solid var(--red);}
+
+  /* ===== help overlay ===== */
+  #help{
+    position:fixed;inset:0;background:rgba(13,16,22,.93);color:#fff;z-index:100;
+    display:none;align-items:center;justify-content:center;
+  }
+  #help.on{display:flex;}
+  #help .box{max-width:640px;font-family:var(--sans);}
+  #help h3{font-family:var(--serif);font-size:34px;margin:0 0 22px;color:var(--gold);}
+  #help table{border-collapse:collapse;font-size:18px;}
+  #help td{padding:8px 18px 8px 0;color:rgba(255,255,255,.85);}
+  #help td.k{font-family:var(--mono);color:var(--gold);white-space:nowrap;}
+
+  /* ===== speaker notes drawer ===== */
+  #notes{
+    position:fixed;left:0;right:0;bottom:0;max-height:36vh;overflow:auto;z-index:90;
+    background:rgba(13,16,22,.96);color:#e8e8e8;padding:20px 30px;font-size:16px;line-height:1.55;
+    display:none;border-top:2px solid var(--gold);
+  }
+  #notes.on{display:block;}
+  #notes .nh{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+
+  /* toolbar */
+  #bar{
+    position:fixed;right:14px;bottom:14px;z-index:95;display:flex;gap:8px;opacity:.25;transition:opacity .25s;
+  }
+  #bar:hover{opacity:1;}
+  #bar button{
+    font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+    background:rgba(13,16,22,.85);color:#fff;border:1px solid rgba(255,255,255,.25);
+    padding:7px 12px;border-radius:6px;cursor:pointer;
+  }
+  #bar button:hover{background:var(--navy);border-color:var(--gold);}
+
+  /* overview grid */
+  #overview{
+    position:fixed;inset:0;background:rgba(13,16,22,.97);z-index:98;display:none;
+    overflow:auto;padding:30px;
+  }
+  #overview.on{display:block;}
+  #overview .og{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+  #overview .oi{
+    background:var(--bg);border:2px solid transparent;border-radius:8px;padding:12px;cursor:pointer;
+    height:120px;overflow:hidden;position:relative;
+  }
+  #overview .oi:hover{border-color:var(--gold);}
+  #overview .oi.cur{border-color:var(--gold);}
+  #overview .oi .on-n{font-family:var(--mono);font-size:11px;color:var(--gold);font-weight:700;}
+  #overview .oi .on-t{font-family:var(--serif);font-size:15px;color:var(--navy);font-weight:700;line-height:1.2;margin-top:4px;}
+</style>
+</head>
+<body>
+
+<div id="deck">
+  <div id="stage">
+
+    <!-- ══════════════ 1 · TITLE ══════════════ -->
+    <section class="slide title-slide" data-notes="Good morning. I'm presenting REPLICA — an agentic framework for visually faithful document reconstruction. Joint work between BharatGen and IIIT Hyderabad. The one-line version: we turn documents into HTML that doesn't just read like the original — it looks like it.">
+      <div class="venue-chip">ICDAR 2026 <span class="oral">Oral</span></div>
+      <h1>REPLICA</h1>
+      <div class="subtitle">An Agentic Framework for<br>Visually Faithful Document Reconstruction</div>
+      <div class="authors">
+        Raghuveer R<sup>1*</sup>, Anirudh Srinivasan<sup>1*</sup>, Venkata Kesav Venna<sup>1*</sup>,
+        Sreevatsa S<sup>2</sup>,<br>Aryan Jain<sup>2</sup>, Sahithi Kukkala<sup>2</sup>, Ravi Kiran Sarvadevabhatla<sup>1,2</sup>
+        <div class="affil"><sup>1</sup> BharatGen &nbsp;·&nbsp; <sup>2</sup> IIIT Hyderabad &nbsp;&nbsp;|&nbsp;&nbsp; * Equal Contribution</div>
+      </div>
+      <div class="title-logos">
+        <img src="static/images/logos/bgen_logo.png" alt="BharatGen">
+        <img src="static/images/logos/iiith_logo.jpeg" alt="IIIT Hyderabad">
+        <img src="static/images/logos/icdar_logo.png" alt="ICDAR 2026">
+      </div>
+    </section>
+
+    <!-- ══════════════ 2 · OCR WORKS ══════════════ -->
+    <section class="slide" data-eyebrow="01 · Motivation"
+      data-notes="Let's start somewhere familiar. OCR. Everyone here has used it — scanning a receipt, Google Lens. Take this three-column Hindi newspaper page. Run OCR: every single word comes back correct. 100% text accuracy. So the problem looks solved.">
+      <div class="kicker">The familiar starting point</div>
+      <h2>OCR gets the words right…</h2>
+      <div class="lede">Text extraction on a three-column multilingual page — <b>every word recovered correctly</b>.</div>
+      <div class="slide-body">
+        <div class="cols">
+          <div class="col">
+            <div class="imgbox"><img src="static/images/demo/newspaper/IndicDLP_6.png" alt="Original newspaper page"></div>
+            <div class="cap">Source page — 3 columns, mixed scripts, figures, headlines</div>
+          </div>
+          <div class="col frag" data-frag="1">
+            <div class="imgbox" style="align-items:flex-start;">
+              <div style="font-family:var(--mono);font-size:15px;line-height:1.85;color:var(--ink-2);text-align:justify;padding:10px;">
+                మీ ఆడబిడ్డగా ఆశీర్వదించండి సిఎం కెసిఆర్ ఆశీస్సులతో మరోసారి బరిలో ప్రజల నుంచి మంచి
+                స్పందన ఉంది అభివృద్ధి చేస్తామనే నినాదంతో ముందుకు వెళ్తా మెదక్ బిఆర్ఎస్ అభ్యర్థి
+                పద్మాదేవేందర్‌రెడ్డి మనతెలంగాణ/మెదక్ ప్రతినిధి మంత్రి హరీశ్‌రావుకే మా మద్దతు
+                మద్దతు ప్రకటించిన వివిధ సంఘాలు పోస్టల్ బ్యాలెట్ ద్వారా ఓటు హక్కు వినియోగించుకోవాలి
+                సైబర్ నేరాలపట్ల జాగ్రత్తగా ఉండాలి పారిశ్రామిక రంగంలో విప్లవాత్మక మార్పులు వచ్చాయి
+                నేడు సంగారెడ్డికి కేటీఆర్ ఐదు వేల బైక్‌లతో ర్యాలీ, గంజ్‌మైదాన్‌లో సభ వంద శాతం
+                ఓటింగే లక్ష్యం జిల్లా ఎన్నికల అధికారి, కలెక్టర్ రాజర్షి షా చేగుంట మండల కేంద్రంలో
+                బిఆర్ఎస్ ఇంటింటి ప్రచారం…
+              </div>
+            </div>
+            <div class="cap">OCR output — 100% character accuracy</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 3 · BUT LOOK AGAIN ══════════════ -->
+    <section class="slide" data-eyebrow="01 · Motivation"
+      data-notes="But look again. Same output. The columns collapsed into one stream. The headline is now the same size as body text. The figures are gone. The reading order is scrambled across columns. Five things died on the way — and none of them were words.">
+      <div class="kicker">But look again</div>
+      <h2>…is it still the <em>same document?</em></h2>
+      <div class="lede">Every word survived. Everything that told you <b>how to read those words</b> did not.</div>
+      <div class="slide-body">
+        <div class="grid4" style="margin-bottom:26px;">
+          <div class="card frag" data-frag="1"><span class="tag">✕ Lost</span><h3>Columns</h3><p>Three parallel columns flattened into one linear stream.</p></div>
+          <div class="card frag" data-frag="2"><span class="tag">✕ Lost</span><h3>Hierarchy</h3><p>Headline, subhead and body text all become the same size.</p></div>
+          <div class="card frag" data-frag="3"><span class="tag">✕ Lost</span><h3>Figures</h3><p>Photographs, captions and their bindings disappear entirely.</p></div>
+          <div class="card frag" data-frag="4"><span class="tag">✕ Lost</span><h3>Reading order</h3><p>Text jumps mid-sentence between unrelated columns.</p></div>
+        </div>
+        <div class="takeaway frag" data-frag="5">
+          You might reasonably ask: <b>so what?</b> All the words are there. Does it actually matter that we lost the bolding, the colour, the position?
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 4 · INVOICE DEMO (live) ══════════════ -->
+    <section class="slide demo" data-eyebrow="01 · Motivation" data-embed="invoice" data-frags="4"
+      data-notes="Let me show you a document where it matters. Same invoice, twice. Left: original. Right: a text-only conversion — every word preserved, structure intact, style discarded. [CLICK] The original had a red OVERDUE stamp. Gone. There is no word 'overdue' in that stamp — the stamp WAS the urgency. [CLICK] This line item was struck through and marked VOID. Cancelled. Now it reads as an active charge. Same characters, opposite meaning. [CLICK] The columns collapsed — which number belongs to which item? [CLICK] And the total, the single most important number, is now the same size as the fine print. A person reading the right-hand version could pay a cancelled charge and miss an overdue notice. Style is data.">
+      <div class="kicker">Why visual fidelity actually matters</div>
+      <h2>Every word survived. <span class="red">The meaning didn't.</span></h2>
+      <div class="slide-body">
+        <div class="embed" id="embedInvoice">
+          <iframe src="visual-fidelity-demo.html?step=0" title="Invoice visual fidelity demo"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 5 · NAMING THE GAP ══════════════ -->
+    <section class="slide" data-eyebrow="01 · Motivation"
+      data-notes="Let's name the gap precisely. A document is three things. Content — what it says. Structure — how it's organised. Style — how it looks. OCR gives us the first. Visual fidelity is the umbrella for the last two, and it's exactly what existing pipelines throw away.">
+      <div class="kicker">Naming the gap</div>
+      <h2>OCR recovers content. It loses <em>structure</em> and <em>style</em>.</h2>
+      <div class="slide-body">
+        <div class="grid3" style="flex:1;align-content:center;">
+          <div class="card">
+            <span class="tag">What it says</span><h3>Content</h3>
+            <p>The words themselves — characters, tokens, language. <b style="color:var(--green)">OCR already does this well.</b></p>
+          </div>
+          <div class="card frag" data-frag="1" style="border-color:var(--gold);">
+            <span class="tag">How it's organised</span><h3>Structure</h3>
+            <p>Titles, columns, nested lists, tables, figures, reading order — the logical <i>and</i> physical layout.</p>
+          </div>
+          <div class="card frag" data-frag="2" style="border-color:var(--gold);">
+            <span class="tag">How it looks</span><h3>Style</h3>
+            <p>Typography, colour, weight, spacing, backgrounds — the rendered appearance on the page.</p>
+          </div>
+        </div>
+        <div class="takeaway frag" data-frag="3">
+          <b>Visual fidelity</b> is the umbrella for the last two — and it is exactly what existing pipelines discard by design.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 6 · FIDELITY LADDER ══════════════ -->
+    <section class="slide" data-eyebrow="01 · Motivation"
+      data-notes="Think of reconstruction as a ladder, not a binary. Rung one: text only — you get the words, and you've lost almost everything else. Rung two: add logical structure — headings, lists, tables — better, but the page still doesn't look like the page. Rung three: add position — now columns and placement survive. Rung four: add visual fidelity — typography, colour, weight, backgrounds. Only at the top rung is the reconstruction actually faithful. Each rung is strictly more information than the last.">
+      <div class="kicker">One picture, one idea</div>
+      <h2>Reconstruction is a <em>ladder</em>, not a switch</h2>
+      <div class="lede">Each rung preserves strictly more of the original document than the one below it.</div>
+      <div class="slide-body">
+        <div class="ladder">
+          <div class="rung frag" data-frag="1" style="--w:22%;">
+            <div class="bar"></div>
+            <div class="rname">Plain text</div>
+            <div class="rdesc">Words only. No columns, no tables, no emphasis, no position. What OCR gives you.</div>
+            <div class="rpct">Text</div>
+          </div>
+          <div class="rung frag" data-frag="2" style="--w:44%;">
+            <div class="bar"></div>
+            <div class="rname">+ Logical structure</div>
+            <div class="rdesc">Headings, lists, tables, reading order recovered. Markdown-class output — still no geometry.</div>
+            <div class="rpct">+ Logic</div>
+          </div>
+          <div class="rung frag" data-frag="3" style="--w:68%;">
+            <div class="bar"></div>
+            <div class="rname">+ Physical position</div>
+            <div class="rdesc">Absolute placement, multi-column geometry, element bounding boxes preserved.</div>
+            <div class="rpct">+ Position</div>
+          </div>
+          <div class="rung final frag" data-frag="4" style="--w:100%;">
+            <div class="bar"></div>
+            <div class="rname">+ Visual fidelity</div>
+            <div class="rdesc">Typography, colour, weight, spacing, figures &amp; backgrounds — the page <i>renders</i> like the source.</div>
+            <div class="rpct">FID-HTML</div>
+          </div>
+        </div>
+        <div class="takeaway frag" data-frag="5">
+          Prior work optimises the bottom two rungs. <b>REPLICA targets the top.</b>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 7 · EXISTING WORK / TEASER ══════════════ -->
+    <section class="slide" data-eyebrow="02 · Related Work"
+      data-notes="Here is the state of the art on one page. A pipeline tool — Marker. An open VLM — Qwen3-VL-30B. A commercial VLM — GPT-5. And ours. Note what survives in each: Marker linearises the columns. The VLMs get text right but drift on placement, font attributes, and column count. REPLICA preserves text colour, paragraph indentation, bold and italics, font size — and the correct number of columns.">
+      <div class="kicker">Where the field stands</div>
+      <h2>Everyone recovers text. <em>Nobody recovers the page.</em></h2>
+      <div class="slide-body">
+        <div class="grid4" style="flex:1;min-height:0;">
+          <div class="col">
+            <div class="imgbox"><img src="static/images/teaser/base_doc.png" alt="Source document"></div>
+            <div class="cap"><b>Source</b></div>
+          </div>
+          <div class="col">
+            <div class="imgbox"><img src="static/images/teaser/13031_rendered_marker.png" alt="Marker output"></div>
+            <div class="cap">Marker <span style="color:var(--red)">— columns linearised</span></div>
+          </div>
+          <div class="col">
+            <div class="imgbox"><img src="static/images/teaser/13031_rendered_gpt5.png" alt="GPT-5 output"></div>
+            <div class="cap">GPT-5 <span style="color:var(--red)">— style &amp; placement drift</span></div>
+          </div>
+          <div class="col">
+            <div class="imgbox" style="border-color:var(--gold);border-width:2px;"><img src="static/images/teaser/13031_rendered.png" alt="REPLICA output"></div>
+            <div class="cap"><b style="color:var(--navy)">REPLICA (ours)</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 8 · WHY A NEW FORMAT ══════════════ -->
+    <section class="slide vcenter" data-eyebrow="03 · FID-HTML"
+      data-notes="Before building a system, ask: what should it output? Markdown has no slot for position or style. LaTeX is expressive but not web-native and not general across sources. Plain HTML CAN express fidelity — but never requires it: two valid HTMLs can render completely differently. That's the key insight. We define Fid-HTML, where position and style are mandatory, inline, per element. Fidelity becomes a property of the format, not a hope.">
+      <div class="kicker">Why a new representation</div>
+      <h2>Generic HTML <em>permits</em> fidelity. FID-HTML <em>guarantees</em> it.</h2>
+      <div class="slide-body">
+        <table class="cmp">
+          <thead>
+            <tr>
+              <th>Format</th><th>Text</th><th>Reading order</th><th>Logical hierarchy</th>
+              <th>Tables &amp; lists</th><th>Figures</th><th>Position (bbox)</th><th>Style &amp; typography</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Markdown</td><td class="yes">✓</td><td class="part">P</td><td class="yes">✓</td><td class="part">P</td><td class="part">P</td><td class="no">✕</td><td class="no">✕</td></tr>
+            <tr><td>LaTeX</td><td class="yes">✓</td><td class="part">P</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="part">P</td></tr>
+            <tr><td>DocTags</td><td class="yes">✓</td><td class="part">P</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="part">P</td></tr>
+            <tr><td>Generic HTML</td><td class="yes">✓</td><td class="part">P</td><td class="yes">✓</td><td class="part">P</td><td class="part">P</td><td class="yes">✓</td><td class="no">✕</td></tr>
+            <tr><td>hOCR / Qwen-HTML</td><td class="yes">✓</td><td class="part">P</td><td class="yes">✓</td><td class="part">P</td><td class="part">P</td><td class="yes">✓</td><td class="no">✕</td></tr>
+            <tr class="ours frag" data-frag="1"><td>FID-HTML (ours)</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          </tbody>
+        </table>
+        <div class="takeaway frag" data-frag="2">
+          Same base language — so it stays <b>web-native, editable, and readable by LLMs</b> — but position and style become required, inline, per element.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 9 · FID-HTML ANATOMY ══════════════ -->
+    <section class="slide" data-eyebrow="03 · FID-HTML"
+      data-notes="Concretely, Fid-HTML encodes a document along six dimensions: textual content at word and block level; hierarchical structure via nested divs; semantic tags with meaningful class names; positional information — absolute placement plus relative containers; styling metadata — font size, colour, bold, italic, underline, strikethrough as inline CSS; and figures and backgrounds layered into the DOM with alt-text for accessibility.">
+      <div class="kicker">What FID-HTML encodes</div>
+      <h2>Six dimensions, one web-native file</h2>
+      <div class="slide-body">
+        <div class="imgbox plain" style="margin-bottom:16px;">
+          <img src="static/images/fidhtml_diag_horizontal.png" alt="FID-HTML six encoded dimensions">
+        </div>
+        <div class="takeaway">
+          Semantic tags support downstream LLM tasks · absolute + relative positioning maintain layout · inline styling ensures faithful rendering · VLM alt-text enables <b>screen-reader accessibility</b>.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 10 · WHY VLMs FAIL ══════════════ -->
+    <section class="slide" data-eyebrow="04 · Approach"
+      data-notes="So why not just prompt a big VLM for Fid-HTML? Because a single forward pass must jointly solve detection, recognition, ordering, and styling — with no geometric grounding and no ability to check its own render. The failures are architectural, not scale-related. Our evidence: REPLICA with an 8-billion parameter Qwen backbone beats Qwen3-VL-30B by 39% overall, at 3.75 times smaller and comparable inference time. Structure beats scale.">
+      <div class="kicker">Why not just prompt a bigger model?</div>
+      <h2>The failure is <em>architectural</em>, not a matter of scale</h2>
+      <div class="slide-body">
+        <div class="cols" style="align-items:stretch;">
+          <div class="col">
+            <div class="card" style="flex:1;border-left:5px solid var(--red);">
+              <span class="tag">Single-pass VLM</span>
+              <h3>One forward pass must do everything</h3>
+              <ul class="bullets tight" style="margin-top:14px;">
+                <li><span class="dot" style="background:var(--red)"></span><div>Detect regions, read text, order them, <b>and</b> style them — jointly, with no geometric grounding.</div></li>
+                <li><span class="dot" style="background:var(--red)"></span><div>No deterministic control: hallucinated structure, unstable CSS.</div></li>
+                <li><span class="dot" style="background:var(--red)"></span><div>Never sees its own render, so visual errors cannot be caught.</div></li>
+                <li><span class="dot" style="background:var(--red)"></span><div>Degrades sharply beyond English &amp; Chinese.</div></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col frag" data-frag="1">
+            <div class="card accent" style="flex:1;border-left:5px solid var(--gold);">
+              <span class="tag">Agentic decomposition</span>
+              <h3>Specialised competencies, coordinated</h3>
+              <ul class="bullets tight" style="margin-top:14px;">
+                <li><span class="dot"></span><div>Deterministic <b>tools</b> handle geometry: detectors, OCR, reading order, font fitting.</div></li>
+                <li><span class="dot"></span><div>Reasoning <b>agents</b> validate, route, group, and reflect.</div></li>
+                <li><span class="dot"></span><div>The system <b>renders and looks at its own output</b>, then repairs it.</div></li>
+              </ul>
+              <div style="margin-top:18px;padding-top:16px;border-top:2px solid var(--gold);font-size:21px;color:var(--navy);">
+                <b>REPLICA + Qwen3-VL-8B beats Qwen3-VL-30B by 39%</b> — at 3.75× smaller and comparable inference time.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 11 · FOUR QUESTIONS ══════════════ -->
+    <section class="slide" data-eyebrow="04 · Approach"
+      data-notes="REPLICA adopts an agentic divide-and-conquer strategy centred on four questions. How do we divide the page into meaningful components? How do we convert each component into HTML? How do we assemble them into a coherent structure? And how do we refine for visual and structural fidelity? Four questions, four stages. Each demands a different competency — which is exactly why it's agentic rather than monolithic.">
+      <div class="kicker">The task decomposes naturally</div>
+      <h2>Four questions → <em>four stages</em></h2>
+      <div class="slide-body">
+        <div class="grid4" style="flex:1;align-content:center;">
+          <div class="card frag" data-frag="1">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;"><div class="num-badge">1</div><h3 style="margin:0;">Segment</h3></div>
+            <p style="font-family:var(--serif);font-size:22px;color:var(--navy);font-style:italic;margin-bottom:10px;">"Where are the pieces?"</p>
+            <p>Detect and hierarchically organise titles, paragraphs, tables, figures into a layout tree.</p>
+          </div>
+          <div class="card frag" data-frag="2">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;"><div class="num-badge">2</div><h3 style="margin:0;">Localize</h3></div>
+            <p style="font-family:var(--serif);font-size:22px;color:var(--navy);font-style:italic;margin-bottom:10px;">"What does each say?"</p>
+            <p>Route every region to a specialist agent that emits styled sub-HTML.</p>
+          </div>
+          <div class="card frag" data-frag="3">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;"><div class="num-badge">3</div><h3 style="margin:0;">Assemble</h3></div>
+            <p style="font-family:var(--serif);font-size:22px;color:var(--navy);font-style:italic;margin-bottom:10px;">"How do they fit?"</p>
+            <p>Merge fragments bottom-up, preserving containment and global reading order.</p>
+          </div>
+          <div class="card frag" data-frag="4">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;"><div class="num-badge gold">4</div><h3 style="margin:0;">Refine</h3></div>
+            <p style="font-family:var(--serif);font-size:22px;color:var(--navy);font-style:italic;margin-bottom:10px;">"Does it look right?"</p>
+            <p>Render, compare against the source, and repair until it visually matches.</p>
+          </div>
+        </div>
+        <div class="takeaway frag" data-frag="5">
+          Four different competencies → we build <b>agents that reason</b> and <b>tools that execute</b> around each. That is what makes it agentic.
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 12 · PIPELINE OVERVIEW ══════════════ -->
+    <section class="slide" data-eyebrow="04 · Approach"
+      data-notes="Here is the whole pipeline. Page image in on the left, Fid-HTML out on the right. Segment builds the layout tree. Localize routes regions to specialists. Assemble merges with reading order. Refine closes the loop by rendering and comparing. I'll walk each stage now — keep this map in mind.">
+      <div class="kicker">The pipeline, at a glance</div>
+      <h2>REPLICA end-to-end</h2>
+      <div class="slide-body">
+        <div class="imgbox plain"><img src="static/images/replica_maindiag.png" alt="REPLICA pipeline overview"></div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 13 · STAGE 1 SEGMENT ══════════════ -->
+    <section class="slide" data-eyebrow="04 · Approach · Stage 1"
+      data-notes="Stage one, Segment. First a classifier decides: digitally-born or scanned? If digital, we read structure straight from PDF primitives. If scanned, a detector ensemble proposes regions — DocLayout-YOLO for flat layouts, IndicDLP-YOLO for hierarchical ones, Hi-SAM for fine-grained text. Those proposals are geometry-driven and often wrong: they over-segment, merge incompatible content, miss hierarchy. So a labeling agent uses Set-of-Mark prompting to assign semantic types and catch mis-segmentation, and a grouping agent builds a directed layout graph — resolving caption-figure binding, list nesting, footnote attachment — which we constrain into a tree.">
+      <div class="kicker">Stage 1 of 4</div>
+      <h2><em>Segment</em> — find the pieces</h2>
+      <div class="slide-body">
+        <div class="stage-strip">
+          <div class="st active"><span class="n">1</span><span class="t">Segment</span></div>
+          <div class="st"><span class="n">2</span><span class="t">Localize</span></div>
+          <div class="st"><span class="n">3</span><span class="t">Assemble</span></div>
+          <div class="st"><span class="n">4</span><span class="t">Refine</span></div>
+        </div>
+        <div class="cols">
+          <div class="col" style="flex:1.15;">
+            <ul class="bullets">
+              <li class="frag" data-frag="1"><span class="dot"></span><div><b>Document-type analysis (tool).</b> Digitally-born → read structure directly from PDF primitives. Scanned → infer from visual geometry.</div></li>
+              <li class="frag" data-frag="2"><span class="dot"></span><div><b>Detector ensemble (tool).</b> DocLayout-YOLO + IndicDLP-YOLO + Hi-SAM, fused by IoU merging.</div></li>
+              <li class="frag" data-frag="3"><span class="dot"></span><div><b>Labeling agent.</b> Set-of-Mark prompting assigns semantic types and catches mis-segmented or mixed-content blocks.</div></li>
+              <li class="frag" data-frag="4"><span class="dot"></span><div><b>Grouping agent.</b> Builds a directed layout graph from containment, reading order and semantic compatibility → constrained into a tree.</div></li>
+            </ul>
+            <div class="takeaway frag" data-frag="5" style="font-size:21px;">
+              Detectors localise well but <b>cannot reason</b>. Agents fix borderless tables, multi-column wraps and nested structures <b>before</b> generation — preventing error propagation.
+            </div>
+          </div>
+          <div class="col">
+            <div class="imgbox"><img src="static/images/demo/newspaper/S1_labeling.png" alt="Segment stage — labeled regions"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 14 · STAGE 2 LOCALIZE ══════════════ -->
+    <section class="slide" data-eyebrow="04 · Approach · Stage 2"
+      data-notes="Stage two, Localize. Each node arrives with its crop, bounding box, upstream label and structural constraints. A router agent picks the specialist — and crucially, it does not just trust the upstream label. It jointly evaluates visual and contextual cues, so if a crop contradicts its predicted type — an equation labelled as text — it overrides and reroutes, preventing cascading hallucinations. Six specialists: text, table, image, form, list, equation. They call auxiliary tools only when needed: OCR for low-resolution crops, table structure recognition for merged headers, TexTAR for font attributes. Since nodes are conditionally independent, this whole stage parallelises.">
+      <div class="kicker">Stage 2 of 4</div>
+      <h2><em>Localize</em> — describe each piece</h2>
+      <div class="slide-body">
+        <div class="stage-strip">
+          <div class="st done"><span class="n">1</span><span class="t">Segment</span></div>
+          <div class="st active"><span class="n">2</span><span class="t">Localize</span></div>
+          <div class="st"><span class="n">3</span><span class="t">Assemble</span></div>
+          <div class="st"><span class="n">4</span><span class="t">Refine</span></div>
+        </div>
+        <div class="cols">
+          <div class="col" style="flex:1.15;">
+            <ul class="bullets">
+              <li class="frag" data-frag="1"><span class="dot"></span><div><b>Router agent.</b> Sees crop + bbox + label + structural constraints, and <b>overrides the upstream label</b> when the visual contradicts it — e.g. an equation tagged as text.</div></li>
+              <li class="frag" data-frag="2"><span class="dot"></span><div><b>Six specialist agents:</b> text, table, image, form, list, equation — each with its own generation strategy.</div></li>
+              <li class="frag" data-frag="3"><span class="dot"></span><div><b>Conditional tool use.</b> OCR only for low-res or script-complex crops; table structure recognition only for merged headers or irregular grids; TexTAR for font attributes.</div></li>
+              <li class="frag" data-frag="4"><span class="dot"></span><div><b>Colour-coded Set-of-Mark</b> prevents index leakage into the generated HTML.</div></li>
+            </ul>
+            <div class="takeaway frag" data-frag="5" style="font-size:21px;">
+              Nodes are conditionally independent → sub-HTML generation is <b>fully parallelisable</b>. Routing accuracy <b>0.97</b>, sub-HTML validity <b>0.96</b>.
+            </div>
+          </div>
+          <div class="col">
+            <div class="imgbox"><img src="static/images/demo/newspaper/S2_specialists.png" alt="Localize stage — router and specialists"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 15 · STAGE 3+4 ══════════════ -->
+    <section class="slide" data-eyebrow="04 · Approach · Stages 3–4"
+      data-notes="Stages three and four. Assemble does a bottom-up merge preserving containment and nesting, then a reading-order agent resolves the order semantically — because spatial sorting alone fails on multi-column newspapers and floating elements. Reading order accuracy is 0.98. Then Refine, which is the part I'd most like you to remember. Even when segmentation and assembly are structurally correct, the render diverges from the source because PDF rendering and the browser box model are different. So: a font-size tool searches for maximal non-overflow scales; a background tool extracts and restores page-level colours and shading; and a reflection agent renders the HTML, visually compares it against the source image, and injects targeted CSS corrections — up to five iterations. Fidelity is evaluated at the level of appearance, not structural compliance.">
+      <div class="kicker">Stages 3 &amp; 4 of 4</div>
+      <h2><em>Assemble</em>, then <em>Refine</em> against the render</h2>
+      <div class="slide-body">
+        <div class="stage-strip">
+          <div class="st done"><span class="n">1</span><span class="t">Segment</span></div>
+          <div class="st done"><span class="n">2</span><span class="t">Localize</span></div>
+          <div class="st active"><span class="n">3</span><span class="t">Assemble</span></div>
+          <div class="st active"><span class="n">4</span><span class="t">Refine</span></div>
+        </div>
+        <div class="grid2" style="flex:1;">
+          <div class="card frag" data-frag="1">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;"><div class="num-badge">3</div><h3 style="margin:0;">Assemble</h3></div>
+            <ul class="bullets tight" style="margin-top:10px;">
+              <li><span class="dot"></span><div><b>Position-aware merge (tool):</b> bottom-up over the layout tree, preserving containment, nesting and spatial alignment.</div></li>
+              <li><span class="dot"></span><div><b>Reading-order agent:</b> spatial sorting alone fails on multi-column pages and floats — ordering is computed from textual continuity and contextual coherence.</div></li>
+              <li><span class="dot"></span><div>Reading order accuracy <b>0.98</b> (Kendall-τ).</div></li>
+            </ul>
+          </div>
+          <div class="card accent frag" data-frag="2">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;"><div class="num-badge gold">4</div><h3 style="margin:0;">Refine — the closed loop</h3></div>
+            <ul class="bullets tight" style="margin-top:10px;">
+              <li><span class="dot"></span><div><b>Font-size optimisation (tool):</b> bounded search for maximal non-overflow scales.</div></li>
+              <li><span class="dot"></span><div><b>Background restoration (tool):</b> page-level colours, shading and overlays restored via CSS layering.</div></li>
+              <li><span class="dot"></span><div><b>Reflection agent:</b> renders the HTML, compares it to the source image, and injects targeted CSS fixes — up to 5 iterations.</div></li>
+            </ul>
+          </div>
+        </div>
+        <div class="takeaway frag" data-frag="3">
+          Why this matters: PDF rendering and the browser's CSS box model simply differ. <b>Fidelity has to be checked on the render, not on the markup.</b>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 16 · LIVE PIPELINE DEMO ══════════════ -->
+    <section class="slide demo bleed" data-eyebrow="04 · Approach · Demo" data-embed="pipeline" data-frags="8"
+      data-notes="Rather than describe it further — here is the actual pipeline running on a real page, with all intermediate outputs. This is on the project page too. [Use the Step button or click through the beats.]">
+      <div class="kicker">Interactive walkthrough</div>
+      <h2>The pipeline on a real page</h2>
+      <div class="slide-body">
+        <div class="embed" id="embedPipeline">
+          <iframe src="index.html?embed=demo&doc=newspaper" title="REPLICA pipeline demo"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 17 · MAIN RESULTS ══════════════ -->
+    <section class="slide vcenter" data-eyebrow="05 · Results"
+      data-notes="All numbers are on VFDR-Bench: 5,000 documents, 15-plus languages, 20-plus categories, fully expert human annotated. Read this table column by column. Everyone passes text extraction — that problem is largely solved. The field collapses on physical structure: look at the GPS and LPS columns, best baseline 0.43 and 0.21. And on visual fidelity, GPT-5 reaches 0.86 but with weak positioning. REPLICA holds across all four axes simultaneously: 0.88 word recognition, 0.20 tree edit distance, 0.73 and 0.86 position, 0.93 visual fidelity, 0.86 overall. That's the claim — not best on one axis, but the only method strong on all of them at once.">
+      <div class="kicker">Measured on VFDR-Bench · 5,000 docs · 15+ languages</div>
+      <h2>Baselines are fine on text. <em>They collapse on position.</em></h2>
+      <div class="slide-body">
+        <table class="res">
+          <thead>
+            <tr><th>Method</th><th>WRR ↑</th><th>CRR ↑</th><th>NTED ↓</th><th>LPS ↑</th><th>GPS ↑</th><th>VFS ↑</th><th>Overall ↑</th></tr>
+          </thead>
+          <tbody>
+            <tr class="cat"><td colspan="8">Pipeline tools</td></tr>
+            <tr><td>Marker</td><td>0.68</td><td>0.82</td><td>0.61</td><td>0.19</td><td>0.34</td><td>0.74</td><td>0.53</td></tr>
+            <tr><td>Docling</td><td>0.40</td><td>0.49</td><td>0.62</td><td>0.17</td><td>0.26</td><td>0.55</td><td>0.38</td></tr>
+            <tr class="cat"><td colspan="8">Expert &amp; general VLMs</td></tr>
+            <tr><td>olmOCR</td><td>0.49</td><td>0.64</td><td>0.93</td><td>0.21</td><td>0.09</td><td>0.33</td><td>0.31</td></tr>
+            <tr><td>Qwen3-VL</td><td>0.66</td><td>0.79</td><td>0.59</td><td>0.22</td><td>0.30</td><td>0.43</td><td>0.47</td></tr>
+            <tr><td>Gemini-2.5-Pro</td><td>0.67</td><td>0.42</td><td>0.56</td><td>0.14</td><td>0.31</td><td>0.82</td><td>0.47</td></tr>
+            <tr><td>GPT-5</td><td>0.65</td><td>0.79</td><td>0.49</td><td>0.21</td><td>0.43</td><td>0.86</td><td>0.58</td></tr>
+            <tr class="cat"><td colspan="8">Screenshot-to-HTML</td></tr>
+            <tr><td>Webcode2m</td><td>0.33</td><td>0.45</td><td>0.82</td><td>0.15</td><td>0.29</td><td>0.39</td><td>0.30</td></tr>
+            <tr class="ours frag" data-frag="1"><td>REPLICA (ours)</td><td>0.88</td><td>0.93</td><td>0.20</td><td>0.73</td><td>0.86</td><td>0.93</td><td>0.86</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ══════════════ 18 · ALL AXES + ABLATION ══════════════ -->
+    <section class="slide" data-eyebrow="05 · Results"
+      data-notes="Two views of the same story. On the left, the radar plot: REPLICA is the only method that covers all four axes — the baselines each collapse on at least one. On the right, the ablation, building the system up piece by piece. Flat layout gives 0.53. Hierarchical layout and the full segment stage take us to 0.67. Set-of-Mark, 0.71. Then the two biggest jumps: agentic Localize — router plus specialists — takes 0.76 to 0.86; and the refine loop, font, background and reflection, takes 0.86 to 0.93. Those two jumps confirm the thesis: single-pass generation isn't enough, and you have to look at the render.">
+      <div class="kicker">All four axes at once</div>
+      <h2>Every component earns its place</h2>
+      <div class="slide-body">
+        <div class="cols">
+          <div class="col">
+            <div class="imgbox"><img src="static/images/teaser/image-2.png" alt="Radar plot: REPLICA vs baselines"></div>
+            <div class="cap">REPLICA is the only method strong on TE, LS, PS <i>and</i> VF simultaneously</div>
+          </div>
+          <div class="col">
+            <table class="res" style="font-size:19px;">
+              <thead><tr><th>Configuration</th><th>OS ↑</th><th>VFS ↑</th><th>GPS ↑</th></tr></thead>
+              <tbody>
+                <tr><td>Flat layout (DLN)</td><td>0.53</td><td>0.74</td><td>0.34</td></tr>
+                <tr><td>+ Hierarchical layout</td><td>0.60</td><td>0.79</td><td>0.48</td></tr>
+                <tr><td>+ Hi-SAM (full Segment)</td><td>0.67</td><td>0.82</td><td>0.63</td></tr>
+                <tr><td>+ SoM in Segment</td><td>0.71</td><td>0.85</td><td>0.69</td></tr>
+                <tr><td>+ Monolithic Localize</td><td>0.76</td><td>0.88</td><td>0.72</td></tr>
+                <tr class="frag" data-frag="1" style="background:var(--gold-soft);"><td><b>+ Agentic Localize</b></td><td><b>0.86</b></td><td>0.90</td><td>0.77</td></tr>
+                <tr><td>+ Font-size fix</td><td>0.89</td><td>0.92</td><td>0.79</td></tr>
+                <tr><td>+ Background restore</td><td>0.90</td><td>0.93</td><td>0.80</td></tr>
+                <tr class="ours frag" data-frag="2"><td>+ Reflection (final)</td><td>0.93</td><td>0.97</td><td>0.83</td></tr>
+              </tbody>
+            </table>
+            <div class="cap">Biggest jumps: <b>agentic Localize</b> and the <b>Refine loop</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 19 · QUALITATIVE ══════════════ -->
+    <section class="slide" data-eyebrow="05 · Results" data-embed="qual"
+      data-notes="Spot the difference. On the left the source scan, on the right REPLICA's Fid-HTML rendered live in the browser — this is real selectable text and real CSS, not an image. Column boundaries, typography, spatial layout, and the figures all survive.">
+      <div class="kicker">Spot the difference</div>
+      <h2>Source scan <em>vs</em> rendered FID-HTML</h2>
+      <div class="slide-body">
+        <div class="cols">
+          <div class="col">
+            <div class="imgbox"><img src="static/images/qual/IndicDLP_1.png" alt="Original document"></div>
+            <div class="cap"><b>Original</b> — scanned page</div>
+          </div>
+          <div class="col">
+            <div class="embed"><iframe src="static/images/qual/IndicDLP_1_corrected.html" title="REPLICA FID-HTML render" scrolling="no"></iframe></div>
+            <div class="cap"><b style="color:var(--navy)">REPLICA</b> — live FID-HTML render (selectable text)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 20 · DOWNSTREAM ══════════════ -->
+    <section class="slide" data-eyebrow="06 · Applications"
+      data-notes="Because Fid-HTML is web-native and carries both semantics and geometry, it's reusable well beyond reconstruction. Design-preserving translation — translate a form or a menu and it still looks like that form. Document preservation and archiving. Indexing and searchability. Grounded document intelligence — the nested DOM maps directly onto phrase-inside-line-inside-block containment, so you get pixel-level supervision for free. Semantic chunking for RAG. And position-aware retrieval.">
+      <div class="kicker">Beyond reconstruction</div>
+      <h2>What FID-HTML <em>unlocks</em></h2>
+      <div class="slide-body">
+        <div class="imgbox plain"><img src="static/images/applications.png" alt="Downstream applications of REPLICA"></div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 21 · LIMITATIONS ══════════════ -->
+    <section class="slide" data-eyebrow="07 · Limitations"
+      data-notes="Being honest about the edges. First, single-page only — multi-page tables and figures can fragment across boundaries. Second, font identification: we reliably recover bold, italic, underline and colour, but exact multilingual font families remain unresolved; DeepFont and SwordNet cover mostly English and Chinese. Third, the refine loop's repeated browser rendering adds real latency. And fourth, the benchmark still leans toward well-structured, high-resource scripts.">
+      <div class="kicker">Being honest about the edges</div>
+      <h2>Where REPLICA still falls short</h2>
+      <div class="slide-body">
+        <div class="lim">
+          <div class="card"><h3>Single-page only</h3><p>Multi-page structures — spanning tables, figures, continued sections — can fragment across page boundaries.</p></div>
+          <div class="card"><h3>Font identification</h3><p>Bold, italic, underline and colour are recovered reliably; exact multilingual <b>font families</b> remain unresolved.</p></div>
+          <div class="card"><h3>Rendering cost</h3><p>The refine loop's repeated browser rendering adds real latency versus a single forward pass.</p></div>
+          <div class="card"><h3>High-resource skew</h3><p>The benchmark still leans toward well-structured layouts and higher-resource scripts.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 22 · SUMMARY ══════════════ -->
+    <section class="slide" data-eyebrow="08 · Conclusion"
+      data-notes="To summarise. Three contributions. Fid-HTML: a representation where visual fidelity is a first-class, required property rather than an afterthought. VFDR-Bench plus new metrics — GPS, LPS, VFS — the first benchmark to actually measure layout and rendered fidelity. And REPLICA, an agentic pipeline reaching 93% visual fidelity, ahead of GPT-5 and Gemini. The through-line: represent, measure, generate — and structured agentic design beats brute-force scale.">
+      <div class="kicker">One paradigm, three contributions</div>
+      <h2>Represent → Measure → Generate</h2>
+      <div class="slide-body">
+        <div class="grid3" style="flex:1;align-content:center;">
+          <div class="card"><span class="tag">Represent</span><h3>FID-HTML</h3><p>A web-native format where position and style are <b>required</b>, inline, per element — fidelity by construction.</p></div>
+          <div class="card"><span class="tag">Measure</span><h3>VFDR-Bench</h3><p>5,000 expert-annotated docs, 15+ languages, 20+ categories — with GPS, LPS and VFS scoring layout and appearance.</p></div>
+          <div class="card accent"><span class="tag">Generate</span><h3>REPLICA</h3><p>Segment → Localize → Assemble → Refine, reaching <b>93% visual fidelity</b> and 0.86 overall.</p></div>
+        </div>
+        <div class="stats" style="margin-top:26px;">
+          <div class="stat"><div class="v gold">0.93</div><div class="k">Visual fidelity</div></div>
+          <div class="stat"><div class="v">0.86</div><div class="k">Overall score</div></div>
+          <div class="stat"><div class="v">15+</div><div class="k">Languages</div></div>
+          <div class="stat"><div class="v">3.75×</div><div class="k">Smaller than 30B baseline</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ 23 · THANK YOU ══════════════ -->
+    <section class="slide thanks" data-eyebrow="Thank you"
+      data-notes="Thank you. Happy to take questions. Project page, code, dataset and models are all linked from the QR.">
+      <h1>Thank you</h1>
+      <div class="sub">Questions?</div>
+      <div class="qr"><img src="static/images/qr_projectpage.png" alt="Project page QR code"></div>
+      <div class="url">replica-agents.github.io</div>
+      <div class="mail">tallapragada.s@research.iiit.ac.in</div>
+    </section>
+
+    <div id="progress"></div>
+  </div>
+</div>
+
+<!-- overview grid -->
+<div id="overview"><div class="og" id="overviewGrid"></div></div>
+
+<!-- speaker notes -->
+<div id="notes"><div class="nh">Speaker notes</div><div id="notesBody"></div></div>
+
+<!-- help -->
+<div id="help"><div class="box">
+  <h3>Presenter controls</h3>
+  <table>
+    <tr><td class="k">→ &nbsp; Space &nbsp; PageDown</td><td>Next step / slide</td></tr>
+    <tr><td class="k">← &nbsp; PageUp</td><td>Previous step / slide</td></tr>
+    <tr><td class="k">↓ / ↑</td><td>Next / previous slide (skip fragments)</td></tr>
+    <tr><td class="k">F</td><td>Toggle fullscreen</td></tr>
+    <tr><td class="k">N</td><td>Toggle speaker notes</td></tr>
+    <tr><td class="k">O</td><td>Slide overview</td></tr>
+    <tr><td class="k">Home / End</td><td>First / last slide</td></tr>
+    <tr><td class="k">B</td><td>Blank screen</td></tr>
+    <tr><td class="k">?</td><td>This help</td></tr>
+  </table>
+  <p style="color:rgba(255,255,255,.5);font-size:15px;margin-top:24px;">
+    Most presenter remotes send PageUp / PageDown — they work out of the box.
+  </p>
+</div></div>
+
+<div id="bar">
+  <button id="btnPrev">◀ Prev</button>
+  <button id="btnNext">Next ▶</button>
+  <button id="btnFull">⛶ Full</button>
+  <button id="btnNotes">Notes</button>
+  <button id="btnHelp">?</button>
+</div>
+
+<script>
+(function(){
+  const stage   = document.getElementById("stage");
+  const slides  = Array.from(document.querySelectorAll(".slide"));
+  const progress= document.getElementById("progress");
+  const notesEl = document.getElementById("notes");
+  const notesBody = document.getElementById("notesBody");
+  const helpEl  = document.getElementById("help");
+  const overview= document.getElementById("overview");
+  const ovGrid  = document.getElementById("overviewGrid");
+
+  let cur = 0;      // slide index
+  let frag = 0;     // fragments revealed on current slide
+  let blanked = false;
+
+  /* ---------- fixed-stage scaling ---------- */
+  function fit(){
+    const s = Math.min(window.innerWidth/1920, window.innerHeight/1080);
+    stage.style.transform = "scale(" + s + ")";
+  }
+
+  /* ---------- scale embedded iframes to their box ----------
+     Two modes:
+       contain — the embedded page has a fixed aspect (e.g. the invoice demo's
+                 own 1920x1080 stage). Give it exactly that size and scale to
+                 fit, so the page renders at 1:1 internally and we shrink it
+                 once. Scaling by width alone would double-scale it.
+       width   — the page is a flowing document of unknown height. Pin a design
+                 width and let the box crop vertically.                        */
+  const EMBED_CFG = {
+    invoice:  { w: 1920, h: 1080, mode: "contain" },
+    pipeline: { w: 1900, mode: "width" },
+    qual:     { w: 433,  h: 774,  mode: "contain" },
+    default:  { w: 1400, mode: "width" }
+  };
+  function fitEmbeds(slide){
+    slide.querySelectorAll(".embed").forEach(box=>{
+      const f = box.querySelector("iframe"); if(!f) return;
+      const cfg = EMBED_CFG[slide.dataset.embed] || EMBED_CFG.default;
+      const bw = box.clientWidth, bh = box.clientHeight;
+      if(cfg.mode === "contain"){
+        const scale = Math.min(bw/cfg.w, bh/cfg.h);
+        f.style.width = cfg.w + "px";
+        f.style.height = cfg.h + "px";
+        f.style.transform = "scale(" + scale + ")";
+        // centre the letterboxed result inside the box
+        f.style.left = Math.round((bw - cfg.w*scale)/2) + "px";
+        f.style.top  = Math.round((bh - cfg.h*scale)/2) + "px";
+      } else {
+        const scale = bw / cfg.w;
+        f.style.width = cfg.w + "px";
+        f.style.height = Math.round(bh/scale) + "px";
+        f.style.transform = "scale(" + scale + ")";
+        f.style.left = "0px"; f.style.top = "0px";
+      }
+    });
+  }
+
+  /* ---------- fragments ---------- */
+  function fragsOf(i){
+    return Array.from(slides[i].querySelectorAll(".frag"))
+      .sort((a,b)=> (+a.dataset.frag||0) - (+b.dataset.frag||0));
+  }
+  // Some slides have no .frag elements of their own but still need N clicks —
+  // e.g. the invoice slide, whose reveals happen inside the embedded demo.
+  function fragCount(i){
+    const declared = parseInt(slides[i].dataset.frags, 10);
+    return isNaN(declared) ? fragsOf(i).length : declared;
+  }
+  function applyFrags(){
+    const fr = fragsOf(cur);
+    fr.forEach((el,k)=> el.classList.toggle("on", k < frag));
+    // slide-specific side effects (drive embedded demos from the clicker)
+    const s = slides[cur];
+    if(s.dataset.embed === "invoice"){
+      const f = s.querySelector("iframe");
+      if(f && f.contentWindow) f.contentWindow.postMessage({type:"vfd:step", step:frag}, "*");
+    }
+  }
+
+  /* ---------- render ---------- */
+  function render(){
+    slides.forEach((s,i)=> s.classList.toggle("current", i === cur));
+    const s = slides[cur];
+
+    // chrome
+    if(!s.querySelector(".eyebrow") && s.dataset.eyebrow){
+      const e = document.createElement("div");
+      e.className = "eyebrow"; e.textContent = s.dataset.eyebrow;
+      s.appendChild(e);
+    }
+    if(!s.querySelector(".counter") && cur > 0){
+      const c = document.createElement("div");
+      c.className = "counter"; c.textContent = cur + " / " + (slides.length - 1);
+      s.appendChild(c);
+    }
+
+    applyFrags();
+    fitEmbeds(s);
+    progress.style.width = ((cur)/(slides.length-1)*100) + "%";
+    notesBody.textContent = s.dataset.notes || "—";
+    history.replaceState(null, "", "#" + cur);
+    ovGrid.querySelectorAll(".oi").forEach((o,i)=> o.classList.toggle("cur", i===cur));
+  }
+
+  function goto(i, atEnd){
+    cur = Math.max(0, Math.min(slides.length-1, i));
+    frag = atEnd ? fragCount(cur) : 0;
+    render();
+  }
+  // The pipeline demo advances by relative beats, so the clicker sends it a
+  // step/back command rather than an absolute stage number.
+  function drivePipeline(action){
+    const s = slides[cur];
+    if(s.dataset.embed !== "pipeline") return;
+    const f = s.querySelector("iframe");
+    if(f && f.contentWindow) f.contentWindow.postMessage({type:"replica:demo", action}, "*");
+  }
+  function next(){
+    if(frag < fragCount(cur)){ frag++; applyFrags(); drivePipeline("step"); return; }
+    if(cur < slides.length-1) goto(cur+1, false);
+  }
+  function prev(){
+    if(frag > 0){ frag--; applyFrags(); drivePipeline("back"); return; }
+    if(cur > 0) goto(cur-1, true);
+  }
+
+  /* ---------- overview ---------- */
+  slides.forEach((s,i)=>{
+    const t = s.querySelector("h1,h2");
+    const d = document.createElement("div");
+    d.className = "oi";
+    d.innerHTML = `<div class="on-n">${i===0?"TITLE":i}</div><div class="on-t">${t?t.textContent.trim():""}</div>`;
+    d.addEventListener("click", ()=>{ overview.classList.remove("on"); goto(i,false); });
+    ovGrid.appendChild(d);
+  });
+
+  /* ---------- keyboard / remote ---------- */
+  // Presenter remotes almost universally emit PageUp / PageDown.
+  window.addEventListener("keydown", (e)=>{
+    const k = e.key;
+    if(k === "Escape"){ helpEl.classList.remove("on"); overview.classList.remove("on"); return; }
+    if(helpEl.classList.contains("on") && k !== "?"){ helpEl.classList.remove("on"); }
+
+    switch(k){
+      case "ArrowRight": case " ": case "Spacebar": case "PageDown":
+        e.preventDefault(); next(); break;
+      case "ArrowLeft": case "PageUp":
+        e.preventDefault(); prev(); break;
+      case "ArrowDown":
+        e.preventDefault(); goto(cur+1, false); break;
+      case "ArrowUp":
+        e.preventDefault(); goto(cur-1, false); break;
+      case "Home": e.preventDefault(); goto(0,false); break;
+      case "End":  e.preventDefault(); goto(slides.length-1,false); break;
+      case "f": case "F": e.preventDefault(); toggleFull(); break;
+      case "n": case "N": notesEl.classList.toggle("on"); break;
+      case "o": case "O": overview.classList.toggle("on"); break;
+      case "b": case "B":
+        blanked = !blanked;
+        stage.style.visibility = blanked ? "hidden" : "visible"; break;
+      case "?": helpEl.classList.toggle("on"); break;
+    }
+  });
+
+  function toggleFull(){
+    if(!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+    else document.exitFullscreen?.();
+  }
+
+  /* ---------- click / touch ---------- */
+  stage.addEventListener("click", (e)=>{
+    // don't hijack clicks inside an embedded demo
+    if(e.target.closest(".embed")) return;
+    next();
+  });
+
+  document.getElementById("btnNext").addEventListener("click", (e)=>{ e.stopPropagation(); next(); });
+  document.getElementById("btnPrev").addEventListener("click", (e)=>{ e.stopPropagation(); prev(); });
+  document.getElementById("btnFull").addEventListener("click", (e)=>{ e.stopPropagation(); toggleFull(); });
+  document.getElementById("btnNotes").addEventListener("click", (e)=>{ e.stopPropagation(); notesEl.classList.toggle("on"); });
+  document.getElementById("btnHelp").addEventListener("click", (e)=>{ e.stopPropagation(); helpEl.classList.toggle("on"); });
+
+  window.addEventListener("resize", ()=>{ fit(); fitEmbeds(slides[cur]); });
+  window.addEventListener("hashchange", ()=>{
+    const n = parseInt(location.hash.slice(1),10);
+    if(!isNaN(n) && n !== cur) goto(n,false);
+  });
+
+  /* ---------- boot ---------- */
+  fit();
+  const start = parseInt(location.hash.slice(1),10);
+  goto(isNaN(start) ? 0 : start, false);
+  // embeds need a beat after their iframe lays out
+  window.addEventListener("load", ()=>{ fit(); fitEmbeds(slides[cur]); });
+  setTimeout(()=>fitEmbeds(slides[cur]), 400);
+})();
+</script>
+</body>
+</html>
