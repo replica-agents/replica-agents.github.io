@@ -131,15 +131,23 @@
     .nav-links a.nav-slides { color: var(--accent); font-weight: 800; }
     .nav-links a.nav-slides i { font-size: 12px; margin-right: 4px; }
 
-    /* ---- embed mode (?embed=demo): bare demo section for iframing in slides ---- */
+    /* ---- embed mode (?embed=<sectionId>): one bare section for iframing in
+           slides.html. JS tags the chosen section with .embed-target.        ---- */
     body.embed-mode nav.topnav,
     body.embed-mode header.hero,
     body.embed-mode footer,
-    body.embed-mode section:not(#demo) { display: none !important; }
-    body.embed-mode section#demo { padding: 10px 0 0 !important; background: transparent !important; }
-    body.embed-mode section#demo .section-head { display: none !important; }
+    body.embed-mode section:not(.embed-target) { display: none !important; }
+    body.embed-mode section.embed-target { padding: 8px 0 0 !important; background: transparent !important; }
+    body.embed-mode section.embed-target > .section-head,
+    body.embed-mode section.embed-target .section-head { display: none !important; }
     body.embed-mode .pdemo-wrap { margin: 0 !important; }
     body.embed-mode .reveal { opacity: 1 !important; transform: none !important; }
+    /* the long prose paragraph above the Fid-HTML figure is redundant on a slide */
+    body.embed-mode section#fidhtml .abstract-body { display: none !important; }
+    /* let embedded content use the full iframe width — the slide, not the page,
+       controls the measure, and tables need every pixel to stay legible */
+    body.embed-mode .container { max-width: none !important; padding: 0 16px !important; }
+    body.embed-mode .table-scroll { box-shadow: none !important; }
     .nav-right { display: flex; align-items: center; gap: 8px; }
     .icon-btn {
       width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border);
@@ -1114,7 +1122,7 @@
         <div class="tp-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Reconstruction — pick a method to compare against the input</div>
         <div class="method-pills" id="teaserPills"><!-- injected --></div>
 
-        <div class="teaser-compare">
+        <div class="teaser-compare" data-part="compare">
           <div class="teaser-panel">
             <div class="tp-label"><i class="fa-solid fa-file-lines"></i> Input Document</div>
             <div class="frame" data-img data-src="static/images/teaser/base_doc.png" data-label="Input document"></div>
@@ -1125,7 +1133,7 @@
           </div>
         </div>
 
-        <div class="teaser-radar">
+        <div class="teaser-radar" data-part="radar">
           <div class="tp-label"><i class="fa-solid fa-chart-pie"></i> Fidelity Radar — REPLICA vs. baselines</div>
           <div class="frame" data-img data-src="static/images/teaser/image-2.png" data-label="Radar plot (TE / LS / PS / VF)"></div>
           <figcaption class="figcap" style="margin-top:12px;">Green ✓ = axis preserved. <b>TE</b> Text Extraction · <b>LS</b> Logical Structure · <b>PS</b> Physical Structure · <b>VF</b> Visual Fidelity.</figcaption>
@@ -1179,7 +1187,7 @@
         </p>
       </div>
 
-      <div class="fid-figure reveal" id="fidFigure">
+      <div class="fid-figure reveal" data-part="figure" id="fidFigure">
         <div class="fid-orig">
           <div class="fid-orig-head"><span class="badge-dot"></span> Original document</div>
           <div class="frame" id="fidOrigImg"></div>
@@ -1203,11 +1211,11 @@
         <div class="fid-chips" id="fidChips"><!-- injected --></div>
       </div>
 
-      <div class="subhead reveal" style="margin-top: 48px;"><i class="fa-solid fa-table-cells-large"></i> FID-HTML vs. Other Formats <span class="hint">— <span class="check">✓</span> full · <span class="pchar">P</span> partial · <span class="cross">×</span> missing</span></div>
-      <div class="table-scroll reveal">
+      <div class="subhead reveal" data-part="table" style="margin-top: 48px;"><i class="fa-solid fa-table-cells-large"></i> FID-HTML vs. Other Formats <span class="hint">— <span class="check">✓</span> full · <span class="pchar">P</span> partial · <span class="cross">×</span> missing</span></div>
+      <div class="table-scroll reveal" data-part="table">
         <table class="data" id="fidFormatTable"><!-- injected --></table>
       </div>
-      <p class="table-note reveal"><b>T.E.</b> Text Extraction · <b>L.S.</b> Logical Structure · <b>P.S.</b> Physical Structure · <b>V.F.</b> Visual Fidelity &nbsp;·&nbsp; R.O. = Reading Order, L.H. = Layout Hierarchy.</p>
+      <p class="table-note reveal" data-part="table"><b>T.E.</b> Text Extraction · <b>L.S.</b> Logical Structure · <b>P.S.</b> Physical Structure · <b>V.F.</b> Visual Fidelity &nbsp;·&nbsp; R.O. = Reading Order, L.H. = Layout Hierarchy.</p>
     </div>
   </section>
 
@@ -1220,13 +1228,13 @@
         <p>A Visually-Faithful Document Reconstruction benchmark with high-fidelity FID-HTML annotations.</p>
       </div>
 
-      <div class="stat-grid reveal" id="vfdrStats" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 40px;"><!-- injected --></div>
+      <div class="stat-grid reveal" data-part="stats" id="vfdrStats" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 40px;"><!-- injected --></div>
 
-      <div class="subhead reveal"><i class="fa-solid fa-scale-balanced"></i> Benchmark Comparison <span class="hint">— TE / LS / PS / VF coverage</span></div>
-      <div class="table-scroll reveal">
+      <div class="subhead reveal" data-part="table"><i class="fa-solid fa-scale-balanced"></i> Benchmark Comparison <span class="hint">— TE / LS / PS / VF coverage</span></div>
+      <div class="table-scroll reveal" data-part="table">
         <table class="data" id="benchTable"><!-- injected --></table>
       </div>
-      <div class="vfdr-note reveal"><b>VFDR-Bench is the only</b> document benchmark that evaluates both <b>Physical Structure (PS)</b> and <b>Visual Fidelity (VF)</b>.</div>
+      <div class="vfdr-note reveal" data-part="table"><b>VFDR-Bench is the only</b> document benchmark that evaluates both <b>Physical Structure (PS)</b> and <b>Visual Fidelity (VF)</b>.</div>
     </div>
   </section>
 
@@ -1353,25 +1361,25 @@
       </div>
 
       <!-- stat chips -->
-      <div class="stat-grid reveal" id="statGrid"><!-- injected --></div>
+      <div class="stat-grid reveal" data-part="stats" id="statGrid"><!-- injected --></div>
 
       <!-- bar chart -->
-      <div class="subhead reveal"><i class="fa-solid fa-chart-column"></i> Metric Comparison <span class="hint">— switch metric, bars sorted high→low, REPLICA highlighted</span></div>
-      <div class="chart-card reveal">
+      <div class="subhead reveal" data-part="chart"><i class="fa-solid fa-chart-column"></i> Metric Comparison <span class="hint">— switch metric, bars sorted high→low, REPLICA highlighted</span></div>
+      <div class="chart-card reveal" data-part="chart">
         <div class="chart-tabs" id="chartTabs"><!-- injected --></div>
         <div class="bars" id="chartBars"><!-- injected --></div>
       </div>
 
       <!-- main table -->
-      <div class="subhead reveal"><i class="fa-solid fa-table-list"></i> Main Comparison <span class="hint">— Table 2</span></div>
-      <div class="table-scroll reveal">
+      <div class="subhead reveal" data-part="main"><i class="fa-solid fa-table-list"></i> Main Comparison <span class="hint">— Table 2</span></div>
+      <div class="table-scroll reveal" data-part="main">
         <table class="data" id="mainTable"><!-- injected --></table>
       </div>
-      <p class="table-note reveal"><span class="mono">NTED↓</span> is lower-is-better; all other columns are higher-is-better. Best value per column in <span style="color:var(--accent);font-weight:700">accent</span>.</p>
+      <p class="table-note reveal" data-part="main"><span class="mono">NTED↓</span> is lower-is-better; all other columns are higher-is-better. Best value per column in <span style="color:var(--accent);font-weight:700">accent</span>.</p>
 
       <!-- ablation -->
-      <div class="subhead reveal"><i class="fa-solid fa-stairs"></i> Ablation <span class="hint">— Table 3, cumulative components</span></div>
-      <div class="cards" style="grid-template-columns: 1.4fr 1fr; gap: 20px;" id="ablationWrap">
+      <div class="subhead reveal" data-part="ablation"><i class="fa-solid fa-stairs"></i> Ablation <span class="hint">— Table 3, cumulative components</span></div>
+      <div class="cards" style="grid-template-columns: 1.4fr 1fr; gap: 20px;" id="ablationWrap" data-part="ablation">
         <div class="table-scroll reveal" style="box-shadow:none;">
           <table class="data" id="ablationTable" style="min-width:420px;"><!-- injected --></table>
         </div>
@@ -1382,8 +1390,8 @@
       </div>
 
       <!-- reliability -->
-      <div class="subhead reveal" style="margin-top:30px;"><i class="fa-solid fa-shield-halved"></i> Agent &amp; Tool Reliability <span class="hint">— Table 4</span></div>
-      <div class="table-scroll reveal">
+      <div class="subhead reveal" data-part="reliability" style="margin-top:30px;"><i class="fa-solid fa-shield-halved"></i> Agent &amp; Tool Reliability <span class="hint">— Table 4</span></div>
+      <div class="table-scroll reveal" data-part="reliability">
         <table class="data" id="reliabilityTable"><!-- injected --></table>
       </div>
     </div>
@@ -2382,31 +2390,31 @@
      and verified visually with an overlay calibration page. */
   const FIG4_REGIONS = {
     stage1_panel:      { x: 0.004, y: 0.015, w: 0.318, h: 0.92 },
-    input_doc:         { x: 0.012, y: 0.03,  w: 0.09,  h: 0.17 },
+    input_doc:         { x: 0.014, y: 0.043, w: 0.092, h: 0.190 },
     "1A_doctype":      { x: 0.008, y: 0.33,  w: 0.075, h: 0.32 },
-    "1E_pdf_extract":  { x: 0.115, y: 0.22,  w: 0.075, h: 0.27 },
-    "1E_pdf_objects":  { x: 0.214, y: 0.218, w: 0.048, h: 0.26 },
-    "1B_proposal":     { x: 0.105, y: 0.52,  w: 0.072, h: 0.37 },
-    "1C_labeling":     { x: 0.167, y: 0.5,   w: 0.052, h: 0.35 },
-    "1D_grouping":     { x: 0.212, y: 0.5,   w: 0.06,  h: 0.35 },
+    "1E_pdf_extract":  { x: 0.1127, y: 0.217, w: 0.064, h: 0.262 },
+    "1E_pdf_objects":  { x: 0.2146, y: 0.2256, w: 0.0442, h: 0.2236 },
+    "1B_proposal":     { x: 0.1046, y: 0.5305, w: 0.0620, h: 0.3575 },
+    "1C_labeling":     { x: 0.1685, y: 0.503, w: 0.041, h: 0.353 },
+    "1D_grouping":     { x: 0.2127, y: 0.503, w: 0.054, h: 0.353 },
     layout_tree:       { x: 0.273, y: 0.40,  w: 0.062, h: 0.50 },
     stage2_panel:      { x: 0.344, y: 0.02,  w: 0.254, h: 0.945 },
     "2A_router":       { x: 0.42,  y: 0.155, w: 0.09,  h: 0.24 },
-    "2B_text_agent":   { x: 0.3515, y: 0.395, w: 0.0435, h: 0.235 },
-    "2B_table_agent":  { x: 0.3995, y: 0.395, w: 0.0435, h: 0.235 },
-    "2B_image_agent":  { x: 0.4475, y: 0.395, w: 0.0435, h: 0.235 },
-    "2B_form_agent":   { x: 0.4955, y: 0.395, w: 0.0435, h: 0.235 },
-    "2B_list_agent":   { x: 0.5435, y: 0.395, w: 0.0435, h: 0.235 },
-    subhtml_fragments: { x: 0.3515, y: 0.615, w: 0.2355, h: 0.19 },
-    auxiliary_context: { x: 0.3455, y: 0.79,  w: 0.043, h: 0.12 },
-    "2C_collection":   { x: 0.3925, y: 0.82,  w: 0.16,  h: 0.14 },
-    stage3_panel:      { x: 0.60,  y: 0.02,  w: 0.136, h: 0.945 },
-    "3B_reading_order":{ x: 0.607, y: 0.158, w: 0.098, h: 0.175 },
-    "3A_position_merge":{ x: 0.611, y: 0.40, w: 0.0715, h: 0.29 },
-    initial_html:      { x: 0.688, y: 0.40,  w: 0.054, h: 0.32 },
-    stage4_panel:      { x: 0.761, y: 0.02,  w: 0.235, h: 0.945 },
-    "4A_font_size":    { x: 0.776, y: 0.166, w: 0.047, h: 0.31 },
-    "4B_background":   { x: 0.776, y: 0.54,  w: 0.047, h: 0.34 },
+    "2B_text_agent":   { x: 0.3423, y: 0.396, w: 0.0481, h: 0.165 },
+    "2B_table_agent":  { x: 0.3915, y: 0.396, w: 0.0481, h: 0.165 },
+    "2B_image_agent":  { x: 0.4415, y: 0.396, w: 0.0481, h: 0.165 },
+    "2B_form_agent":   { x: 0.4915, y: 0.396, w: 0.0481, h: 0.165 },
+    "2B_list_agent":   { x: 0.5415, y: 0.396, w: 0.0481, h: 0.165 },
+    subhtml_fragments: { x: 0.3519, y: 0.6159, w: 0.2327, h: 0.1320 },
+    auxiliary_context: { x: 0.3442, y: 0.7902, w: 0.0442, h: 0.1305 },
+    "2C_collection":   { x: 0.3923, y: 0.8195, w: 0.1596, h: 0.1780 },
+    stage3_panel:      { x: 0.5992, y: 0.022, w: 0.1450, h: 0.9050 },
+    "3B_reading_order":{ x: 0.6085, y: 0.1760, w: 0.1240, h: 0.1530 },
+    "3A_position_merge":{ x: 0.6262, y: 0.4122, w: 0.0662, h: 0.3195 },
+    initial_html:      { x: 0.6896, y: 0.4122, w: 0.0496, h: 0.3341 },
+    stage4_panel:      { x: 0.7558, y: 0.022, w: 0.2400, h: 0.9050 },
+    "4A_font_size":    { x: 0.7546, y: 0.2098, w: 0.0704, h: 0.2598 },
+    "4B_background":   { x: 0.7546, y: 0.5390, w: 0.0704, h: 0.2900 },
     "4C_reflection":   { x: 0.825, y: 0.166, w: 0.115, h: 0.665 },
     final_html:        { x: 0.94,  y: 0.357, w: 0.0575, h: 0.34 },
   };
@@ -4477,8 +4485,26 @@
      and accepts postMessage commands so a presenter remote can drive it. */
   function initEmbedMode() {
     const params = new URLSearchParams(location.search);
-    if (params.get("embed") !== "demo") return;
+    const target = params.get("embed");
+    if (!target) return;
+    const sec = document.getElementById(target);
+    if (!sec) return;
+    sec.classList.add("embed-target");
     document.body.classList.add("embed-mode");
+    // ?part=<name> — show only the blocks tagged data-part="<name>", so one
+    // section can serve several slides (Fid-HTML figure vs. its table, the
+    // main results table vs. the ablation, ...). Untagged wrappers stay.
+    const part = params.get("part");
+    if (part) {
+      const keep = new Set(part.split(",").filter(Boolean));
+      sec.querySelectorAll("[data-part]").forEach(n => {
+        if (!keep.has(n.dataset.part)) n.style.display = "none";
+      });
+    }
+    // ?hide=<sel>,<sel> — ad-hoc removal of anything else.
+    (params.get("hide") || "").split(",").filter(Boolean).forEach(sel => {
+      sec.querySelectorAll(sel).forEach(n => { n.style.display = "none"; });
+    });
     const doc = params.get("doc");
     if (doc) {
       const btn = document.querySelector(`#pdemoDocRow [data-doc="${doc}"]`);
