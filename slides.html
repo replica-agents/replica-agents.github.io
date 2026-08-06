@@ -152,6 +152,40 @@
   .bullets .ag{background:var(--violet);}
   .bullets .tl{background:var(--navy-soft);}
 
+  /* stage colours taken from the pipeline figure's own panels */
+  .stagerow{display:flex;gap:12px;flex:1;min-height:0;}
+  .stagecard{border:2px solid var(--line);border-radius:12px;background:var(--paper);overflow:hidden;
+    display:flex;flex-direction:column;flex:0 0 78px;transition:flex .6s cubic-bezier(.4,0,.2,1),
+    border-color .4s, background .4s, opacity .4s;opacity:.45;}
+  .stagecard.seen{opacity:1;}
+  .stagecard.open{flex:1 1 auto;opacity:1;}
+  .stagecard.s1{--sc:#4a7ab5;--scbg:#e8f0f9;}
+  .stagecard.s2{--sc:#5c9e63;--scbg:#eaf4ea;}
+  .stagecard.s3{--sc:#d0a53a;--scbg:#faf2dd;}
+  .stagecard.s4{--sc:#cf8a52;--scbg:#fbeee2;}
+  .stagecard.seen{border-color:var(--sc);}
+  .sc-head{display:flex;align-items:center;gap:12px;padding:13px 15px;background:var(--scbg);
+    border-bottom:2px solid var(--sc);min-height:78px;}
+  .stagecard:not(.open) .sc-head{flex-direction:column;justify-content:center;gap:8px;height:100%;border-bottom:0;}
+  .sc-n{width:38px;height:38px;border-radius:50%;background:var(--sc);color:#fff;display:grid;place-items:center;
+    font-family:var(--mono);font-size:18px;font-weight:700;flex:none;}
+  .sc-t{font-family:var(--serif);font-size:26px;font-weight:700;color:var(--navy);white-space:nowrap;}
+  .stagecard:not(.open) .sc-t{writing-mode:vertical-rl;transform:rotate(180deg);font-size:22px;}
+  .sc-q{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--ink-2);margin-left:auto;text-align:right;max-width:52%;}
+  .stagecard:not(.open) .sc-q{display:none;}
+  .sc-body{flex:1;min-height:0;display:flex;flex-direction:column;padding:14px 16px;gap:12px;overflow:hidden;}
+  .stagecard:not(.open) .sc-body{display:none;}
+  .sc-fig{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;}
+  .sc-fig img{max-width:100%;max-height:100%;object-fit:contain;}
+  .sc-list{list-style:none;margin:0;padding:0;flex:0 0 auto;}
+  .sc-list li{display:flex;gap:11px;align-items:flex-start;font-size:18.5px;line-height:1.42;
+    color:var(--ink-2);margin-bottom:8px;}
+  .sc-list li b{color:var(--navy);}
+  .sc-list .d{width:9px;height:9px;border-radius:50%;flex:none;margin-top:8px;}
+  .sc-list .d.ag{background:var(--violet);}
+  .sc-list .d.tl{background:var(--navy-soft);}
+  .sc-list .d.out{background:var(--sc);}
+
   .stage-strip{display:flex;gap:11px;margin-bottom:20px;}
   .st{flex:1;background:var(--paper);border:1.5px solid var(--line);border-radius:10px;padding:10px 15px;
     display:flex;align-items:center;gap:11px;transition:all .3s;}
@@ -163,18 +197,25 @@
 
   /* ---------- live fidelity ladder ---------- */
   .ladder-wrap{display:flex;gap:28px;flex:1;min-height:0;}
-  .ladder-src{flex:0 0 360px;display:flex;flex-direction:column;}
-  .ladder-out{flex:1;display:flex;flex-direction:column;min-width:0;}
+  .ladder-src{flex:0 0 500px;display:flex;flex-direction:column;justify-content:center;}
+  .ladder-out{flex:1;display:flex;flex-direction:column;min-width:0;justify-content:center;}
   .lv-steps{display:flex;gap:9px;margin-bottom:12px;}
   .lv-step{flex:1;border:1.5px solid var(--line);border-radius:8px;padding:8px 11px;background:var(--paper);
     font-family:var(--mono);font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);
     text-align:center;font-weight:700;transition:all .35s;}
   .lv-step.on{background:var(--gold);border-color:var(--gold);color:var(--navy-deep);}
   .lv-step.done{border-color:var(--gold-line);color:var(--navy-soft);background:var(--gold-soft);}
-  .lv-canvas{flex:1;min-height:0;background:var(--paper);border:1px solid var(--line);border-radius:10px;
-    position:relative;overflow:hidden;padding:20px 24px;}
+  /* A page is a page only once geometry exists. Below level 2 the reconstruction
+     is a text stream with no dimensions, so its box deliberately does NOT match
+     the source; from level 2 on, both boxes are the same size. */
+  /* No width/height transition here: animating from a percentage to a fixed px
+     value does not reliably settle, and the box would stay at its old size. */
+  .pagebox{background:var(--paper);border:1px solid var(--line);border-radius:10px;
+    position:relative;overflow:hidden;padding:20px 24px;width:100%;height:100%;}
+  .pagebox.sized{width:462px;height:625px;flex:none;}
+  .ladder-src,.ladder-out{align-items:center;}
   .doc{font-family:Georgia,serif;color:#222;font-size:13.5px;line-height:1.55;position:relative;height:100%;}
-  .doc .d-stamp{position:absolute;right:6px;top:40px;transform:rotate(-9deg);border:3px solid var(--red);
+  .doc .d-stamp{position:absolute;right:8px;top:34px;transform:rotate(-9deg);border:3px solid var(--red);
     color:var(--red);font-family:var(--mono);font-weight:800;font-size:16px;letter-spacing:.1em;padding:4px 10px;
     border-radius:6px;opacity:0;transition:opacity .45s;}
   .doc.L3 .d-stamp{opacity:.8;}
@@ -253,7 +294,9 @@
   .thanks .qr{background:#fff;padding:15px;border-radius:14px;display:inline-block;}
   .thanks .qr img{width:180px;height:180px;display:block;}
   .thanks .url{font-family:var(--mono);font-size:19px;color:var(--gold);margin-top:15px;letter-spacing:.04em;}
-  .thanks .mail{font-family:var(--mono);font-size:17px;color:rgba(255,255,255,.6);margin-top:7px;}
+  .thanks-logos{display:flex;gap:46px;align-items:center;justify-content:center;margin-top:34px;
+    background:#fff;padding:16px 34px;border-radius:12px;}
+  .thanks-logos img{height:54px;width:auto;object-fit:contain;}
 
   /* ---------- source viewer: the deck showing its own markup ---------- */
   #srcview{position:fixed;inset:0;background:rgba(10,13,18,.97);z-index:99;display:none;flex-direction:column;padding:24px 32px;}
@@ -315,42 +358,6 @@
       </div>
     </section>
 
-    <!-- ═══════════ 1 · WHY HTML SLIDES ═══════════ -->
-    <section class="slide" data-eyebrow="A note on this deck" data-frags="3"
-      data-notes="One quick note before I start. This talk is about reconstructing documents as HTML — so the talk itself is HTML. One self-contained file, rendered live by your browser. That is not a gimmick. It means every document you are about to see is live DOM, not a screenshot; the interactive figures from our project page are embedded and still work; and at any point I can press V and show you the source of the slide you are looking at. If our claim is that HTML is the right representation for documents, the honest thing is to present in it.">
-      <div class="kicker">Why these slides look different</div>
-      <h2>The medium <em>is</em> the argument</h2>
-      <div class="lede">This talk is about reconstructing documents <b>as HTML</b>. So the talk is HTML — one self-contained file, rendered live by your browser.</div>
-      <div class="slide-body">
-        <div class="grid3" style="flex:1;align-content:center;">
-          <div class="card frag" data-frag="1">
-            <span class="tag">Consequence 1</span><h3>Nothing here is a screenshot</h3>
-            <p>Every reconstructed document in this deck is <b>live DOM</b> — real tags, real inline CSS, selectable text. You are seeing our actual output rendered, not a picture of it.</p>
-            <div style="margin-top:13px;padding:11px 14px;background:#eef1f6;border:1px dashed #b9c6d8;border-radius:7px;font-size:17px;color:var(--navy);">
-              Try it: this sentence is selectable — and so is every document on the slides that follow.
-            </div>
-          </div>
-          <div class="card frag" data-frag="2">
-            <span class="tag">Consequence 2</span><h3>The figures still work</h3>
-            <p>The interactive figures from our project page are <b>embedded live</b> — the same code, not exported stills. I can click, hover and step through them mid-talk.</p>
-            <div style="margin-top:13px;font-family:var(--mono);font-size:16px;color:var(--ink-3);line-height:1.85;">
-              teaser · fid-html · pipeline<br>results tables · qualitative · applications
-            </div>
-          </div>
-          <div class="card accent frag" data-frag="3">
-            <span class="tag">Consequence 3</span><h3>You can read the source</h3>
-            <p>Press <b style="font-family:var(--mono)">V</b> at any time and the deck shows you the HTML of the slide you are currently looking at.</p>
-            <div style="margin-top:13px;font-family:var(--mono);font-size:16px;color:var(--navy);">
-              <span style="background:var(--navy);color:#fff;padding:3px 10px;border-radius:5px;">V</span> &nbsp;→&nbsp; view source of this slide
-            </div>
-          </div>
-        </div>
-        <div class="takeaway">
-          If the claim is <b>"HTML is the right representation for documents"</b>, the honest thing is to present in it.
-        </div>
-      </div>
-    </section>
-
     <!-- ═══════════ 2 · SECTION 01 ═══════════ -->
     <section class="slide section-slide" data-eyebrow="01 · Motivation"
       data-notes="Section one. The problem, and why the way a document looks is part of what it means.">
@@ -389,9 +396,9 @@
       </div>
     </section>
 
-    <!-- ═══════════ 4 · LIVE FIDELITY LADDER ═══════════ -->
+    <!-- ═══════════ LIVE FIDELITY LADDER ═══════════ -->
     <section class="slide" data-eyebrow="01 · Motivation" data-frags="3" id="ladderSlide"
-      data-notes="So what did we actually lose? Let me build a document back up one layer at a time — this is running live, same content, four representations. [CLICK] Level zero, text only: every word is here and in order, but it is a wall of prose. You cannot tell the heading from the body, the table has become a run of numbers, the total is indistinguishable from the fine print. This is what OCR and most parsers give you. [CLICK] Level one, add logical structure: now we know this is a heading, this is a table with rows and columns. Markdown-class output. A big win for machines — but the page still does not look like the page. [CLICK] Level two, add physical position: the two-column geometry is back and the numbers align under their headers. Now you can tell which number belongs to which item. Still visually flat. [CLICK] Level three, add visual fidelity: typography, weight, colour, the brand bar — and critically the strikethrough and the OVERDUE stamp. Only now does the cancelled line item read as cancelled, and only now does the overdue notice exist at all. Each layer is strictly more information than the last, and only the top one is faithful.">
+      data-notes="So what did we actually lose? Same document, twice. On the left the original page. On the right I rebuild it one layer at a time — this is running live, and at the end the two are literally the same markup. [CLICK] Level zero, text only: every word is present and in order, but it is a wall of prose. You cannot tell the heading from the body, the table has become a run of numbers, the total is indistinguishable from the fine print. Note the shape does not even match — a text stream has no page. This is what OCR and most parsers give you. [CLICK] Level one, add logical structure: now we know this is a heading, this is a table with rows and columns. Markdown-class output. A big win for machines — but still no page geometry, so the shape still does not match. [CLICK] Level two, add physical position: now the page has the same dimensions as the original, the two-column body is back, and the numbers align under their headers. Now you can tell which number belongs to which item. [CLICK] Level three, add visual fidelity: typography, weight, colour, the brand bar — and critically the strikethrough and the OVERDUE stamp. Now the right side is pixel-for-pixel the left side. Only the cancelled line reads as cancelled, and only now does the overdue notice exist at all.">
       <div class="kicker">What each layer actually buys you</div>
       <h2>Rebuilding a document, <em>one layer at a time</em></h2>
       <div class="slide-body">
@@ -403,20 +410,14 @@
         </div>
         <div class="ladder-wrap">
           <div class="ladder-src">
-            <div class="lv-canvas" style="padding:0;">
-              <img src="static/images/qual/X51005621482.png" alt="Source document"
-                   style="width:100%;height:100%;object-fit:contain;display:block;">
-            </div>
-            <div class="cap">A source page</div>
-          </div>
-          <div class="ladder-out">
-            <div class="lv-canvas">
-              <!-- one document element, restyled live by adding a class -->
-              <div class="doc" id="ladderDoc">
+            <div class="pagebox sized">
+              <!-- the source page. the reconstruction on the right is a clone of
+                   this exact element, so at level 3 the two must agree. -->
+              <div class="doc L1 L2 L3" id="ladderSrc">
                 <div class="d-bar"></div>
                 <div class="d-stamp">OVERDUE</div>
-                <div class="d-sub">Invoice</div>
-                <div class="d-title">MERIDIAN &amp; CO. — #INV-2024-0847</div>
+                <div class="d-sub">Invoice · #INV-2024-0847</div>
+                <div class="d-title">MERIDIAN &amp; CO.</div>
                 <div class="d-body">
                   <p>Bill to: Northwind Traders, Attn: A. Vance, 88 Kingsway, Chicago, IL. Invoice date May 12, 2024. Terms Net 15. Status Overdue.</p>
                   <table class="d-tab">
@@ -432,6 +433,10 @@
                 <div class="d-foot">Payment due within 15 days of overdue notice.</div>
               </div>
             </div>
+            <div class="cap"><b>Original</b> — the source page</div>
+          </div>
+          <div class="ladder-out">
+            <div class="pagebox" id="ladderBox"><!-- clone injected here --></div>
             <div class="lv-what" id="ladderWhat"></div>
           </div>
         </div>
@@ -477,7 +482,7 @@
     </section>
 
     <!-- ═══════════ 6 · LIVE TEASER (paper Fig. 1) ═══════════ -->
-    <section class="slide demo bleed" data-eyebrow="02 · Where the field stands" data-embed="teaser"
+    <section class="slide demo bleed" data-eyebrow="02 · Where the field stands" data-embed="teaser" data-nav="1" data-frags="3"
       data-notes="Here is the state of the art — this is Figure 1 from the paper, running live, and I can switch the comparison method myself. On the left the input page, on the right whichever system I pick. Marker, a strong pipeline tool, linearises the three columns into one. Qwen3-VL-30B and GPT-5 get the text largely right but drift on placement, font attributes and column count. REPLICA preserves text colour, paragraph indentation, bold and italics, font size, and the correct number of columns. The radar underneath is Figure 1B — all four axes at once. Every baseline collapses on at least one; REPLICA is the only shape that covers all four.">
       <div class="kicker">Where the field stands</div>
       <h2>Everyone recovers text. <em>Nobody recovers the page.</em> <span class="srcnote">— paper Fig. 1, live &amp; interactive</span></h2>
@@ -504,23 +509,19 @@
     </section>
 
     <!-- ═══════════ 8 · FORMAT TABLE (paper Table 1) ═══════════ -->
-    <section class="slide demo bleed" data-eyebrow="03 · FID-HTML" data-embed="fmt" data-frags="1"
+    <section class="slide demo bleed" data-eyebrow="03 · FID-HTML" data-embed="fmt"
       data-notes="This is Table 1 from the paper, live. Read down the last two column groups. Markdown has no slot for position or style at all. LaTeX is expressive but partial on hierarchy and not web-native. DocTags and hOCR carry boxes but are partial on styling. And plain HTML — this is the important row — plain HTML CAN express fidelity but never REQUIRES it: two valid HTML documents with the same text can render completely differently. That is the gap. Fid-HTML is the only row full across every column, because position and style are mandatory, inline, per element. Fidelity becomes a property of the format rather than a hope.">
       <div class="kicker">Comparing representations</div>
       <h2>Generic HTML <em>permits</em> fidelity. FID-HTML <em>guarantees</em> it. <span class="srcnote">— paper Table 1, live</span></h2>
       <div class="slide-body">
         <div class="embed">
           <iframe src="index.html?embed=fidhtml&part=table" title="Format comparison (paper Table 1)"></iframe>
-          <div class="callout frag" data-frag="1" style="right:24px;bottom:34px;">
-            <span class="big">The only complete row</span>
-            Every other format leaves position or style optional. FID-HTML requires both, per element.
-          </div>
         </div>
       </div>
     </section>
 
     <!-- ═══════════ 9 · FID-HTML ANATOMY (paper Fig. 3) ═══════════ -->
-    <section class="slide demo bleed" data-eyebrow="03 · FID-HTML" data-embed="fidfig"
+    <section class="slide demo bleed" data-eyebrow="03 · FID-HTML" data-embed="fidfig" data-nav="1" data-frags="6"
       data-notes="Concretely, this is what Fid-HTML encodes — and the code on the right is the real source of the page on the left, not a mock-up. Six dimensions. One, textual content at word and block level. Two, hierarchical structure through nested divs. Three, semantic tags — li, table, tr, td — with meaningful class names. Four, positional information: global placement by absolute positioning, local alignment by relative containers and p wrappers. Five, styling metadata: font size, colour, bold, italic, underline, strikethrough, as inline CSS. Six, figures and backgrounds layered into the DOM with VLM-generated alt-text — which is also what makes the output screen-reader accessible. Click any dimension and it highlights exactly where it lives in the code; flip to Rendered and your browser draws that exact markup.">
       <div class="kicker">What FID-HTML encodes</div>
       <h2>Six dimensions — <em>click one</em> to see where it lives in the source <span class="srcnote">— paper Fig. 3, live</span></h2>
@@ -577,98 +578,76 @@
       </div>
     </section>
 
-    <!-- ═══════════ 12 · WHAT MAKES REPLICA AGENTIC ═══════════ -->
-    <section class="slide vcenter" data-eyebrow="04 · Why agentic" data-frags="3"
-      data-notes="So concretely, what makes REPLICA agentic? Four places where the system exercises judgment a fixed pipeline cannot. One: the labeling agent does not just accept detector boxes — using Set-of-Mark prompting it reasons jointly over spatial grounding and text content, and flags mis-segmented regions and mixed-content blocks. Two: the grouping agent builds a directed layout graph, resolving caption-to-figure binding, list nesting and footnote attachment — relationships pure geometry cannot recover. Three, and this is my favourite: the router agent evaluates the crop against its upstream label, and if the visual contradicts the label — an equation that Segment tagged as text — it overrides the label and reroutes. A fixed pipeline would have propagated that error straight into the output. Four: the reflection agent renders the HTML, looks at it against the source, and injects targeted CSS until the appearance stabilises. It is the only component that ever sees the final result. Everything else — detectors, OCR, table structure recognition, reading order, font fitting, background restoration — those are tools, called conditionally, only when needed.">
-      <div class="kicker">What makes REPLICA agentic</div>
-      <h2>Four places the system <em>exercises judgment</em></h2>
+    <!-- ═══════════ THE PIPELINE, STAGE BY STAGE ═══════════ -->
+    <section class="slide" data-eyebrow="04 · Approach" data-frags="4" id="stagesSlide"
+      data-notes="So how does that decomposition actually run? Four questions, four stages — and I will build the pipeline figure up one stage at a time. [CLICK] Stage 1, Segment: how do we divide the document into meaningful components? A document-type tool decides digital or scanned; a detector ensemble — DocLayout-YOLO, IndicDLP-YOLO, Hi-SAM — proposes regions; then two agents take over. The Labeling agent uses Set-of-Mark prompting to assign types and catch mis-segmentation, and the Grouping agent builds the layout graph, resolving caption-figure binding and list nesting. Output: a hierarchical layout tree. [CLICK] Stage 2, Localize: how do we convert each component into HTML? The Router agent picks a specialist from the crop itself, overriding the upstream label when the visual contradicts it. Six specialists — text, table, image, form, list, equation — emit sub-HTML with position and style inline. Tools like OCR and table-structure recognition are called only when needed. Nodes are conditionally independent, so this stage parallelises. [CLICK] Stage 3, Assemble: how do we compose them? A position-aware merge tool works bottom-up over the tree, then the Reading-Order agent linearises semantically — because top-to-bottom sorting fails on multi-column pages. [CLICK] Stage 4, Refine: how do we make it actually look right? Font-size and background tools, and then the Reflection agent renders the HTML, compares it against the source image, and injects CSS until it stabilises. That is the only component that ever sees the final render — and it is why the objective is stated on R of H.">
+      <div class="kicker">Four questions, four stages</div>
+      <h2>The pipeline, <em>stage by stage</em></h2>
       <div class="slide-body">
-        <div class="grid2" style="gap:20px;">
-          <div class="card agent frag" data-frag="1">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:9px;">
-              <span class="math" style="padding:3px 10px;font-size:19px;">A<sub>lab</sub></span>
-              <h3 style="margin:0;">Labeling agent — disagrees with the detector</h3>
+        <!-- the figure builds up; completed stages collapse to a numbered chip -->
+        <div class="stagerow" id="stageRow">
+          <div class="stagecard s1" data-st="1">
+            <div class="sc-head"><span class="sc-n">1</span><span class="sc-t">Segment</span>
+              <span class="sc-q">"How to divide the document into meaningful components?"</span></div>
+            <div class="sc-body">
+              <div class="sc-fig"><img src="static/images/stages/stage1.png" alt="Segment stage of the pipeline"></div>
+              <ul class="sc-list">
+                <li><span class="d tl"></span><b>T<sub>type</sub>, T<sub>det</sub></b> — digital/scanned classifier; DocLayout-YOLO + IndicDLP-YOLO + Hi-SAM, fused by IoU.</li>
+                <li><span class="d ag"></span><b>A<sub>lab</sub></b> — Set-of-Mark labelling; catches mis-segmented and mixed-content regions.</li>
+                <li><span class="d ag"></span><b>A<sub>grp</sub></b> — builds the layout graph; resolves caption–figure binding, list nesting, footnotes.</li>
+                <li><span class="d out"></span>→ hierarchical layout tree <b>T<sub>layout</sub></b></li>
+              </ul>
             </div>
-            <p>Set-of-Mark prompting lets it reason jointly over <b>spatial grounding and textual content</b>, so it identifies mis-segmented regions, mixed-content blocks and ambiguous proposals instead of accepting them.</p>
           </div>
-          <div class="card agent frag" data-frag="1">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:9px;">
-              <span class="math" style="padding:3px 10px;font-size:19px;">A<sub>grp</sub></span>
-              <h3 style="margin:0;">Grouping agent — recovers relationships</h3>
+          <div class="stagecard s2" data-st="2">
+            <div class="sc-head"><span class="sc-n">2</span><span class="sc-t">Localize</span>
+              <span class="sc-q">"How to convert each component into equivalent HTML?"</span></div>
+            <div class="sc-body">
+              <div class="sc-fig"><img src="static/images/stages/stage2.png" alt="Localize stage of the pipeline"></div>
+              <ul class="sc-list">
+                <li><span class="d ag"></span><b>A<sub>route</sub></b> — picks the specialist from the <i>crop</i>, overriding the upstream label when the visual contradicts it.</li>
+                <li><span class="d ag"></span><b>𝒜<sub>spec</sub></b> — six specialists: text, table, image, form, list, equation.</li>
+                <li><span class="d tl"></span><b>T<sub>aux</sub></b> — OCR, table structure, TexTAR: invoked only when necessary.</li>
+                <li><span class="d out"></span>→ sub-HTML <b>H<sub>v</sub></b> per node · conditionally independent, so <b>parallelisable</b></li>
+              </ul>
             </div>
-            <p>Builds a directed layout graph from containment, reading order and semantic compatibility — resolving <b>caption–figure binding, list nesting and footnote attachment</b> that geometry alone cannot.</p>
           </div>
-          <div class="card agent frag" data-frag="2" style="border-color:var(--violet);background:#f6f4fe;">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:9px;">
-              <span class="math" style="padding:3px 10px;font-size:19px;">A<sub>route</sub></span>
-              <h3 style="margin:0;">Router agent — overrides its own input</h3>
+          <div class="stagecard s3" data-st="3">
+            <div class="sc-head"><span class="sc-n">3</span><span class="sc-t">Assemble</span>
+              <span class="sc-q">"How to assemble components into a coherent structure?"</span></div>
+            <div class="sc-body">
+              <div class="sc-fig"><img src="static/images/stages/stage3.png" alt="Assemble stage of the pipeline"></div>
+              <ul class="sc-list">
+                <li><span class="d tl"></span><b>T<sub>pos</sub></b> — bottom-up merge over T<sub>layout</sub>, preserving containment and alignment.</li>
+                <li><span class="d ag"></span><b>A<sub>ro</sub></b> — semantic reading order (≺); spatial sorting fails on multi-column pages and floats.</li>
+                <li><span class="d out"></span>→ initial HTML document <b>H</b> · reading-order accuracy <b>0.98</b></li>
+              </ul>
             </div>
-            <p>If the crop contradicts its predicted type — <b>an equation labelled as text</b> — it overrides the upstream label and reroutes to the correct specialist, <b>stopping the error from cascading</b> into generation.</p>
           </div>
-          <div class="card agent frag" data-frag="2" style="border-color:var(--violet);background:#f6f4fe;">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:9px;">
-              <span class="math" style="padding:3px 10px;font-size:19px;">A<sub>ref</sub></span>
-              <h3 style="margin:0;">Reflection agent — looks at the result</h3>
+          <div class="stagecard s4" data-st="4">
+            <div class="sc-head"><span class="sc-n">4</span><span class="sc-t">Refine</span>
+              <span class="sc-q">"How to refine structure for visual and structural fidelity?"</span></div>
+            <div class="sc-body">
+              <div class="sc-fig"><img src="static/images/stages/stage4.png" alt="Refine stage of the pipeline"></div>
+              <ul class="sc-list">
+                <li><span class="d tl"></span><b>T<sub>font</sub>, T<sub>bg</sub></b> — non-overflow font scales by bounded search; background restored by CSS layering.</li>
+                <li><span class="d ag"></span><b>A<sub>ref</sub></b> — renders <b>R(H)</b>, compares it to <b>I</b>, injects targeted CSS; up to 5 iterations.</li>
+                <li><span class="d out"></span>→ high-fidelity final HTML · <i>the only stage that sees the render</i></li>
+              </ul>
             </div>
-            <p>Renders the HTML, compares it against the source image, and injects targeted CSS corrections until alignment stabilises. <b>The only component that sees the final render.</b></p>
-          </div>
-        </div>
-        <div class="takeaway frag" data-frag="3">
-          Everything else — detectors, OCR, table structure, reading order, font fitting, background restoration — are <b>tools</b>, invoked conditionally. Agentic is not "an LLM in the loop"; it is <b>judgment placed exactly where geometry is insufficient</b>.
-        </div>
-      </div>
-    </section>
-
-    <!-- ═══════════ 13 · FOUR QUESTIONS ═══════════ -->
-    <section class="slide vcenter" data-eyebrow="04 · Approach" data-frags="5"
-      data-notes="That decomposition follows four questions, stated exactly this way in the paper. How to divide the document into meaningful components — Segment. How to convert each component into equivalent HTML — Localize. How to assemble components into a coherent structure — Assemble. How to refine structure for visual and structural fidelity — Refine. Four questions, four stages, four genuinely different competencies. That is why it is agentic rather than one big model.">
-      <div class="kicker">An agentic divide-and-conquer strategy</div>
-      <h2>Four questions → <em>four stages</em></h2>
-      <div class="slide-body">
-        <div class="grid4" style="flex:0 0 auto;">
-          <div class="card frag" data-frag="1">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><div class="num-badge">1</div><h3 style="margin:0;">Segment</h3></div>
-            <p style="font-family:var(--serif);font-size:20px;color:var(--navy);font-style:italic;margin-bottom:9px;">"How to divide the document into meaningful components?"</p>
-            <p>Hierarchical semantic layout detection → a layout tree.</p>
-          </div>
-          <div class="card frag" data-frag="2">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><div class="num-badge">2</div><h3 style="margin:0;">Localize</h3></div>
-            <p style="font-family:var(--serif);font-size:20px;color:var(--navy);font-style:italic;margin-bottom:9px;">"How to convert each component into equivalent HTML?"</p>
-            <p>Router + specialist agents → styled sub-HTML per node.</p>
-          </div>
-          <div class="card frag" data-frag="3">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><div class="num-badge">3</div><h3 style="margin:0;">Assemble</h3></div>
-            <p style="font-family:var(--serif);font-size:20px;color:var(--navy);font-style:italic;margin-bottom:9px;">"How to assemble components into a coherent structure?"</p>
-            <p>Position-aware merge + semantic reading order.</p>
-          </div>
-          <div class="card frag" data-frag="4">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><div class="num-badge gold">4</div><h3 style="margin:0;">Refine</h3></div>
-            <p style="font-family:var(--serif);font-size:20px;color:var(--navy);font-style:italic;margin-bottom:9px;">"How to refine structure for visual and structural fidelity?"</p>
-            <p>Font, background, and closed-loop visual reflection.</p>
-          </div>
-        </div>
-        <div class="frag" data-frag="5" style="margin-top:26px;">
-          <div class="math big">
-            𝒜 <span class="op">= set of agents</span> &nbsp;·&nbsp; 𝒯 <span class="op">= set of tools</span> &nbsp;·&nbsp;
-            <span class="op">agents reason, route and generate; tools execute reproducibly</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ═══════════ 14 · PIPELINE OVERVIEW ═══════════ -->
-    <section class="slide" data-eyebrow="04 · Approach"
-      data-notes="Here is the whole pipeline — Figure 4 from the paper. Page image in on the left, high-fidelity HTML out on the right. Keep this map in mind: I will walk each stage now, and the interactive demo afterwards steps through it region by region on a real page.">
-      <div class="kicker">The pipeline, at a glance</div>
-      <h2>REPLICA end-to-end <span class="srcnote">— paper Fig. 4</span></h2>
-      <div class="slide-body">
-        <div class="imgbox plain"><img src="static/images/replica_maindiag.png" alt="REPLICA pipeline overview (Fig. 4)"></div>
-      </div>
-    </section>
+    <!-- ═════════════════════════════════════════════════════════════════════
+     ARCHIVED — per-stage detail slides (Segment / Localize / Assemble+Refine).
+     Superseded by the "stage by stage" reveal above. To restore: delete the
+     opening "<!##" and closing "##>" markers below and re-save.
 
-    <!-- ═══════════ 15 · STAGE 1 ═══════════ -->
+<!##
     <section class="slide" data-eyebrow="04 · Approach · Stage 1" data-frags="4"
-      data-notes="Stage one, Segment. A classifier tool decides digital or scanned — delta equals T-type of I. If digital we bypass detection entirely and read boxes, spans and font metadata straight from PDF primitives. If scanned, a detector ensemble proposes candidate regions B — DocLayout-YOLO for flat layouts, IndicDLP-YOLO for hierarchical ones, Hi-SAM for fine-grained text, fused by IoU merging. Those proposals are geometry-driven: they over-segment, merge incompatible content, and miss hierarchical relationships. So the labeling agent assigns a structural label and auxiliary attributes to each region, and the grouping agent builds the graph G whose edges encode parent-child relations, which we constrain into a tree by enforcing acyclicity and single-parent. The point of the stage is to prevent error propagation before generation begins.">
+      data-notes="Stage one, Segment. A classifier tool decides digital or scanned. If digital we bypass detection and read boxes, spans and font metadata straight from PDF primitives. If scanned, a detector ensemble proposes candidate regions, fused by IoU merging. Those proposals are geometry-driven: they over-segment, merge incompatible content, and miss hierarchy. So the labeling agent assigns a structural label and attributes, and the grouping agent builds the graph G, constrained into a tree.">
       <div class="kicker">Stage 1 of 4</div>
       <h2><em>Segment</em> — hierarchical semantic layout detection</h2>
       <div class="slide-body">
@@ -683,33 +662,31 @@
             <div class="mathrow">
               <div class="frag" data-frag="1">
                 <span class="math">δ = T<sub>type</sub>(I),&nbsp; δ ∈ {digital, scanned}</span>
-                <div class="mathnote"><b>1A · tool.</b> Digital → read boxes, spans and font metadata from PDF primitives (<span class="math" style="padding:0 6px;font-size:16px;">B = T<sub>pdf</sub>(I)</span>), bypassing detection. Scanned → infer from visual geometry.</div>
+                <div class="mathnote"><b>1A · tool.</b> Digital → read from PDF primitives, bypassing detection. Scanned → infer from visual geometry.</div>
               </div>
               <div class="frag" data-frag="2">
                 <span class="math">B = {b<sub>i</sub>}<sup>N</sup><sub>i=1</sub>,&nbsp; b<sub>i</sub> = m(I),&nbsp; m ∈ T<sub>det</sub></span>
-                <div class="mathnote"><b>1B · tool ensemble.</b> DocLayout-YOLO + IndicDLP-YOLO + Hi-SAM, fused by IoU merging. Geometry-driven — <i>may over-segment, merge incompatible content, or miss hierarchy.</i></div>
+                <div class="mathnote"><b>1B · tool ensemble.</b> DocLayout-YOLO + IndicDLP-YOLO + Hi-SAM, fused by IoU merging.</div>
               </div>
               <div class="frag" data-frag="3">
                 <span class="math">(ℓ<sub>i</sub>, τ<sub>i</sub>) = A<sub>lab</sub>(I, b<sub>i</sub>)</span>
-                <div class="mathnote"><b>1C · agent.</b> Set-of-Mark prompting; assigns structural label ℓ and attributes τ, <b>and identifies mis-segmented or mixed-content regions</b>.</div>
+                <div class="mathnote"><b>1C · agent.</b> Set-of-Mark prompting; identifies mis-segmented or mixed-content regions.</div>
               </div>
               <div class="frag" data-frag="4">
-                <span class="math">G = (V, E),&nbsp; V = {v<sub>i</sub> ↔ b<sub>i</sub>}&nbsp; ⟹&nbsp; T<sub>layout</sub> = Tree(G)</span>
-                <div class="mathnote"><b>1D · agent.</b> Edges encode parent–child relations from containment, reading order and semantic compatibility; acyclicity + single-parent constraints yield the layout tree.</div>
+                <span class="math">G = (V, E)&nbsp; ⟹&nbsp; T<sub>layout</sub> = Tree(G)</span>
+                <div class="mathnote"><b>1D · agent.</b> Acyclicity + single-parent constraints yield the layout tree.</div>
               </div>
             </div>
           </div>
           <div class="col">
-            <div class="imgbox"><img src="static/images/demo/newspaper/S1_tree.png" alt="Segment — the page after labeling and hierarchical grouping"></div>
-            <div class="cap">every region labelled, then nested into <b>T<sub>layout</sub></b></div>
+            <div class="imgbox"><img src="static/images/demo/newspaper/S1_tree.png" alt="Segment"></div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ═══════════ 16 · STAGE 2 ═══════════ -->
     <section class="slide" data-eyebrow="04 · Approach · Stage 2" data-frags="4"
-      data-notes="Stage two, Localize. Each node v of the layout tree arrives as a four-tuple: its visual crop I-v, its bounding box b-v, the upstream label ell-v from Segment, and phi-v, the structural constraints — parent type, ordering. The router agent selects a specialist, and crucially it takes the crop and constraints as input, not just the label, so when the visual contradicts the predicted type it overrides and reroutes. Six specialists — text, table, image, form, list, equation — each generating localized HTML H-v. Specialists invoke auxiliary tools only when necessary: the text agent calls OCR for low-resolution or script-complex crops but bypasses it for clean digital text; the table agent queries a structure recogniser only when it detects merged headers or irregular grids. And because the nodes are conditionally independent, this entire stage parallelises.">
+      data-notes="Stage two, Localize. Each node arrives as a four-tuple: crop, bounding box, upstream label, structural constraints. The router agent selects a specialist from the crop, overriding the label when the visual contradicts it. Six specialists generate localized HTML. Auxiliary tools are invoked only when necessary. Nodes are conditionally independent, so the stage parallelises.">
       <div class="kicker">Stage 2 of 4</div>
       <h2><em>Localize</em> — layout-aware HTML generation</h2>
       <div class="slide-body">
@@ -724,83 +701,60 @@
             <div class="mathrow">
               <div class="frag" data-frag="1">
                 <span class="math">v ↦ (I<sub>v</sub>, b<sub>v</sub>, ℓ<sub>v</sub>, φ<sub>v</sub>)</span>
-                <div class="mathnote">Each node carries its <b>visual crop, bounding box, upstream label</b> and <b>structural constraints</b> φ (parent type, ordering).</div>
+                <div class="mathnote">Crop, bounding box, upstream label, and structural constraints φ.</div>
               </div>
               <div class="frag" data-frag="2">
-                <span class="math">a<sub>v</sub> = A<sub>route</sub>(I<sub>v</sub>, ℓ<sub>v</sub>, φ<sub>v</sub>),&nbsp; a<sub>v</sub> ∈ 𝒜<sub>spec</sub></span>
-                <div class="mathnote"><b>2A · agent.</b> Takes the <b>crop</b>, not just the label — so when the visual contradicts ℓ<sub>v</sub> it <b>overrides and reroutes</b>, preventing cascading hallucination.</div>
+                <span class="math">a<sub>v</sub> = A<sub>route</sub>(I<sub>v</sub>, ℓ<sub>v</sub>, φ<sub>v</sub>)</span>
+                <div class="mathnote"><b>2A · agent.</b> Takes the crop, not just the label — overrides and reroutes on mismatch.</div>
               </div>
               <div class="frag" data-frag="3">
-                <span class="math">𝒜<sub>spec</sub> = {A<sub>text</sub>, A<sub>table</sub>, A<sub>img</sub>, A<sub>form</sub>, A<sub>list</sub>, A<sub>eqn</sub>} ⊂ 𝒜</span>
-                <div class="mathnote"><b>2B · agents.</b> Six specialists, each with its own generation strategy, producing <span class="math" style="padding:0 6px;font-size:16px;">H<sub>v</sub> = a<sub>v</sub>(I<sub>v</sub>, b<sub>v</sub>, φ<sub>v</sub>)</span>.</div>
+                <span class="math">𝒜<sub>spec</sub> = {A<sub>text</sub>, A<sub>table</sub>, A<sub>img</sub>, A<sub>form</sub>, A<sub>list</sub>, A<sub>eqn</sub>}</span>
+                <div class="mathnote"><b>2B · agents.</b> Six specialists producing H<sub>v</sub>.</div>
               </div>
               <div class="frag" data-frag="4">
-                <span class="math">T<sub>aux</sub> ⊂ 𝒯 &nbsp;<span class="op">invoked only when necessary</span></span>
-                <div class="mathnote">OCR for low-res or script-complex crops (bypassed for clean digital text); table structure recognition only for merged headers or irregular grids; TexTAR for font attributes. Nodes are <b>conditionally independent → generation is parallelisable</b>.</div>
+                <span class="math">T<sub>aux</sub> ⊂ 𝒯 &nbsp;<span class="op">only when necessary</span></span>
+                <div class="mathnote">OCR, table structure recognition, TexTAR. Conditionally independent → parallelisable.</div>
               </div>
             </div>
           </div>
           <div class="col">
             <div class="codecard">
-              <div class="cc-head">H<sub>v</sub> &nbsp;— real sub-HTML emitted for one region</div>
-              <pre class="cc-body">&lt;<span class="t">h2</span> <span class="a">class</span>=<span class="s">"title_2"</span>
-    <span class="a">style</span>=<span class="s">"position: absolute;
-      left: 232px; top: 99px;
-      width: 660px; height: 59px;
-      font-size: 18px; font-weight: 700;
-      color: rgb(20,20,20);"</span>&gt;
-  CSIR — INSTITUTE OF MINERALS
-  &amp; MATERIALS TECHNOLOGY
-&lt;/<span class="t">h2</span>&gt;</pre>
+              <div class="cc-head">H<sub>v</sub> — real sub-HTML emitted for one region</div>
+              <pre class="cc-body">&amp;lt;h2 class="title_2" style="position: absolute; left: 232px; top: 99px;"&amp;gt;…&amp;lt;/h2&amp;gt;</pre>
             </div>
-            <div class="cap">position <i>and</i> style, inline, per element</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ═══════════ 17 · STAGES 3+4 ═══════════ -->
     <section class="slide" data-eyebrow="04 · Approach · Stages 3–4" data-frags="3"
-      data-notes="Stages three and four. Assemble: a composition tool performs a bottom-up merge over the layout tree, preserving containment, nesting and spatial alignment. Then the reading-order agent computes a semantically grounded ordering relation, because spatial sorting — top-to-bottom, left-to-right — simply fails on multi-column newspapers and floating elements; the agent evaluates textual continuity and contextual coherence instead, and the HTML is linearised under that relation. Then Refine, the stage I would most like you to remember. Even when segmentation, localization and assembly are all structurally correct, the rendered HTML diverges from the source, because PDF rendering and the browser's CSS box model are simply different systems. So: a font tool selects maximal non-overflow font scales by bounded search. A background tool extracts page-level colours, shading and overlays and restores them by CSS layering. And the reflection agent performs closed-loop visual comparison between the render and the source image, identifying perceptual artefacts — subtle overlaps, wrapping inconsistencies, misalignment — that only emerge after rendering, and injects targeted CSS corrections such as shape-outside until alignment stabilises, up to five iterations. Fidelity is evaluated at the level of appearance, not structural compliance.">
+      data-notes="Assemble merges bottom-up and orders semantically. Refine renders, compares against the source, and repairs until the appearance stabilises.">
       <div class="kicker">Stages 3 &amp; 4 of 4</div>
       <h2><em>Assemble</em>, then <em>Refine</em> against the render</h2>
       <div class="slide-body">
-        <div class="stage-strip">
-          <div class="st done"><span class="n">1</span><span class="t">Segment</span></div>
-          <div class="st done"><span class="n">2</span><span class="t">Localize</span></div>
-          <div class="st active"><span class="n">3</span><span class="t">Assemble</span></div>
-          <div class="st active"><span class="n">4</span><span class="t">Refine</span></div>
-        </div>
         <div class="grid2" style="flex:1;">
           <div class="card frag" data-frag="1">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><div class="num-badge">3</div><h3 style="margin:0;">Assemble</h3></div>
-            <div style="margin-bottom:9px;"><span class="math" style="font-size:19px;">T<sub>pos</sub> ∈ 𝒯</span></div>
-            <p style="margin-bottom:14px;"><b>Position-aware merge (tool).</b> Bottom-up over T<sub>layout</sub>, preserving containment, nesting and spatial alignment → a structurally valid document.</p>
-            <div style="margin-bottom:9px;"><span class="math" style="font-size:19px;">A<sub>ro</sub> ∈ 𝒜&nbsp; <span class="op">→ linearised under</span> ≺</span></div>
-            <p><b>Reading-order agent.</b> Spatial heuristics fail on multi-column pages and floats; the agent evaluates <b>textual continuity and contextual coherence</b> across nodes instead.</p>
+            <h3>Assemble</h3>
+            <p><b>T<sub>pos</sub></b> bottom-up merge; <b>A<sub>ro</sub></b> semantic reading order under ≺.</p>
           </div>
           <div class="card accent frag" data-frag="2">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><div class="num-badge gold">4</div><h3 style="margin:0;">Refine — the closed loop</h3></div>
-            <ul class="bullets tight" style="margin-top:4px;">
-              <li><span class="dot tl"></span><div><span class="math" style="font-size:17px;padding:1px 7px;">T<sub>font</sub></span> &nbsp;maximal non-overflow font scales by <b>bounded search</b>.</div></li>
-              <li><span class="dot tl"></span><div><span class="math" style="font-size:17px;padding:1px 7px;">T<sub>bg</sub></span> &nbsp;page-level colours, shading and overlays restored by <b>CSS layering</b>.</div></li>
-              <li><span class="dot ag"></span><div><span class="math" style="font-size:17px;padding:1px 7px;">A<sub>ref</sub></span> &nbsp;closed-loop comparison of <b>R(H)</b> against <b>I</b> — catches overlaps, wrapping and misalignment that <i>only exist after rendering</i>, injecting targeted CSS (e.g. <span style="font-family:var(--mono);font-size:16px;">shape-outside</span>) for up to 5 iterations.</div></li>
-            </ul>
+            <h3>Refine — the closed loop</h3>
+            <p><b>T<sub>font</sub></b>, <b>T<sub>bg</sub></b>, and <b>A<sub>ref</sub></b> comparing R(H) to I for up to 5 iterations.</p>
           </div>
         </div>
-        <div class="takeaway frag" data-frag="3">
-          PDF rendering and the browser's CSS box model are different systems. <b>Fidelity has to be checked on the render, not on the markup</b> — which is exactly what <b>R(H) ≈ I</b> demands.
-        </div>
+        <div class="takeaway frag" data-frag="3">Fidelity has to be checked on the render, not the markup.</div>
       </div>
     </section>
+##>
+═════════════════════════════════════════════════════════════════════ -->
 
     <!-- ═══════════ 18 · LIVE PIPELINE DEMO ═══════════ -->
-    <section class="slide demo bleed" data-eyebrow="04 · Approach · Demo" data-embed="pipeline" data-frags="8"
+    <section class="slide demo bleed" data-eyebrow="04 · Approach · Demo" data-embed="pipeline" data-frags="0"
       data-notes="Rather than describe it further — here is the pipeline running on a real page with every intermediate output. Step through with the clicker, or hit Play for the full walkthrough. Each beat spotlights the corresponding part of Figure 4 on the left.">
       <div class="kicker">Interactive walkthrough</div>
-      <h2>The pipeline, running on a real page <span class="srcnote">— live, steps with the clicker</span></h2>
+      <h2>The pipeline, running on a real page <span class="srcnote">— live · plays automatically at 1.5×</span></h2>
       <div class="slide-body">
-        <div class="embed"><iframe src="index.html?embed=demo&doc=newspaper" title="REPLICA pipeline demo"></iframe></div>
+        <div class="embed"><iframe src="index.html?embed=demo&doc=magazine&autoplay=1&rate=1.5" title="REPLICA pipeline demo"></iframe></div>
       </div>
     </section>
 
@@ -809,6 +763,19 @@
       data-notes="Section four. How we measure it, and what we find.">
       <h1>Evaluation</h1>
       <div class="q">We have a representation and a system. But no existing benchmark scores physical structure or rendered appearance — so we built one.</div>
+    </section>
+
+    <!-- ═══════════ VFDR-BENCH SAMPLES ═══════════ -->
+    <section class="slide vcenter" data-eyebrow="05 · Evaluation" id="benchSamplesSlide"
+      data-notes="This is what is actually in VFDR-Bench. Five thousand documents spanning single and multi-column layouts, scanned and born-digital sources, fifteen-plus languages and twenty-plus document categories — newspapers, magazines, government forms, receipts, scientific papers, historical archives. Every one annotated in Fid-HTML by trained annotators, because you cannot score position or style against a Markdown reference.">
+      <div class="kicker">What is actually in the benchmark</div>
+      <h2>VFDR-Bench — <em>sample documents</em></h2>
+      <div class="slide-body">
+        <div class="imgbox plain" id="benchSamplesBox">
+          <img src="static/images/vfdr_samples.png" alt="VFDR-Bench sample documents"
+               onerror="this.closest('.imgbox').innerHTML='&lt;div class=&quot;assetgap&quot;&gt;&lt;b&gt;VFDR-Bench samples figure not yet added.&lt;/b&gt;&lt;br&gt;Drop the image at &lt;code&gt;static/images/vfdr_samples.png&lt;/code&gt; and it will appear here automatically.&lt;/div&gt;'">
+        </div>
+      </div>
     </section>
 
     <!-- ═══════════ 20 · VFDR-BENCH + METRICS ═══════════ -->
@@ -857,7 +824,7 @@
       <h2>Everyone passes text. <em>The field collapses on position.</em> <span class="srcnote">— paper Table 2, live &amp; complete</span></h2>
       <div class="slide-body">
         <div class="embed">
-          <iframe src="index.html?embed=results&part=main&hide=.subhead,.table-note" title="Main results (paper Table 2)"></iframe>
+          <iframe src="index.html?embed=results&part=main&grade=1&hide=.subhead,.table-note" title="Main results (paper Table 2)"></iframe>
         </div>
         <div class="trendbar">
           <div class="tb frag" data-frag="1">
@@ -877,7 +844,7 @@
     </section>
 
     <!-- ═══════════ 22 · ABLATION (paper Table 3, full & live) ═══════════ -->
-    <section class="slide demo bleed vcenter" data-eyebrow="05 · Evaluation" data-embed="abl" data-frags="2"
+    <section class="slide demo bleed vcenter" data-eyebrow="05 · Evaluation" data-embed="abl" data-nav="1" data-frags="9"
       data-notes="Table 3, the ablation, built up cumulatively. Flat layout detection gives 0.53 overall. Hierarchical layout, Hi-SAM and Set-of-Mark take the Segment stage from 0.53 to 0.71 — steady gains from better geometry. [CLICK] Then the first big jump: monolithic localization, one model doing all regions, gives 0.76. Introducing the router and the specialists takes it to 0.86. That is a ten-point jump purely from agentic decomposition, at the same model scale. [CLICK] And the second: font fix, background restore and reflection take 0.86 to 0.93, with visual fidelity reaching 0.97. Those two jumps are the empirical case for the whole design — single-pass generation is not enough, and you have to look at the render.">
       <div class="kicker">Every component earns its place</div>
       <h2>Two jumps carry the design <span class="srcnote">— paper Table 3, live &amp; complete</span></h2>
@@ -916,30 +883,27 @@
       </div>
     </section>
 
-    <!-- ═══════════ 24 · QUALITATIVE ═══════════ -->
-    <section class="slide demo" data-eyebrow="05 · Evaluation" data-embed="qual" data-frags="1"
-      data-notes="Spot the difference. On the left the source scan; on the right REPLICA's Fid-HTML rendered live by your browser — real selectable text and real inline CSS, not an image of our output. Column boundaries, typography and spatial layout all survive. [CLICK] And to prove the point about the medium: I can press V right now and read you the HTML that is producing the right-hand page.">
-      <div class="kicker">Spot the difference</div>
+    <!-- ═══════════ QUALITATIVE ═══════════ -->
+    <section class="slide demo" data-eyebrow="05 · Evaluation" data-embed="qual" data-frags="4" id="qualSlide"
+      data-notes="Spot the difference. On the left the source scan; on the right REPLICA's Fid-HTML rendered live by your browser — real selectable text and real inline CSS, not an image of our output. I will step through several document types. [CLICK] A government notice with a table. [CLICK] A dense receipt — small type, faint scan. [CLICK] A multi-column magazine spread. [CLICK] And a scientific paper with equations and figures. In every case the column boundaries, typography and spatial layout survive.">
+      <div class="kicker">Spot the difference &nbsp;·&nbsp; <span id="qualCounter" style="font-family:var(--mono);color:var(--gold);"></span></div>
       <h2>Source scan <em>vs</em> live FID-HTML render</h2>
       <div class="slide-body">
         <div class="cols">
           <div class="col">
-            <div class="imgbox"><img src="static/images/qual/IndicDLP_1.png" alt="Original scanned document"></div>
-            <div class="cap"><b>Original</b> — scanned page</div>
+            <div class="imgbox"><img id="qualImg" src="static/images/qual/IndicDLP_1.png" alt="Original scanned document"></div>
+            <div class="cap"><b>Original</b> — <span id="qualCapL">scanned page</span></div>
           </div>
           <div class="col">
-            <div class="embed"><iframe src="static/images/qual/IndicDLP_1_corrected.html" title="REPLICA FID-HTML render" scrolling="no"></iframe></div>
+            <div class="embed"><iframe id="qualFrame" src="static/images/qual/IndicDLP_1_corrected.html" title="REPLICA FID-HTML render" scrolling="no"></iframe></div>
             <div class="cap"><b style="color:var(--navy)">REPLICA</b> — live FID-HTML: real DOM, selectable text, inline CSS</div>
           </div>
-        </div>
-        <div class="takeaway frag" data-frag="1" style="margin-top:16px;">
-          This is not a screenshot of our output — it <b>is</b> our output, rendered by your browser right now. <b style="font-family:var(--mono)">V</b> shows you its source.
         </div>
       </div>
     </section>
 
     <!-- ═══════════ 25 · DOWNSTREAM (paper Fig. 2) ═══════════ -->
-    <section class="slide demo bleed" data-eyebrow="06 · Applications" data-embed="down"
+    <section class="slide demo bleed" data-eyebrow="06 · Applications" data-embed="down" data-nav="1" data-frags="6"
       data-notes="Because Fid-HTML is web-native and carries both semantics and geometry, it is reusable well beyond reconstruction — this is Figure 2 from the paper, live; hover any application to zoom into it. Layout-preserving document translation: translate a form and it still looks like that form. Document preservation and archiving. Indexing and searchability. Grounded document intelligence — the nested DOM maps directly onto phrase inside line inside block containment, so you get pixel-level grounding for free. Semantic chunking for RAG, where chunks follow logical structure rather than character counts. And position-aware retrieval — query by where something sits on the page.">
       <div class="kicker">Beyond reconstruction</div>
       <h2>What FID-HTML <em>unlocks</em> <span class="srcnote">— paper Fig. 2, live · hover to zoom</span></h2>
@@ -998,7 +962,11 @@
       <div class="sub">Questions?</div>
       <div class="qr"><img src="static/images/qr_projectpage.png" alt="Project page QR code"></div>
       <div class="url">replica-agents.github.io</div>
-      <div class="mail">tallapragada.s@research.iiit.ac.in</div>
+      <div class="thanks-logos">
+        <img src="static/images/logos/cvit_logo.png" alt="CVIT" onerror="this.style.display=&quot;none&quot;">
+        <img src="static/images/logos/iiith_logo.jpeg" alt="IIIT Hyderabad">
+        <img src="static/images/logos/bgen_logo.png" alt="BharatGen">
+      </div>
     </section>
 
     <div id="progress"></div>
@@ -1059,8 +1027,12 @@
   let cur = 0, frag = 0, blanked = false;
 
   function fit(){
-    const s = Math.min(window.innerWidth/1920, window.innerHeight/1080);
-    stage.style.transform = "scale(" + s + ")";
+    // A transiently zero-sized window (mid-navigation, restored tab) would
+    // otherwise collapse the whole deck to scale(0) and never recover.
+    const w = window.innerWidth  || document.documentElement.clientWidth  || 1920;
+    const h = window.innerHeight || document.documentElement.clientHeight || 1080;
+    const sc = Math.min(w/1920, h/1080);
+    stage.style.transform = "scale(" + (sc > 0.05 ? sc : 1) + ")";
   }
 
   /* ---------- embedded-iframe sizing ----------
@@ -1073,7 +1045,7 @@
     radar:    { w: 1250, mode: "width" },
     fmt:      { w: 1420, mode: "width" },
     fidfig:   { w: 1620, mode: "width" },
-    restable: { w: 2320, mode: "width" },
+    restable: { w: 2560, mode: "width" },
     abl:      { w: 1560, mode: "width" },
     rel:      { w: 1420, mode: "width" },
     down:     { w: 1640, mode: "width" },
@@ -1126,17 +1098,30 @@
     // keyed by data-frag so several elements can share one step
     fragsOf(cur).forEach(el => el.classList.toggle("on", (+el.dataset.frag||0) <= frag));
     if(slides[cur].id === "ladderSlide") renderLadder();
+    if(slides[cur].id === "stagesSlide") renderStages();
+    if(slides[cur].id === "qualSlide") renderQual();
   }
 
   /* ---------- the live fidelity ladder ---------- */
   const LADDER_TEXT = [
-    '<b>Level 0 · text only.</b> Every word is present and in order — but the heading, the table and the total are indistinguishable from one another. This is what OCR and most parsers give you.',
-    '<b>Level 1 · + logical structure.</b> Headings, table rows and columns are now marked up. Machine-readable — but the page still does not <i>look</i> like the page.',
-    '<b>Level 2 · + physical position.</b> Two-column geometry restored, numbers aligned under their headers. Now you can tell <i>which number belongs to which item</i>.',
-    '<b>Level 3 · + visual fidelity.</b> Typography, weight, colour — and the strikethrough and OVERDUE stamp. Only now does the cancelled line read as cancelled, and the overdue notice exist at all.'
+    '<b>Level 0 · text only.</b> Every word is present and in order — but heading, table and total are indistinguishable, and the output has <i>no page</i>: its shape does not match the original at all.',
+    '<b>Level 1 · + logical structure.</b> Headings, table rows and columns are marked up. Machine-readable — but still no geometry, so the page shape still does not match.',
+    '<b>Level 2 · + physical position.</b> The page now has the <b>same dimensions as the source</b>, the two-column body is back and numbers align under their headers. You can finally tell which number belongs to which item.',
+    '<b>Level 3 · + visual fidelity.</b> Typography, weight, colour — and the strikethrough and OVERDUE stamp. The reconstruction is now <b>identical to the original</b>: only here does the cancelled line read as cancelled.'
   ];
+  // The reconstruction is a clone of the source element, so "matching at
+  // level 3" is structural rather than something we have to keep in sync.
+  (function buildLadder(){
+    const src = document.getElementById("ladderSrc"), box = document.getElementById("ladderBox");
+    if(!src || !box) return;
+    const clone = src.cloneNode(true);
+    clone.id = "ladderDoc"; clone.className = "doc";
+    box.appendChild(clone);
+  })();
   function renderLadder(){
     const doc = document.getElementById("ladderDoc"); if(!doc) return;
+    // geometry only exists from level 2 — that is the whole point of the level
+    document.getElementById("ladderBox").classList.toggle("sized", frag >= 2);
     doc.classList.toggle("L1", frag >= 1);   // cumulative: L3 keeps L1 and L2
     doc.classList.toggle("L2", frag >= 2);
     doc.classList.toggle("L3", frag >= 3);
@@ -1145,6 +1130,17 @@
       s.classList.toggle("done", i < Math.min(frag,3));
     });
     document.getElementById("ladderWhat").innerHTML = LADDER_TEXT[Math.min(frag, LADDER_TEXT.length-1)];
+  }
+
+  /* ---------- staged pipeline reveal ----------
+     One stage opens at a time; finished stages collapse to a coloured spine so
+     there is room for the next one. */
+  function renderStages(){
+    document.querySelectorAll("#stageRow .stagecard").forEach((c,i)=>{
+      const n = i + 1;
+      c.classList.toggle("seen", n <= frag);
+      c.classList.toggle("open", n === frag);
+    });
   }
 
   /* ---------- render ---------- */
@@ -1180,12 +1176,50 @@
     const f = s.querySelector("iframe");
     if(f && f.contentWindow) f.contentWindow.postMessage({type:"replica:demo", action}, "*");
   }
+  // Slides marked data-nav step *inside* their embedded figure — cycling teaser
+  // methods, Fid-HTML dimensions, downstream applications, ablation rows.
+  // Additive only: the figures stay fully mouse-interactive.
+  function driveNav(dir){
+    const s = slides[cur];
+    if(!s.dataset.nav) return false;
+    const f = s.querySelector("iframe");
+    if(f && f.contentWindow) f.contentWindow.postMessage({type:"replica:nav", dir}, "*");
+    return true;
+  }
+  // Qualitative slide cycles a local list of real source/render pairs.
+  const QUAL_SET = [
+    {img:"IndicDLP_1",   cap:"government notice · Gujarati, tabular"},
+    {img:"X51005621482", cap:"retail receipt · dense small type"},
+    {img:"00000087",     cap:"multi-column magazine spread"},
+    {img:"LoRaLay_1",    cap:"scientific paper · figures &amp; equations"}
+  ];
+  function renderQual(){
+    const q = QUAL_SET[Math.min(frag, QUAL_SET.length-1)];
+    const img = document.getElementById("qualImg"), fr = document.getElementById("qualFrame");
+    if(!img || !fr) return;
+    const nsrc = "static/images/qual/" + q.img + ".png";
+    if(!img.src.endsWith(nsrc)) img.src = nsrc;
+    const hsrc = "static/images/qual/" + q.img + "_corrected.html";
+    if(!fr.getAttribute("src").endsWith(hsrc)) fr.setAttribute("src", hsrc);
+    document.getElementById("qualCapL").innerHTML = q.cap;
+    document.getElementById("qualCounter").textContent =
+      (Math.min(frag, QUAL_SET.length-1) + 1) + " / " + QUAL_SET.length;
+    setTimeout(()=>fitEmbeds(slides[cur]), 250);
+  }
   function next(){
-    if(frag < fragCount(cur)){ frag++; applyFrags(); drivePipeline("step"); return; }
+    if(frag < fragCount(cur)){
+      frag++; applyFrags(); drivePipeline("step");
+      if(slides[cur].dataset.nav) driveNav(1);
+      return;
+    }
     if(cur < slides.length-1) goto(cur+1, false);
   }
   function prev(){
-    if(frag > 0){ frag--; applyFrags(); drivePipeline("back"); return; }
+    if(frag > 0){
+      frag--; applyFrags(); drivePipeline("back");
+      if(slides[cur].dataset.nav) driveNav(-1);
+      return;
+    }
     if(cur > 0) goto(cur-1, true);
   }
 

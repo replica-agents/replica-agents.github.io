@@ -148,6 +148,25 @@
        controls the measure, and tables need every pixel to stay legible */
     body.embed-mode .container { max-width: none !important; padding: 0 16px !important; }
     body.embed-mode .table-scroll { box-shadow: none !important; }
+
+    /* ---- presentation styling for the embedded results table ----
+       Readable at projector distance: heavier category bands, colour-graded
+       cells so the collapse on position is visible before anyone reads a
+       number, and the Params column dropped (it is empty for every row). */
+    body.embed-mode.grade #mainTable thead tr:last-child th:nth-child(2),
+    body.embed-mode.grade #mainTable tbody tr:not(.group-label) td:nth-child(2) { display: none; }
+    body.embed-mode.grade #mainTable tbody tr td { font-size: 17px; padding: 9px 10px; }
+    body.embed-mode.grade #mainTable tbody tr.grp td {
+      background: #1e3a5f !important; color: #fff !important; font-weight: 800 !important;
+      letter-spacing: .14em; font-size: 13px !important; padding: 7px 12px !important;
+    }
+    body.embed-mode.grade #mainTable td.g0 { background: #f6dcd6; }
+    body.embed-mode.grade #mainTable td.g1 { background: #fbeadb; }
+    body.embed-mode.grade #mainTable td.g2 { background: #fdf6e3; }
+    body.embed-mode.grade #mainTable td.g3 { background: #eaf3e6; }
+    body.embed-mode.grade #mainTable td.g4 { background: #cfe8c9; font-weight: 700; }
+    body.embed-mode.grade #mainTable td.best { box-shadow: inset 0 0 0 2px #1f7a5c; font-weight: 800; }
+    body.embed-mode.grade #mainTable tbody tr.ours td { font-size: 19px; }
     .nav-right { display: flex; align-items: center; gap: 8px; }
     .icon-btn {
       width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--border);
@@ -4510,13 +4529,113 @@
       const btn = document.querySelector(`#pdemoDocRow [data-doc="${doc}"]`);
       if (btn) btn.click();
     }
+    // Colour-grade the main results table so the trend is legible from the back
+    // of a lecture hall. Purely presentational; the numbers are untouched.
+    if (params.get("grade") === "1") {
+      document.body.classList.add("grade");
+      const tbl = $("#mainTable");
+      if (tbl) {
+        // Params is dropped for the slide; the grouped header spans one fewer column.
+        const grpFirst = tbl.querySelector("thead tr.grp th");
+        if (grpFirst) {
+          const cs = parseInt(grpFirst.getAttribute("colspan") || "1", 10);
+          if (cs > 1) grpFirst.setAttribute("colspan", cs - 1);
+        }
+        const rows = $$("#mainTable tbody tr").filter(r => !r.classList.contains("grp"));
+        const heads = $$("#mainTable thead tr:last-child th").map(h => h.textContent.trim());
+        const cols = {};
+        heads.forEach((h, ci) => {
+          if (ci < 2) return;
+          const lower = /↓/.test(h);
+          const vals = rows.map(r => parseFloat((r.children[ci] || {}).textContent)).filter(v => !isNaN(v));
+          if (!vals.length) return;
+          cols[ci] = { lo: Math.min(...vals), hi: Math.max(...vals), lower,
+                       best: lower ? Math.min(...vals) : Math.max(...vals) };
+        });
+        rows.forEach(r => {
+          Object.keys(cols).forEach(ci => {
+            const cell = r.children[ci]; if (!cell) return;
+            const v = parseFloat(cell.textContent); if (isNaN(v)) return;
+            const c = cols[ci];
+            let t = c.hi === c.lo ? 1 : (v - c.lo) / (c.hi - c.lo);
+            if (c.lower) t = 1 - t;                       // NTED: lower is better
+            cell.classList.add("g" + Math.min(4, Math.floor(t * 5)));
+            if (v === c.best) cell.classList.add("best");
+          });
+        });
+      }
+    }
+
+    if (params.get("autoplay") === "1") {
+      // ?speed accepts either a preset button value or any multiplier via
+      // ?rate=1.5 — the preset row only offers 0.5x / 1x / 2x.
+      const sp = params.get("speed");
+      if (sp) { const b = document.querySelector(`#pdemoSpeed [data-s="${sp}"]`); if (b) b.click(); }
+      const rate = parseFloat(params.get("rate"));
+      if (!isNaN(rate) && rate > 0) {
+        speedMult = 1 / rate;
+        $$("#pdemoSpeed button").forEach(x => x.classList.remove("on"));
+      }
+      setTimeout(() => { const p = $("#pdemoPlay"); if (p) p.click(); }, 700);
+    }
+
+    /* ---- Keyboard bridge -------------------------------------------------
+       slides.html drives these figures with the presenter remote. This is
+       purely additive: every mouse interaction still works exactly as before.
+       Messages: {type:"replica:demo", action} · {type:"replica:nav", dir}    */
+    let navIdx = -1;
+    const navTargets = {
+      teaser:    () => ({ n: TEASER_METHODS.length,   go: i => showTeaser(i) }),
+      fidhtml:   () => ({ n: FIDHTML_CALLOUTS.length, go: i => { fidActive = null; toggleFid(FIDHTML_CALLOUTS[i].id); scrollCodeToHl(); } }),
+      downstream:() => ({ n: DOWNSTREAM_APPS.length,  go: i => {
+                            downPinned = i;
+                            $$("#downCards .dapp").forEach((c, j) => c.classList.toggle("active", j === i));
+                            downZoomTo(DOWNSTREAM_APPS[i].id); downSetCaption(DOWNSTREAM_APPS[i]);
+                         } }),
+      results:   () => ({ n: $$("#ablationTable tbody tr").length, go: i => {
+                            $$("#ablationTable tbody tr").forEach((r, j) => setAblHl(j, j === i));
+                         } })
+    };
+    // Bring the highlighted dimension into view inside the code panel.
+    function scrollCodeToHl() {
+      const code = $("#fidCode"); if (!code) return;
+      const cls = (code.className.match(/hl-(\d)/) || [])[1];
+      if (!cls) return;
+      const first = code.querySelector(`[data-dim="${cls}"]`);
+      if (first) {
+        // offsetTop is relative to the nearest positioned ancestor, which is not
+        // the code panel — measure against the panel's own box instead.
+        const cr = code.getBoundingClientRect(), fr = first.getBoundingClientRect();
+        const top = code.scrollTop + (fr.top - cr.top) - code.clientHeight / 2 + fr.height / 2;
+        code.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+      }
+    }
     window.addEventListener("message", (e) => {
-      const d = e.data;
-      if (!d || d.type !== "replica:demo") return;
-      const map = { step: "#pdemoFwd", back: "#pdemoBack", play: "#pdemoPlay", reset: "#pdemoReset" };
-      const sel = map[d.action];
-      if (sel) { const b = $(sel); if (b) b.click(); }
+      const d = e.data; if (!d) return;
+      if (d.type === "replica:demo") {
+        const map = { step: "#pdemoFwd", back: "#pdemoBack", play: "#pdemoPlay", reset: "#pdemoReset" };
+        const sel = map[d.action];
+        if (sel) { const b = $(sel); if (b) b.click(); }
+        return;
+      }
+      if (d.type === "replica:nav") {
+        const f = navTargets[target]; if (!f) return;
+        const t = f(); if (!t.n) return;
+        navIdx = (navIdx + (d.dir || 1) + t.n) % t.n;
+        t.go(navIdx);
+      }
     });
+    // Tell the parent when the demo walkthrough reaches the end, so the deck
+    // knows the next click should move on rather than step the demo again.
+    if (target === "demo") {
+      const prog = $("#pdemoStepCount");
+      if (prog) new MutationObserver(() => {
+        const m = (prog.textContent || "").match(/(\d+)\s*\/\s*(\d+)/);
+        if (m && m[1] === m[2] && parseInt(m[2], 10) > 0) {
+          try { parent.postMessage({ type: "replica:demoBeat", done: true }, "*"); } catch (err) {}
+        }
+      }).observe(prog, { childList: true, characterData: true, subtree: true });
+    }
   }
 
   /* ===================== NAV ===================== */
