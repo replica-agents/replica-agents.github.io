@@ -1,0 +1,419 @@
+/* ==========================================================================
+   REPLICA — ICDAR 2026 poster.  A0 portrait, 841 × 1189 mm, one page.
+   Structure in mm, type in pt. No vw/vh/rem-off-a-guessed-root anywhere:
+   those do not survive headless printing at a different device pixel ratio.
+   ========================================================================== */
+
+@import url('./fonts/fonts.css');
+
+/* --- tokens --------------------------------------------------------------
+   Palette derived, not chosen. Grounds sampled from the poster's own subject
+   matter; stage colours and the violet sampled off the paper's Fig. 4 and
+   Fig. 2. See POSTER_PLAN.md §2.1 for the derivation and contrast ratios. */
+:root {
+  --paper:  #EFE8E4;   /* warm rag — input / source document / the PDF world */
+  --screen: #F7F6F2;   /* low-ink warm neutral — clean on uncoated poster stock */
+  --ink-p:  #1E1815;
+  --ink-s:  #141A21;
+
+  --seg: #4A6BA5;  --seg-d: #4A6AA5;
+  --loc: #689558;  --loc-d: #527545;
+  --asm: #C9A83F;  --asm-d: #806B28;
+  --ref: #C67736;  --ref-d: #9C5E2A;
+
+  --mark: #6124BC;
+  --rule: rgba(20, 26, 33, .22);
+  --dim:  rgba(20, 26, 33, .58);
+
+  /* grid */
+  --margin: 28mm;
+  --col: 54.42mm;
+  --gut: 12mm;
+
+  --serif: 'Source Serif 4', Georgia, serif;
+  --sans:  'IBM Plex Sans', Helvetica, Arial, sans-serif;
+  --mono:  'IBM Plex Mono', Menlo, monospace;
+}
+
+@page { size: 841mm 1189mm; margin: 0; }
+
+html, body {
+  width: 841mm; height: 1189mm; margin: 0; padding: 0;
+  overflow: hidden;
+  background: var(--screen);
+  color: var(--ink-s);
+  font-family: var(--sans);
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* faint page-geometry grid: visible up close, gone at reading distance */
+body::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    repeating-linear-gradient(to bottom, rgba(20,26,33,.018) 0 .2mm, transparent .2mm 8mm);
+}
+
+.poster {
+  position: relative; z-index: 1;
+  box-sizing: border-box;
+  width: 841mm; height: 1189mm;
+  padding: var(--margin);
+  display: grid;
+  /* 1037 mm of bands + 6 × 16 mm gaps = 1133 mm = the live height exactly.
+     Band E lost the ablation column (author's call); the height went to Band C,
+     where the Fig. 1A comparison strip was too small to read. */
+  grid-template-rows: 128mm 236mm 216mm 202mm 142mm 100mm 13mm;
+  row-gap: 16mm;
+}
+
+.band { position: relative; min-width: 0; min-height: 0; break-inside: avoid; }
+.g12 {
+  display: grid; grid-template-columns: repeat(12, 1fr); column-gap: var(--gut);
+  min-width: 0;
+}
+
+/* --- shared type ---------------------------------------------------------- */
+.eyebrow {
+  display: block;
+  background: rgba(97, 36, 188, .11);
+  border-left: 3mm solid var(--mark);
+  padding: 2.4mm 5mm; margin: 0 0 3.5mm;
+  font-family: var(--sans); font-size: 34pt; font-weight: 600;
+  letter-spacing: .04em; text-transform: uppercase; color: var(--ink-s);
+  line-height: 1.02;
+}
+
+h2.head {
+  font-size: 54pt; font-weight: 600; line-height: 1.02; margin: 0 0 5mm;
+  letter-spacing: -.012em;
+}
+h3.sub { font-size: 37pt; font-weight: 600; line-height: 1.08; margin: 0 0 3mm; }
+p, li { font-size: 30pt; line-height: 1.40; margin: 0 0 4mm; }
+.cap {
+  font-family: var(--mono); font-size: 25pt; line-height: 1.28;
+  color: var(--dim); margin: 0;
+}
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+b, strong { font-weight: 600; }
+
+/* SoM badge — filled violet circle, white numeral. Never an ① glyph:
+   the circled-numeral codepoints are not in the self-hosted subsets. */
+.som {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 13mm; height: 13mm; border-radius: 50%;
+  background: var(--mark); color: #fff;
+  font-family: var(--sans); font-size: 27pt; font-weight: 600;
+  line-height: 1; flex: none; vertical-align: -2.5mm;
+}
+.som.sm { width: 11mm; height: 11mm; font-size: 24pt; vertical-align: -2mm; }
+.som.seg { background: var(--seg-d); }
+.som.loc { background: var(--loc-d); }
+.som.asm { background: var(--asm-d); }
+.som.ref { background: var(--ref-d); }
+
+/* corner brackets, never a 4-sided border */
+.brk { position: relative; }
+.brk::before, .brk::after {
+  content: ''; position: absolute; width: 9mm; height: 9mm; pointer-events: none;
+  border: .7mm solid var(--rule);
+}
+.brk::before { top: 0; left: 0; border-right: 0; border-bottom: 0; }
+.brk::after { bottom: 0; right: 0; border-left: 0; border-top: 0; }
+.brk > .brk-tr, .brk > .brk-bl {
+  position: absolute; width: 9mm; height: 9mm; border: .7mm solid var(--rule);
+}
+.brk > .brk-tr { top: 0; right: 0; border-left: 0; border-bottom: 0; }
+.brk > .brk-bl { bottom: 0; left: 0; border-right: 0; border-top: 0; }
+
+/* the two substrates */
+.on-paper  { background: var(--paper);  color: var(--ink-p); }
+.on-screen { background: var(--screen); color: var(--ink-s); }
+
+/* ===== BAND A — title ===================================================== */
+.bandA { display: grid; grid-template-columns: 1fr 140mm; column-gap: 16mm;
+         align-items: start; padding-top: 5mm; }
+.bandA .rail { display: flex; flex-direction: column; gap: 6mm; }
+.bandA .logo img { width: 120mm; display: block; }
+.title {
+  font-family: var(--serif); font-weight: 600; font-size: 76pt;
+  line-height: 1.02; letter-spacing: -.015em; margin: 0;
+}
+/* full caps at the SAME size, distinguished by weight -- font-variant-caps:
+   all-small-caps rendered REPLICA visibly smaller than the rest of the title */
+.title .sys { font-weight: 700; letter-spacing: .005em; color: #287653; }
+.title .visual { color: #B63831; }
+.thesis {
+  font-size: 40pt; font-weight: 400; color: var(--mark);
+  margin: 3mm 0 0; line-height: 1.12;
+}
+.authors { font-size: 28pt; line-height: 1.16; letter-spacing: -.025em; margin: 3mm 0 0; white-space: nowrap; }
+.authors sup, .affils sup { font-size: 24pt; }
+.affils { font-size: 26pt; color: var(--dim); margin: 1.5mm 0 0; }
+.project-url {
+  font-family: var(--mono); font-size: 25pt; font-weight: 600; letter-spacing: .015em;
+  color: var(--mark); line-height: 1.05; margin: 2.5mm 0 0;
+}
+.codes { display: flex; gap: 10mm; justify-content: flex-start; }
+.codes figure { margin: 0; text-align: center; }
+.codes svg, .codes img, .codes .qr-slot { display: block; }
+.codes figcaption {
+  font-family: var(--mono); font-size: 24pt; color: var(--dim);
+  margin-top: 3mm; line-height: 1.1; white-space: nowrap;
+}
+.qr-slot {
+  border: .8mm dashed var(--rule); box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 24pt; color: var(--dim);
+  text-align: center; padding: 4mm; line-height: 1.15;
+}
+
+/* ===== BAND B — the seam ================================================== */
+.bandB { display: grid; grid-template-columns: 480mm 1fr; column-gap: 15mm; }
+.seamwrap { position: relative; height: 100%; }
+/* The two substrates, made visible behind the whole hero: warm paper to the
+   left of the seam, cool screen to the right. This is what makes the idea
+   readable from ten metres, and it is what teaches the code the rest of the
+   poster then relies on. */
+.seamwrap::before {
+  content: ''; position: absolute; left: -6mm; top: -5mm; width: 246mm; bottom: 22mm;
+  background: var(--paper); z-index: 0;
+}
+
+.plate { position: absolute; top: 0; height: 202mm; width: 150mm; overflow: hidden; }
+.plate img { width: 100%; display: block; }
+.plate.src   { left: 0;     background: #fff; padding: 4mm; box-sizing: border-box; z-index: 2; }
+.plate.dst   { right: 0;    background: #fff; z-index: 2; }
+.plate.src::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  box-shadow: inset 0 0 0 .5mm rgba(30,24,21,.30);
+}
+/* minimal browser chrome on the output plate, matching Fig. 1 */
+.chrome {
+  position: absolute; right: 0; top: 0; width: 150mm; height: 11mm; z-index: 2;
+  background: #E5E4DF; border: .5mm solid rgba(20,26,33,.28); border-bottom: 0;
+  box-sizing: border-box; display: flex; align-items: center; gap: 2.6mm;
+  padding: 0 4mm;
+}
+.chrome i { width: 3.2mm; height: 3.2mm; border-radius: 50%; background: #A9B6C4; }
+.chrome .addr {
+  flex: 1; height: 5.6mm; border-radius: 1mm; background: #FCFCFA;
+  border: .35mm solid rgba(20,26,33,.20);
+}
+.plate.dst { top: 11mm; height: 191mm; border: .5mm solid rgba(20,26,33,.28);
+             box-sizing: border-box; }
+
+/* the seam itself */
+.seam { position: absolute; left: 239mm; top: -5mm; width: 1.4mm; height: 220mm;
+        background: var(--mark); z-index: 6; }
+.seam::before, .seam::after {
+  content: ''; position: absolute; top: 0; width: 11mm; height: 100%;
+}
+.seam::before { right: 1.4mm; background: linear-gradient(to left,  rgba(97,36,188,.30), transparent); }
+.seam::after  { left: 1.4mm;  background: linear-gradient(to right, rgba(97,36,188,.30), transparent); }
+
+/* the decomposition, three layers at different offsets */
+.decomp { position: absolute; left: 158mm; top: 2mm; width: 170mm; height: 196mm; z-index: 3; }
+.decomp .boxes {
+  position: absolute; left: 0; top: 8mm; width: 96mm; height: 148mm; overflow: hidden;
+  box-shadow: 0 0 0 .5mm rgba(20,26,33,.24);
+}
+.decomp .boxes img { width: 100%; display: block; }
+.region { position: absolute; box-sizing: border-box; border: .7mm solid var(--mark); background: rgba(97,36,188,.12); }
+.title-region { top: 4%; left: 7%; width: 86%; height: 17%; }
+.hero-region { top: 22%; left: 7%; width: 86%; height: 32%; border-color: var(--asm-d); background: rgba(201,168,63,.16); }
+.copy-region { top: 55%; left: 7%; width: 49%; height: 42%; border-color: var(--seg-d); background: rgba(74,107,165,.13); }
+.caption-region { top: 55%; left: 58%; width: 35%; height: 42%; border-color: var(--loc-d); background: rgba(104,149,88,.14); }
+/* fragment chips caught mid-flight across the seam: the left half of each is
+   drawn warm, the right half cool, so the chip itself shows the crossing */
+.frag {
+  position: absolute; font-family: var(--mono); font-size: 24pt; z-index: 5;
+  border: .5mm solid rgba(20,26,33,.45); white-space: nowrap; line-height: 1.1;
+  padding: 2mm 3.4mm;
+  background: linear-gradient(to right,
+     var(--paper) 0 var(--split), #FFFFFF var(--split) 100%);
+}
+.frag.f1 { left: 46mm;  top: 26mm;  --split: 62%; }
+.frag.f2 { left: 58mm;  top: 96mm;  --split: 44%; }
+.frag.f3 { left: 40mm;  top: 166mm; --split: 78%; }
+
+.seamlabel {
+  position: absolute; bottom: 0; font-family: var(--mono); font-size: 24pt;
+  color: var(--dim); line-height: 1.2; z-index: 5;
+}
+.seamlabel.l { left: 0; }
+.seamlabel.r { right: 0; text-align: right; }
+
+/* stat strip */
+/* Four stats, one size, one grid. The earlier 176 pt hero over three at 72 pt
+   read as inconsistent rather than hierarchical. */
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12mm 10mm;
+         align-content: start; }
+.stats .num {
+  font-family: var(--mono); font-variant-numeric: tabular-nums;
+  font-size: 104pt; font-weight: 500; line-height: .92; letter-spacing: -.02em;
+  margin: 0;
+}
+.stat .unit { font-size: 34%; vertical-align: baseline; }  /* 24.5 pt: the 24 pt floor beats the 30% guideline */
+.stat .cap { margin-top: 3mm; line-height: 1.22; }
+.statmore {
+  grid-column: 1 / -1; background: rgba(97,36,188,.07); border-left: 2mm solid var(--mark);
+  padding: 3.5mm 5mm 3mm; margin-top: -2mm;
+}
+.statmore p { font-size: 27pt; line-height: 1.12; margin: 0; }
+.statmore .stat-kicker {
+  font-family: var(--mono); font-size: 21pt; font-weight: 600; letter-spacing: .08em;
+  color: var(--mark); margin: 0 0 1.4mm;
+}
+.stat-keys { display: flex; gap: 4mm; margin-top: 2.5mm; }
+.stat-keys span { font-family: var(--mono); font-size: 19pt; font-weight: 600; color: var(--dim); white-space: nowrap; }
+
+/* ===== BAND C ============================================================= */
+.bandC { display: grid; grid-template-columns: 452.9mm 320.1mm; column-gap: var(--gut); }
+.strip { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 9mm; }
+.strip figure { margin: 0; }
+.strip .shot {
+  height: 125mm; overflow: hidden; background: #fff; display: grid; place-items: center;
+  border: .5mm solid rgba(20,26,33,.26);
+}
+.strip .shot.paper { background: var(--paper); }
+.strip .shot img { width: auto; height: 100%; max-width: 100%; display: block; object-fit: contain; }
+.strip figcaption { margin-top: 3mm; line-height: 1.06; }
+.strip figcaption { white-space: nowrap; }
+.strip figcaption b { display: inline; font-size: 26pt; }
+.strip figcaption span { display: inline; margin: 0; font-size: 22pt; line-height: 1.06; color: var(--dim); }
+.strip .ours { color: var(--mark); }
+
+.dims { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2mm 5mm; margin: 0 0 2mm; }
+.dim { display: flex; gap: 3mm; align-items: flex-start; }
+.dim p { font-size: 27pt; line-height: 1.16; margin: 0; }
+.dim b { display: block; }
+
+table.t { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+table.t th, table.t td {
+  font-family: var(--mono); font-size: 25pt; padding: .65mm 1.6mm; text-align: right;
+  border-bottom: .35mm solid var(--rule);
+}
+table.t th { font-weight: 600; color: var(--ink-s); font-size: 25pt; line-height: 1.05; }
+table.t td:first-child, table.t th:first-child { text-align: left; font-family: var(--sans); }
+table.t tr.ours td { background: rgba(97,36,188,.10); font-weight: 600; }
+table.t tr.ours td:first-child { color: var(--mark); }
+.results-table .metric-groups th {
+  background: rgba(97,36,188,.08); font-family: var(--sans); font-size: 19pt;
+  letter-spacing: -.018em; line-height: 1; padding: 1.3mm .8mm .9mm;
+  text-align: center; white-space: nowrap; border-bottom: .2mm solid var(--rule);
+}
+.results-table .metric-groups th:first-child { text-align: left; }
+.results-table .metric-labels th { font-size: 22pt; padding-top: .8mm; }
+.results-table .metric-groups th:nth-child(2),
+.results-table .metric-labels th:nth-child(-n+2) { background: rgba(74,107,165,.13); color: #355783; }
+.results-table .metric-groups th:nth-child(3),
+.results-table .metric-labels th:nth-child(3) { background: rgba(104,149,88,.15); color: #496C3D; }
+.results-table .metric-groups th:nth-child(4),
+.results-table .metric-labels th:nth-child(4),
+.results-table .metric-labels th:nth-child(5) { background: rgba(201,168,63,.19); color: #725F20; }
+.results-table .metric-groups th:nth-child(5),
+.results-table .metric-labels th:nth-child(6) { background: rgba(182,56,49,.12); color: #92342E; }
+.results-table .metric-groups th:nth-child(6),
+.results-table .metric-labels th:nth-child(7) { background: rgba(97,36,188,.10); color: var(--mark); }
+.results-table td:nth-child(2) { border-left: 1mm solid var(--seg-d); }
+.results-table td:nth-child(4) { border-left: 1mm solid var(--loc-d); }
+.results-table td:nth-child(5) { border-left: 1mm solid var(--asm-d); }
+.results-table td:nth-child(7) { border-left: 1mm solid #B63831; }
+.results-table td:nth-child(8) { border-left: 1mm solid var(--mark); }
+
+/* ===== BAND D — pipeline ================================================== */
+.bandD { display: grid; place-items: center; height: 100%; }
+.original-pipeline { width: 640mm; height: 202mm; margin: 0; position: relative; }
+.original-pipeline img { display: block; width: 640mm; height: 202mm; object-fit: contain; }
+.original-pipeline figcaption { position: absolute; right: 0; bottom: 0; margin: 0; padding: 1.2mm 2mm; background: rgba(247,246,242,.88);
+  font-family: var(--mono); font-size: 18pt; line-height: 1; color: var(--dim); }
+
+/* ===== BAND E ============================================================= */
+.bandE { display: grid; grid-template-columns: 386.5mm 386.5mm; column-gap: var(--gut); }
+.statchips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2mm 6mm; margin: 0 0 2.5mm; }
+.statchip .n {
+  font-family: var(--mono); font-variant-numeric: tabular-nums;
+  font-size: 42pt; font-weight: 500; line-height: 1; margin: 0;
+}
+.statchip .t { font-size: 25pt; color: var(--dim); margin: .8mm 0 0; line-height: 1.05; }
+dl.defs { margin: 0 0 2mm; }
+dl.defs div { display: flex; gap: 3mm; margin-bottom: .6mm; }
+dl.defs dt {
+  font-family: var(--mono); font-weight: 600; font-size: 28pt; width: 17mm; flex: none;
+}
+dl.defs dd { margin: 0; font-size: 26pt; line-height: 1.16; }
+.newmetric { color: var(--mark); font-weight: 600; }
+.formula {
+  font-family: var(--mono); font-size: 26pt; padding: 1mm 0;
+  border-top: .35mm solid var(--rule); border-bottom: .35mm solid var(--rule);
+  margin: 0 0 3mm;
+}
+.bar { position: relative; }
+.bar::before {
+  content: ''; position: absolute; left: 0; top: .8mm; bottom: .8mm;
+  width: calc(var(--w) * 1%); background: rgba(97,36,188,.14);
+}
+.bar span { position: relative; }
+
+/* ablation staircase */
+.stair { display: flex; flex-direction: column; gap: 1.8mm; }
+.step { display: grid; grid-template-columns: 1fr 22mm; align-items: center; gap: 3mm; }
+.stair { gap: 1mm; }
+.step .track { height: 7.6mm; background: rgba(20,26,33,.07); position: relative; }
+.step .fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--asm); }
+.step.final .fill { background: var(--mark); }
+.step .lab {
+  position: absolute; left: 2.5mm; top: 50%; transform: translateY(-50%);
+  font-size: 24pt; white-space: nowrap; line-height: 1;
+}
+.step .v {
+  font-family: var(--mono); font-variant-numeric: tabular-nums;
+  font-size: 24pt; text-align: right;
+}
+.step.final .v { font-weight: 600; color: var(--mark); }
+.jump {
+  font-family: var(--mono); font-size: 24pt; color: var(--mark);
+  margin: .6mm 0 .6mm 3mm;
+}
+.strip-rel {
+  font-family: var(--mono); font-size: 24pt; line-height: 1.16; color: var(--dim);
+  margin-top: 2.5mm; padding-top: 2mm; border-top: .35mm solid var(--rule);
+}
+
+/* ===== BAND F ============================================================= */
+.bandF { display: grid; grid-template-columns: 452.9mm 320.1mm; column-gap: var(--gut); }
+.tiles { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 9mm; }
+.tiles figure { margin: 0; }
+.tiles .shot {
+  height: 64mm; overflow: hidden; background: #fff;
+  border: .4mm solid rgba(20,26,33,.22);
+}
+.tiles .shot img {
+  width: 100%; height: 100%; display: block;
+  object-fit: contain; object-position: center;
+}
+.tiles .shot { position: relative; }
+.tiles .retrieval .shot img,
+.tiles .qa .shot img { position: absolute; max-width: none; object-fit: initial; }
+/* Close-ups deliberately use the original paper figure, not a new illustration:
+   each crop enlarges the task outcome that is otherwise illegible at poster scale. */
+.tiles .retrieval .shot img { width: 560mm; height: auto; right: 0; top: -70mm; }
+.tiles .qa .shot img { width: 650mm; height: auto; right: 0; top: -15mm; }
+.tiles figcaption { font-size: 24pt; line-height: 1.06; margin-top: 2.4mm; font-weight: 600; white-space: nowrap; }
+.limits > p:not(.takeaway) { font-size: 24pt; line-height: 1.08; margin: 0 0 2mm; white-space: nowrap; }
+.takeaway {
+  background: var(--paper); color: var(--ink-p);
+  font-family: var(--serif); font-size: 32pt; line-height: 1.20;
+  padding: 3mm 5mm; margin: 2mm 0 0;
+}
+
+/* ===== footer ============================================================= */
+.footer {
+  display: flex; align-items: center; justify-content: space-between; gap: 8mm;
+  border-top: .5mm solid var(--rule); padding-top: 2mm;
+  font-size: 26pt; line-height: 1.05; color: var(--dim);
+}
+.footer .legend-type { font-family: var(--mono); font-size: 24pt; }
+.footer .logos { display: flex; align-items: center; gap: 8mm; }
+.footer .logos img { height: 9mm; display: block; }
