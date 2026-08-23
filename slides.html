@@ -196,9 +196,16 @@
   .st.done{border-color:var(--navy-soft);} .st.done .t,.st.done .n{color:var(--navy-soft);}
 
   /* ---------- live fidelity ladder ---------- */
-  .ladder-wrap{display:flex;gap:28px;flex:1;min-height:0;}
-  .ladder-src{flex:0 0 500px;display:flex;flex-direction:column;justify-content:center;}
-  .ladder-out{flex:1;display:flex;flex-direction:column;min-width:0;justify-content:center;}
+  /* Grid, not two centred flex columns: the caption and the level note below
+     the boxes have different heights, so centring each column independently
+     left the two pages 32px out of vertical alignment. One shared row for the
+     pages guarantees they line up exactly. */
+  /* Columns are content-sized and the pair is centred as a group, so the
+     reconstruction never leaves a river of dead space to its right. The level
+     note spans both columns underneath, which is also what fills that width. */
+  .ladder-wrap{display:grid;grid-template-columns:462px 556px;grid-template-rows:auto auto;
+    column-gap:96px;row-gap:6px;flex:1;min-height:0;align-content:center;justify-content:center;}
+  .ladder-src,.ladder-out{display:contents;}
   .lv-steps{display:flex;gap:9px;margin-bottom:12px;}
   .lv-step{flex:1;border:1.5px solid var(--line);border-radius:8px;padding:8px 11px;background:var(--paper);
     font-family:var(--mono);font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);
@@ -213,7 +220,18 @@
   .pagebox{background:var(--paper);border:1px solid var(--line);border-radius:10px;
     position:relative;overflow:hidden;padding:20px 24px;width:100%;height:100%;}
   .pagebox.sized{width:462px;height:625px;flex:none;}
-  .ladder-src,.ladder-out{align-items:center;}
+  /* display:contents hoists the children into the grid, so each one is placed
+     explicitly — otherwise they flow in DOM order and stack. */
+  .ladder-src .pagebox{grid-column:1;grid-row:1;justify-self:center;align-self:center;}
+  .ladder-src .cap    {grid-column:1;grid-row:2;align-self:start;justify-self:center;}
+  .ladder-out .pagebox{grid-column:2;grid-row:1;justify-self:center;align-self:center;}
+  .ladder-out .cap    {grid-column:2;grid-row:2;align-self:start;justify-self:center;}
+  /* Auto columns cannot resolve a percentage width, so the unsized (level 0/1)
+     reconstruction needs explicit dimensions — deliberately NOT the source's,
+     because "a text stream has no page" is the point of those two levels. */
+  .ladder-out .pagebox{width:556px;height:664px;}
+  .ladder-out .pagebox.sized{width:462px;height:625px;}
+
   .doc{font-family:Georgia,serif;color:#222;font-size:13.5px;line-height:1.55;position:relative;height:100%;}
   .doc .d-stamp{position:absolute;right:8px;top:34px;transform:rotate(-9deg);border:3px solid var(--red);
     color:var(--red);font-family:var(--mono);font-weight:800;font-size:16px;letter-spacing:.1em;padding:4px 10px;
@@ -250,7 +268,7 @@
   .doc .d-bar{height:0;background:linear-gradient(90deg,var(--navy) 0 70%,var(--gold) 70%);
     margin:0;border-radius:2px;transition:all .45s;}
   .doc.L3 .d-bar{height:5px;margin:0 0 11px;}
-  .lv-what{margin-top:12px;background:var(--gold-soft);border-left:4px solid var(--gold);padding:12px 18px;
+  .lv-what{margin-top:14px;background:var(--gold-soft);border-left:4px solid var(--gold);padding:12px 18px;
     border-radius:0 8px 8px 0;font-size:18.5px;color:#5f4a12;line-height:1.4;min-height:78px;}
   .lv-what b{color:var(--navy);}
 
@@ -334,6 +352,278 @@
   #overview .oi:hover,#overview .oi.cur{border-color:var(--gold);}
   #overview .oi .on-n{font-family:var(--mono);font-size:10.5px;color:var(--gold);font-weight:700;}
   #overview .oi .on-t{font-family:var(--serif);font-size:14px;color:var(--navy);font-weight:700;line-height:1.2;margin-top:4px;}
+
+  /* ═══════════ REQUIREMENTS FOR VFDR ═══════════ */
+  .reqgroup{display:flex;flex-direction:column;gap:12px;}
+  .reqgroup + .reqgroup{margin-top:24px;}
+  .reqlabel{font-size:19px;color:var(--ink-3);display:flex;align-items:center;gap:12px;}
+  .reqlabel .rq{font-family:var(--mono);font-size:14px;letter-spacing:.14em;text-transform:uppercase;
+    font-weight:700;color:#fff;background:var(--navy);padding:5px 13px;border-radius:999px;}
+  .reqlabel .rq.alt{background:var(--gold);color:var(--navy-deep);}
+  .card .q{margin-bottom:9px !important;color:var(--ink-3);}
+  .card .metric{margin-top:11px;font-family:var(--mono);font-size:15.5px;color:var(--navy-soft);}
+  .card .metric.gold{color:var(--gold);}
+  .reqrow2{gap:20px;}
+  .card.wide{display:flex;align-items:center;gap:20px;padding:18px 24px;}
+  .card.wide .ricon{width:112px;height:78px;flex:0 0 auto;}
+  .card.wide h3{margin-bottom:6px;}
+  .ricon .fr{fill:#fff;stroke:var(--navy-soft);stroke-width:2.5;}
+  .ricon .bar{fill:var(--navy-soft);}
+  .ricon .dotr{fill:#ef7b6d;} .ricon .doty{fill:#f2c14e;} .ricon .dotg{fill:#7ec98f;}
+  .ricon .url{fill:rgba(255,255,255,.55);}
+  .ricon .ln{fill:#c6cfda;} .ricon .pic{fill:var(--gold-soft);stroke:var(--gold-line);stroke-width:1.5;}
+  .ricon .wire{fill:none;stroke:var(--gold);stroke-width:2.2;stroke-linecap:round;}
+  .ricon .node{fill:var(--gold-soft);stroke:var(--gold);stroke-width:2;}
+  .ricon .nt{font-family:var(--mono);font-size:9px;fill:#8a6510;font-weight:700;}
+
+  /* ═══════════ AGENTS VS TOOLS — compact ═══════════ */
+  .card.compact{padding:20px 24px;}
+  .atline{font-family:var(--serif);font-size:27px;font-weight:700;color:var(--navy);line-height:1.25;}
+  .atline .arw{color:var(--ink-3);margin:0 4px;}
+  .atsub{font-size:18px;color:var(--ink-3);margin-top:6px;}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:15px;}
+  .chips .chip{font-family:var(--mono);font-size:14px;color:var(--navy-soft);background:#eef2f7;
+    border:1px solid #dbe3ec;border-radius:999px;padding:4px 11px;}
+  .chips.ag .chip{color:var(--violet);background:#f1eefc;border-color:#ddd6f6;}
+
+  /* ═══════════ VFDR-BENCH CAROUSEL ═══════════ */
+  .chint{font-family:var(--sans);font-size:15px;letter-spacing:0;text-transform:none;
+    color:var(--ink-3);font-weight:400;font-style:italic;}
+  .chint b{font-family:var(--mono);font-style:normal;color:var(--navy-soft);}
+  .caro-stats{flex:0 0 auto;margin-bottom:14px;gap:44px;}
+  .carowrap{display:flex;flex-direction:column;flex:1;min-height:0;gap:10px;}
+  .carotabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;flex:0 0 auto;}
+  .carotab{border:1.5px solid var(--line);background:var(--paper);border-radius:999px;cursor:pointer;
+    font-family:var(--sans);font-size:15px;font-weight:600;color:var(--ink-2);padding:6px 16px;transition:all .2s;}
+  .carotab:hover{border-color:var(--navy-soft);color:var(--navy);}
+  .carotab.on{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .carotab .n{opacity:.6;font-size:13px;margin-left:6px;font-family:var(--mono);}
+  .carostage{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .caroitem{position:absolute;top:50%;left:50%;cursor:zoom-in;
+    transition:transform .55s cubic-bezier(.22,.7,.3,1),opacity .55s;
+    background:var(--paper);border:1px solid var(--line);border-radius:8px;overflow:hidden;
+    box-shadow:0 8px 26px rgba(20,30,50,.16);}
+  .caroitem.mid{box-shadow:0 14px 44px rgba(20,30,50,.3);border-color:var(--gold);}
+  .caroitem.off{opacity:0;pointer-events:none;}
+  .caroitem img{display:block;height:100%;width:auto;max-width:none;}
+  .carocap{flex:0 0 auto;text-align:center;display:flex;align-items:baseline;justify-content:center;gap:14px;}
+  .carocap .t{font-family:var(--serif);font-size:24px;font-weight:700;color:var(--navy);}
+  .carocap .d{font-size:18px;color:var(--ink-2);}
+  .carocap .ix{font-family:var(--mono);font-size:15px;color:var(--ink-3);}
+  .carodots{display:flex;gap:5px;justify-content:center;flex:0 0 auto;flex-wrap:wrap;}
+  .carodot{width:9px;height:9px;border-radius:50%;background:var(--line);cursor:pointer;transition:all .2s;}
+  .carodot.on{background:var(--gold);transform:scale(1.35);}
+  .carostate{position:absolute;right:88px;bottom:64px;font-family:var(--mono);font-size:13px;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);}
+  .carostate.on{color:var(--green);}
+  #caroZoom{position:fixed;inset:0;z-index:80;background:rgba(10,14,22,.94);display:none;
+    align-items:center;justify-content:center;flex-direction:column;gap:18px;cursor:zoom-out;padding:40px;}
+  #caroZoom.on{display:flex;}
+  #caroZoom img{max-width:88vw;max-height:82vh;object-fit:contain;background:#fff;border-radius:6px;}
+  #caroZoom .z-cap{color:rgba(255,255,255,.75);font-family:var(--mono);font-size:15px;letter-spacing:.06em;}
+
+  /* ═══════════ METRIC RADAR ═══════════ */
+  .radarwrap{display:grid;grid-template-columns:1.15fr .85fr;gap:36px;align-items:center;flex:1;min-height:0;}
+  .mradar{width:100%;height:100%;max-height:660px;}
+  .mradar .rgrid circle{fill:none;stroke:var(--line);stroke-width:1.5;}
+  .mradar .rgrid circle:first-child{stroke:#c9c2b2;}
+  .mradar .rgrid line{stroke:var(--line);stroke-width:1.5;}
+  .mradar .rnode circle.std{fill:var(--navy-soft);}
+  .mradar .rnode circle.new{fill:var(--gold);}
+  .mradar .ax{font-family:var(--serif);font-size:27px;font-weight:700;fill:var(--navy);}
+  .mradar .qq{font-family:var(--sans);font-size:18px;fill:var(--ink-3);font-style:italic;}
+  .mradar .mt{font-family:var(--mono);font-size:19px;fill:var(--navy-soft);font-weight:600;}
+  .mradar .new .ax{fill:#8a6510;} .mradar .new .mt{fill:var(--gold);}
+  .mradar .chipstd{font-family:var(--mono);font-size:13px;fill:var(--ink-3);font-weight:400;letter-spacing:.1em;}
+  .mradar .chipnew{font-family:var(--mono);font-size:13px;fill:var(--red);font-weight:700;letter-spacing:.14em;}
+  .mradar .rcentre circle{fill:var(--navy);}
+  .mradar .rcentre .os{font-family:var(--serif);font-size:30px;font-weight:700;fill:#fff;}
+  .mradar .rcentre .osn{font-family:var(--mono);font-size:13px;fill:rgba(255,255,255,.7);}
+  .radarside{display:flex;flex-direction:column;gap:16px;}
+  .rs-card{background:var(--paper);border:1px solid var(--line);border-left:5px solid var(--navy-soft);
+    border-radius:10px;padding:17px 21px;}
+  .rs-card.gold{border-left-color:var(--gold);background:var(--gold-soft);}
+  .rs-card h4{margin:0 0 7px;font-family:var(--serif);font-size:23px;color:var(--navy);font-weight:700;}
+  .rs-card p{margin:0 0 7px;font-size:18px;line-height:1.5;color:var(--ink-2);}
+  .rs-card p:last-child{margin-bottom:0;}
+  .rs-card p.rs-tiny{font-size:16px;color:var(--ink-3);font-style:italic;}
+  .rs-card p.rs-tiny b{font-style:normal;color:var(--navy);}
+
+  /* ═══════════ MAIN RESULTS TABLE ═══════════ */
+  .rwrap{flex:0 1 auto;min-height:0;overflow:auto;border:1px solid var(--line);border-radius:12px;background:var(--paper);}
+  .rtab{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;}
+  .rtab th,.rtab td{padding:6px 10px;font-size:18px;text-align:center;border-bottom:1px solid #eceade;
+    transition:background .3s,opacity .3s,color .3s;}
+  .rtab thead th{position:sticky;top:0;background:var(--paper);z-index:2;}
+  .rtab th.gh{font-family:var(--mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink-3);font-weight:700;padding-top:12px;}
+  .rtab th.gh.b{border-left:1px solid var(--line);}
+  .rtab tr.hd2 th{font-family:var(--mono);font-size:15px;color:var(--ink-3);font-weight:600;border-bottom:2px solid var(--line);}
+  .rtab td.m,.rtab th.m{text-align:left;font-weight:600;color:var(--ink);white-space:nowrap;}
+  .rtab tr.cat td{background:#eef1f5;text-align:left;font-family:var(--mono);font-size:14px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--navy);font-weight:700;cursor:pointer;padding:7px 10px;}
+  .rtab tr.cat td:hover{background:#e3e9f1;}
+  .rtab tr.cat .car{display:inline-block;width:18px;color:var(--gold);}
+  .rtab tr.cat .cn{font-size:13px;color:var(--ink-3);letter-spacing:0;text-transform:none;margin-left:10px;font-weight:400;}
+  .rtab tr.xtra{display:none;} .rtab tr.xtra.open{display:table-row;}
+  .rtab tr.ours td{background:var(--gold-soft);font-weight:800;color:#8a6510;border-bottom:none;}
+  .rtab tr.ours td.m{color:#8a6510;}
+  .rtab.focus td.q,.rtab.focus th.q{opacity:.22;}
+  .rtab.focus tr.ours td.q{opacity:1;}
+  .rtab td.lit,.rtab th.lit{background:#e9eff7;}
+  .rtab th.gh.lit{color:var(--navy);background:#dde6f2;}
+  .rtab td.mark{outline:3px solid var(--red);outline-offset:-3px;border-radius:5px;color:var(--red);font-weight:800;}
+  .rtab td.good{outline:3px solid var(--gold);outline-offset:-3px;border-radius:5px;}
+  .rtab.graded td.g0{background:#fdeceb;color:#a02c1f;}
+  .rtab.graded td.g1{background:#fdf1dd;color:#8a5a12;}
+  .rtab.graded td.g2{background:#eef5ef;color:#4a6551;}
+  .rtab.graded td.g3{background:#dcefe1;color:#14663a;font-weight:700;}
+  .rtab.graded tr.ours td{font-weight:800;}
+  .rtab.graded tr.ours td.m{background:var(--gold-soft);color:#8a6510;}
+  .rnote{flex:0 0 auto;margin-top:12px;display:flex;flex-direction:column;gap:7px;}
+  .rlegend{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:14px;color:var(--ink-3);
+    opacity:0;transition:opacity .4s;justify-content:flex-end;}
+  .rlegend.on{opacity:1;}
+  .rlegend i{display:inline-block;width:26px;height:15px;border-radius:3px;border:1px solid rgba(0,0,0,.08);}
+  .rline{display:flex;gap:16px;align-items:baseline;background:var(--paper);border:1px solid var(--line);
+    border-left:5px solid var(--navy-soft);border-radius:0 8px 8px 0;padding:9px 18px;}
+  .rline.bad{border-left-color:var(--red);} .rline.win{border-left-color:var(--gold);background:var(--gold-soft);}
+  .rline .t{font-family:var(--serif);font-size:21px;font-weight:700;color:var(--navy);white-space:nowrap;min-width:210px;}
+  .rline .d{font-size:18px;color:var(--ink-2);line-height:1.4;}
+  .rline .d b{color:var(--red);} .rline.win .d b{color:#8a6510;}
+
+  /* ═══════════ ABLATION CHART ═══════════ */
+  .ablwrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;}
+  #ablChart{width:100%;height:100%;max-height:720px;}
+  #ablChart .band rect{opacity:0;transition:opacity .5s;}
+  #ablChart .band.on rect{opacity:1;}
+  #ablChart .bandlab{font-family:var(--mono);font-size:16px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;opacity:.35;transition:opacity .5s;}
+  #ablChart .band.on .bandlab{opacity:1;}
+  #ablChart .gridline{stroke:var(--line);stroke-width:1.2;}
+  #ablChart .yl{font-family:var(--mono);font-size:15px;fill:var(--ink-3);}
+  #ablChart .xl{font-family:var(--sans);font-size:15.5px;fill:var(--ink-2);}
+  #ablChart .xl.hot{fill:var(--navy);font-weight:700;}
+  #ablChart path.ln{fill:none;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;}
+  #ablChart path.ln.os{stroke:var(--navy);stroke-width:5.5;}
+  #ablChart path.ln.vf{stroke:var(--gold);}
+  #ablChart path.ln.ps{stroke:var(--violet);}
+  #ablChart circle.pt{stroke:#fff;stroke-width:2.5;}
+  #ablChart .lmk{opacity:0;transition:opacity .5s;}
+  #ablChart .lmk.on{opacity:1;}
+  #ablChart .lmk rect{fill:var(--gold-soft);stroke:var(--gold);stroke-width:2;}
+  #ablChart .lmk .lt{font-family:var(--serif);font-size:24px;font-weight:700;fill:#8a6510;}
+  #ablChart .lmk .ld{font-family:var(--sans);font-size:16px;fill:var(--ink-2);}
+  #ablChart .lgd{font-family:var(--mono);font-size:16px;fill:var(--ink-2);}
+  #ablChart .asml{font-size:14px;opacity:.85;}
+  #ablChart .asmn{font-family:var(--sans);font-size:13px;font-style:italic;}
+  #ablChart .note{font-family:var(--sans);font-size:15px;fill:var(--ink-3);font-style:italic;}
+
+  /* ═══════════ QUALITATIVE (equal rectangles) ═══════════ */
+  .qual{display:grid;grid-template-columns:1fr 1fr;gap:30px;flex:1;min-height:0;}
+  .qcol{display:flex;flex-direction:column;min-height:0;}
+  .qbox{background:var(--paper);border:1px solid var(--line);border-radius:10px;overflow:hidden;
+    position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 16px rgba(20,30,50,.08);}
+  .qbox img{max-width:100%;max-height:100%;object-fit:contain;}
+  .qbox iframe{border:0;position:absolute;top:0;left:0;transform-origin:top left;background:#fff;}
+  .qdots{display:inline-flex;gap:7px;margin-left:14px;vertical-align:middle;}
+  .qdot{width:10px;height:10px;border-radius:50%;background:var(--line);}
+  .qdot.on{background:var(--gold);}
+
+  /* ═══════════ RELATED WORK ═══════════ */
+  .relwrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;}
+  .relsvg{width:100%;height:100%;max-height:700px;}
+  .relsvg .relbox.src rect{fill:var(--paper);stroke:var(--gold);stroke-width:3;}
+  .relsvg .relbox.src rect.cap{fill:var(--gold);stroke:none;}
+  .relsvg .bt{font-family:var(--serif);font-size:42px;font-weight:700;fill:#8a6510;}
+  .relsvg .bs{font-family:var(--sans);font-size:20px;fill:var(--ink-2);}
+  .relsvg .bf{font-family:var(--serif);font-size:30px;font-weight:700;fill:var(--navy);}
+  .relsvg .bn{font-family:var(--mono);font-size:16px;fill:var(--ink-3);}
+  .relsvg .bn2{font-family:var(--mono);font-size:14px;fill:var(--gold);letter-spacing:.08em;}
+  .relsvg .grp{fill:#eef1f5;stroke:var(--line);stroke-width:2;}
+  .relsvg .grpt{font-family:var(--mono);font-size:15px;letter-spacing:.14em;fill:var(--ink-3);font-weight:700;}
+  .relsvg .relcard rect{fill:var(--paper);stroke-width:2.5;}
+  .relsvg .relcard.m3 rect{stroke:#05539C;} .relsvg .relcard.m3 .ct{fill:#05539C;}
+  .relsvg .relcard.dc rect{stroke:var(--violet);} .relsvg .relcard.dc .ct{fill:var(--violet);}
+  .relsvg .relcard.dl rect{stroke:var(--green);} .relsvg .relcard.dl .ct{fill:var(--green);}
+  .relsvg .ct{font-family:var(--serif);font-size:26px;font-weight:700;}
+  .relsvg .cs{font-family:var(--sans);font-size:16px;fill:var(--ink-3);}
+  /* venue chip: a typographic badge, with a real logo layered on top if one
+     is dropped in at static/images/logos/{cvpr,eccv}_logo.png */
+  .relsvg .venue .vy{font-family:var(--mono);font-size:12.5px;font-weight:700;fill:var(--ink-3);letter-spacing:.07em;}
+  .relsvg .venue rect.chip-dark{fill:var(--navy);}
+  .relsvg .venue rect.chip-light{fill:#fff;stroke:var(--line);stroke-width:1.5;}
+  .relsvg .relflow path{stroke:var(--gold);stroke-width:4.5;}
+  .relsvg .relflow.back path{stroke:var(--navy-soft);}
+  .relsvg .ft{font-family:var(--serif);font-size:24px;font-weight:700;}
+  .relsvg .ft.gold{fill:#8a6510;} .relsvg .ft.navy{fill:var(--navy-soft);}
+  .relsvg .fn{font-family:var(--sans);font-size:16px;fill:var(--ink-3);}
+  /* SVG groups carrying .frag need the transform suppressed — translateY on an
+     SVG <g> moves it in user units, which would fling it off the viewBox. */
+  svg .frag{transform:none !important;}
+
+  /* ═══════════ AXIS CHECKLIST BAR (under the comparison embeds) ═══════════ */
+  .axbar{flex:0 0 auto;display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap;}
+  .axb{display:inline-flex;align-items:center;gap:9px;font-size:19px;font-weight:600;
+    padding:8px 18px;border-radius:999px;border:2px solid;}
+  .axb b{font-size:20px;}
+  .axb.ok{border-color:var(--green);color:var(--green);background:#eaf5f0;}
+  .axb.ok.gold{border-color:var(--gold);color:#8a6510;background:var(--gold-soft);}
+  .axb.part{border-color:var(--ink-3);color:var(--ink-2);background:#f0f0ec;}
+  .axb.no{border-color:var(--red);color:var(--red);background:#fbeceb;}
+  .axnote{font-size:18px;color:var(--ink-2);font-style:italic;margin-left:6px;}
+  .axnote b{font-style:normal;color:var(--navy);}
+
+  /* ═══════════ THE FORMAT BOTTLENECK (slide 5) ═══════════ */
+  /* An SVG rather than a table: the exhaustive format comparison is paper
+     Table 1 three slides later, and repeating it here would spend the
+     audience's attention twice on the same evidence. */
+  .btl{width:100%;height:auto;max-height:640px;display:block;margin:0 auto;}
+  .btl .bl{font-family:var(--mono);font-size:17px;letter-spacing:.15em;text-transform:uppercase;
+    fill:var(--ink-3);font-weight:700;}
+  .btl .ax{fill:var(--paper);stroke:var(--line);stroke-width:1.5;}
+  .btl .ax.ok{stroke:var(--navy-soft);stroke-width:2;}
+  .btl .ax.gold{stroke:var(--gold);stroke-width:2;fill:var(--gold-soft);}
+  .btl .ax.dead{fill:#f0f1f3;stroke:#d6dae0;stroke-width:2;stroke-dasharray:7 5;}
+  .btl .axn{font-family:var(--serif);font-size:33px;font-weight:700;fill:var(--navy);}
+  .btl .axn.gold{fill:#8a6510;}
+  .btl .axn.dead{fill:#aab1ba;}
+  .btl .axd{font-family:var(--sans);font-size:18px;fill:var(--ink-2);}
+  .btl .axd.dead{fill:#b6bcc4;font-style:italic;}
+  .btl .fl{fill:none;stroke-width:7;stroke-linecap:round;}
+  .btl .fl.ok{stroke:var(--navy-soft);}
+  .btl .fl.gold{stroke:var(--gold);}
+  /* the wall: one slab the two surviving axes pass through, one they do not */
+  .btl .wall.open{fill:var(--paper);stroke:var(--navy);stroke-width:2.5;}
+  .btl .wall.shut{fill:url(#hatch);stroke:var(--red);stroke-width:2.5;}
+  .btl .wl{font-family:var(--mono);font-size:16px;letter-spacing:.14em;text-transform:uppercase;
+    fill:var(--navy);font-weight:700;text-anchor:middle;}
+  .btl .fmtn{font-family:var(--sans);font-size:16px;fill:var(--ink-3);font-weight:600;}
+  .btl .fmtc{font-family:var(--mono);font-size:23px;fill:var(--navy);font-weight:700;}
+  .btl .shutn{font-family:var(--mono);font-size:26px;letter-spacing:.2em;fill:var(--red);
+    font-weight:800;text-anchor:middle;}
+  .btl .shutd{font-family:var(--sans);font-size:19px;fill:#8f5348;text-anchor:middle;}
+  .btl .shutd .em{fill:var(--red);font-weight:700;}
+  .btl .xm line{stroke:var(--red);stroke-width:6;stroke-linecap:round;}
+
+  /* ═══════════ THANK-YOU QR WALL ═══════════ */
+  /* two columns: REPLICA owns the left at full height, the three grounding
+     models stack on the right — every code stays big enough to photograph */
+  .qrwall{display:grid;grid-template-columns:auto auto;gap:56px;align-items:center;
+    justify-content:center;margin-top:10px;}
+  .qrmain{display:flex;flex-direction:column;align-items:center;gap:14px;}
+  .qrmain img{width:400px;height:400px;background:#fff;padding:16px;border-radius:14px;image-rendering:pixelated;}
+  .qrmain .qn{font-family:var(--serif);font-size:38px;font-weight:700;color:#fff;}
+  .qrmain .qu{font-family:var(--mono);font-size:19px;color:var(--gold);}
+  .qrcol{display:flex;flex-direction:column;gap:16px;}
+  .qrgroup-label{font-family:var(--mono);font-size:14px;letter-spacing:.18em;text-transform:uppercase;
+    color:rgba(255,255,255,.5);margin-bottom:2px;}
+  .qrs{display:flex;align-items:center;gap:18px;}
+  .qrs img{width:132px;height:132px;background:#fff;padding:8px;border-radius:10px;image-rendering:pixelated;}
+  .qrs .qtx{display:flex;flex-direction:column;gap:5px;text-align:left;}
+  .qrs .qn{font-family:var(--serif);font-size:26px;font-weight:700;color:rgba(255,255,255,.96);}
+  .qrs .qv{font-family:var(--mono);font-size:15px;color:rgba(255,255,255,.55);letter-spacing:.07em;}
+
 </style>
 </head>
 <body>
@@ -365,41 +655,9 @@
       <div class="q">A document is not just its words. So what exactly is a document made of — and which parts do we lose when we convert one?</div>
     </section>
 
-    <!-- ═══════════ 3 · OCR WORKS ═══════════ -->
-    <section class="slide" data-eyebrow="01 · Motivation" data-frags="1"
-      data-notes="Start somewhere familiar. OCR. Everyone here has used it. Take this three-column multilingual newspaper page — dense, mixed scripts, figures, headlines. Run OCR on it and every single word comes back correct. A hundred percent character accuracy. On the standard metric, this problem looks solved.">
-      <div class="kicker">The familiar starting point</div>
-      <h2>OCR gets the words right…</h2>
-      <div class="lede">A three-column multilingual page. Text extraction recovers <b>every word correctly</b> — on the standard metric, solved.</div>
-      <div class="slide-body">
-        <div class="cols">
-          <div class="col">
-            <div class="imgbox"><img src="static/images/demo/newspaper/IndicDLP_6.png" alt="Original newspaper page"></div>
-            <div class="cap">Source — 3 columns, mixed scripts, figures, headlines</div>
-          </div>
-          <div class="col frag" data-frag="1">
-            <div class="imgbox" style="align-items:flex-start;">
-              <div style="font-family:var(--mono);font-size:14.5px;line-height:1.85;color:var(--ink-2);text-align:justify;padding:8px;">
-                మీ ఆడబిడ్డగా ఆశీర్వదించండి సిఎం కెసిఆర్ ఆశీస్సులతో మరోసారి బరిలో ప్రజల నుంచి మంచి
-                స్పందన ఉంది అభివృద్ధి చేస్తామనే నినాదంతో ముందుకు వెళ్తా మెదక్ బిఆర్ఎస్ అభ్యర్థి
-                పద్మాదేవేందర్‌రెడ్డి మనతెలంగాణ/మెదక్ ప్రతినిధి మంత్రి హరీశ్‌రావుకే మా మద్దతు
-                మద్దతు ప్రకటించిన వివిధ సంఘాలు పోస్టల్ బ్యాలెట్ ద్వారా ఓటు హక్కు వినియోగించుకోవాలి
-                సైబర్ నేరాలపట్ల జాగ్రత్తగా ఉండాలి పారిశ్రామిక రంగంలో విప్లవాత్మక మార్పులు వచ్చాయి
-                నేడు సంగారెడ్డికి కేటీఆర్ ఐదు వేల బైక్‌లతో ర్యాలీ, గంజ్‌మైదాన్‌లో సభ వంద శాతం
-                ఓటింగే లక్ష్యం జిల్లా ఎన్నికల అధికారి, కలెక్టర్ రాజర్షి షా చేగుంట మండల కేంద్రంలో
-                బిఆర్ఎస్ ఇంటింటి ప్రచారం…
-              </div>
-            </div>
-            <div class="cap">Text-extraction output — 100% character accuracy, zero layout</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- ═══════════ LIVE FIDELITY LADDER ═══════════ -->
     <section class="slide" data-eyebrow="01 · Motivation" data-frags="3" id="ladderSlide"
       data-notes="So what did we actually lose? Same document, twice. On the left the original page. On the right I rebuild it one layer at a time — this is running live, and at the end the two are literally the same markup. [CLICK] Level zero, text only: every word is present and in order, but it is a wall of prose. You cannot tell the heading from the body, the table has become a run of numbers, the total is indistinguishable from the fine print. Note the shape does not even match — a text stream has no page. This is what OCR and most parsers give you. [CLICK] Level one, add logical structure: now we know this is a heading, this is a table with rows and columns. Markdown-class output. A big win for machines — but still no page geometry, so the shape still does not match. [CLICK] Level two, add physical position: now the page has the same dimensions as the original, the two-column body is back, and the numbers align under their headers. Now you can tell which number belongs to which item. [CLICK] Level three, add visual fidelity: typography, weight, colour, the brand bar — and critically the strikethrough and the OVERDUE stamp. Now the right side is pixel-for-pixel the left side. Only the cancelled line reads as cancelled, and only now does the overdue notice exist at all.">
-      <div class="kicker">What each layer actually buys you</div>
       <h2>Rebuilding a document, <em>one layer at a time</em></h2>
       <div class="slide-body">
         <div class="lv-steps">
@@ -437,81 +695,253 @@
           </div>
           <div class="ladder-out">
             <div class="pagebox" id="ladderBox"><!-- clone injected here --></div>
-            <div class="lv-what" id="ladderWhat"></div>
+            <div class="cap"><b>Reconstruction</b> — rebuilt live, layer by layer</div>
+          </div>
+        </div>
+        <!-- outside .ladder-wrap on purpose: the note runs the full slide width,
+             which is what balances the centred pair of pages above it -->
+        <div class="lv-what" id="ladderWhat"></div>
+      </div>
+    </section>
+
+    <!-- ═══════════ 5 · REQUIREMENTS FOR VFDR ═══════════ -->
+    <section class="slide vcenter" data-eyebrow="01 · Motivation" data-frags="2"
+      data-notes="Those four layers are exactly what a faithful reconstruction has to preserve, and they are the spine of the paper. Text — are the words right. Hierarchy — is the structure right: reading order, nesting, tables, lists. Geometry — is the position right: where does each block actually sit. And visual components — does it look right: typography, colour, weight, backgrounds. Prior work optimises the first two and lets the rest go, and the reason is simple: no prior benchmark measured the last two, so no prior system optimised them. [CLICK] And two requirements on the format itself: whatever we output has to be web-native, so it opens anywhere without a bespoke viewer, and machine-readable, so downstream models can consume the structure directly. Those six boxes are the specification for everything that follows.">
+      <div class="kicker">The axes of document reconstruction</div>
+      <h2>Requirements for <em>visually faithful</em> reconstruction</h2>
+      <div class="slide-body">
+        <div class="reqgroup frag" data-frag="1">
+          <div class="reqlabel"><span class="rq">Must preserve</span> the four axes of the document</div>
+          <div class="grid4">
+            <div class="card">
+              <span class="tag">T.E. &nbsp;·&nbsp; Text Extraction</span><h3>Text</h3>
+              <p class="q"><i>Are the words right?</i></p>
+              <p>Characters and words, at block and page level.</p>
+              <div class="metric">WRR · CRR</div>
+            </div>
+            <div class="card">
+              <span class="tag">L.S. &nbsp;·&nbsp; Logical Structure</span><h3>Hierarchy</h3>
+              <p class="q"><i>Is the structure right?</i></p>
+              <p>Reading order, nesting, tables, lists, formulas.</p>
+              <div class="metric">NTED · TEDS · CDM</div>
+            </div>
+            <div class="card" style="border-color:var(--gold);">
+              <span class="tag">P.S. &nbsp;·&nbsp; Physical Structure</span><h3>Geometry</h3>
+              <p class="q"><i>Is the position right?</i></p>
+              <p>Absolute placement of blocks and lines on the page.</p>
+              <div class="metric gold">GPS · LPS &nbsp;<b>(new)</b></div>
+            </div>
+            <div class="card" style="border-color:var(--gold);">
+              <span class="tag">V.F. &nbsp;·&nbsp; Visual Fidelity</span><h3>Visual components</h3>
+              <p class="q"><i>Does it look right?</i></p>
+              <p>Typography, colour, weight, spacing, backgrounds.</p>
+              <div class="metric gold">VFS &nbsp;<b>(new)</b></div>
+            </div>
+          </div>
+        </div>
+        <div class="reqgroup frag" data-frag="2">
+          <div class="reqlabel"><span class="rq alt">Must be</span> a format the rest of the world can use</div>
+          <div class="grid2 reqrow2">
+            <div class="card wide">
+              <svg class="ricon" viewBox="0 0 120 84" aria-hidden="true">
+                <rect x="2" y="2" width="116" height="80" rx="8" class="fr"/>
+                <path d="M2 10a8 8 0 0 1 8-8h100a8 8 0 0 1 8 8v10H2z" class="bar"/>
+                <circle cx="14" cy="11" r="3.1" class="dotr"/><circle cx="24" cy="11" r="3.1" class="doty"/><circle cx="34" cy="11" r="3.1" class="dotg"/>
+                <rect x="44" y="7" width="64" height="8" rx="4" class="url"/>
+                <rect x="12" y="30" width="42" height="30" rx="3" class="pic"/>
+                <rect x="62" y="30" width="46" height="4" rx="2" class="ln"/>
+                <rect x="62" y="39" width="46" height="4" rx="2" class="ln"/>
+                <rect x="62" y="48" width="30" height="4" rx="2" class="ln"/>
+                <rect x="12" y="66" width="96" height="4" rx="2" class="ln"/>
+              </svg>
+              <div><h3>Web-native</h3>
+              <p>Opens in <b>any browser</b> — no bespoke viewer, and search, selection and accessibility come for free.</p></div>
+            </div>
+            <div class="card wide">
+              <svg class="ricon" viewBox="0 0 120 84" aria-hidden="true">
+                <rect x="4" y="8" width="46" height="68" rx="5" class="fr"/>
+                <rect x="12" y="18" width="30" height="4" rx="2" class="ln"/>
+                <rect x="12" y="27" width="30" height="4" rx="2" class="ln"/>
+                <rect x="12" y="38" width="18" height="14" rx="2" class="pic"/>
+                <rect x="12" y="58" width="30" height="4" rx="2" class="ln"/>
+                <rect x="12" y="66" width="22" height="4" rx="2" class="ln"/>
+                <path d="M54 42h10" class="wire"/>
+                <path d="M64 42v-20h8M64 42h8M64 42v20h8" class="wire"/>
+                <rect x="72" y="16" width="44" height="13" rx="3" class="node"/>
+                <rect x="72" y="35" width="44" height="13" rx="3" class="node"/>
+                <rect x="72" y="54" width="44" height="13" rx="3" class="node"/>
+                <text x="94" y="26" text-anchor="middle" class="nt">&lt;h1&gt;</text>
+                <text x="94" y="45" text-anchor="middle" class="nt">&lt;table&gt;</text>
+                <text x="94" y="64" text-anchor="middle" class="nt">&lt;p x,y&gt;</text>
+              </svg>
+              <div><h3>Machine-readable</h3>
+              <p>Structure <i>and</i> geometry are <b>explicit in the markup</b> — a model reads the tree, not the pixels.</p></div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ═══════════ 5 · THE FOUR AXES ═══════════ -->
-    <section class="slide" data-eyebrow="01 · Motivation" data-frags="4"
-      data-notes="Those four layers are exactly the four axes we evaluate on, and they are the spine of the paper. Text extraction — are the words right. Logical structure — is the hierarchy right: reading order, tables, lists, formulas. Physical structure — is the position right: where does each block actually sit. And visual fidelity — does it look right: typography, colour, weight, backgrounds. Prior work optimises the first one or two and lets the rest go, and the reason is simple: no prior benchmark measured the last two, so no prior system optimised them.">
-      <div class="kicker">Naming the axes</div>
-      <h2>Four axes — and prior work covers <em>the first two</em></h2>
+    <!-- ═══════════ 6 · WHERE THE FIELD STANDS (baselines only) ═══════════ -->
+    <section class="slide demo bleed" data-eyebrow="02 · Where the field stands" data-embed="teaser" data-nav="1" data-frags="2"
+      data-notes="So how does the field do against that checklist? This is Figure 1A from the paper, running live. On the left the input page; on the right one system at a time. Marker, a strong pipeline tool, linearises three columns into one — the words survive, the page does not. [CLICK] GPT-5 gets the text largely right, then drifts on placement, font attributes and column count. [CLICK] Qwen3-VL-30B, same story. Every one of them ticks text and roughly ticks structure — and every one of them fails geometry and appearance. Notice I am not showing you our system yet. I want the failure to be the thing you remember, because the failure is the same in every case, and it is not a failure of the model.">
+      <div class="kicker">Against the checklist</div>
+      <h2>Everyone recovers the words. <em>Nobody recovers the page.</em> <span class="srcnote">— paper Fig. 1A, live</span></h2>
       <div class="slide-body">
-        <div class="grid4" style="flex:1;align-content:center;">
-          <div class="card frag" data-frag="1">
-            <span class="tag">T.E.</span><h3>Text Extraction</h3>
-            <p style="margin-bottom:9px;"><i>Are the words right?</i></p>
-            <p>Characters and words, at block and page level.</p>
-            <div style="margin-top:11px;font-family:var(--mono);font-size:15.5px;color:var(--navy-soft);">WRR · CRR</div>
-          </div>
-          <div class="card frag" data-frag="2">
-            <span class="tag">L.S.</span><h3>Logical Structure</h3>
-            <p style="margin-bottom:9px;"><i>Is the hierarchy right?</i></p>
-            <p>Reading order, nesting, tables, lists, formulas.</p>
-            <div style="margin-top:11px;font-family:var(--mono);font-size:15.5px;color:var(--navy-soft);">NTED · TEDS · CDM</div>
-          </div>
-          <div class="card frag" data-frag="3" style="border-color:var(--gold);">
-            <span class="tag">P.S.</span><h3>Physical Structure</h3>
-            <p style="margin-bottom:9px;"><i>Is the position right?</i></p>
-            <p>Absolute placement of blocks and lines on the page.</p>
-            <div style="margin-top:11px;font-family:var(--mono);font-size:15.5px;color:var(--gold);">GPS · LPS &nbsp;<b>(new)</b></div>
-          </div>
-          <div class="card frag" data-frag="4" style="border-color:var(--gold);">
-            <span class="tag">V.F.</span><h3>Visual Fidelity</h3>
-            <p style="margin-bottom:9px;"><i>Does it look right?</i></p>
-            <p>Typography, colour, weight, spacing, backgrounds.</p>
-            <div style="margin-top:11px;font-family:var(--mono);font-size:15.5px;color:var(--gold);">VFS &nbsp;<b>(new)</b></div>
-          </div>
-        </div>
-        <div class="takeaway">
-          The last two axes are the ones no prior benchmark measured — so no prior system optimised them. <b>You cannot improve what you do not measure.</b>
+        <div class="embed"><iframe src="index.html?embed=teaser&part=compare&only=marker,gpt5,qwen" title="Baseline comparison (paper Fig. 1A)"></iframe></div>
+        <div class="axbar">
+          <span class="axb ok">Text <b>&#10003;</b></span>
+          <span class="axb part">Hierarchy <b>~</b></span>
+          <span class="axb no">Geometry <b>&#10007;</b></span>
+          <span class="axb no">Visual <b>&#10007;</b></span>
+          <span class="axnote">— the same two boxes fail for <b>every</b> system</span>
         </div>
       </div>
     </section>
 
-    <!-- ═══════════ 6 · LIVE TEASER (paper Fig. 1) ═══════════ -->
-    <section class="slide demo bleed" data-eyebrow="02 · Where the field stands" data-embed="teaser" data-nav="1" data-frags="3"
-      data-notes="Here is the state of the art — this is Figure 1 from the paper, running live, and I can switch the comparison method myself. On the left the input page, on the right whichever system I pick. Marker, a strong pipeline tool, linearises the three columns into one. Qwen3-VL-30B and GPT-5 get the text largely right but drift on placement, font attributes and column count. REPLICA preserves text colour, paragraph indentation, bold and italics, font size, and the correct number of columns. The radar underneath is Figure 1B — all four axes at once. Every baseline collapses on at least one; REPLICA is the only shape that covers all four.">
-      <div class="kicker">Where the field stands</div>
-      <h2>Everyone recovers text. <em>Nobody recovers the page.</em> <span class="srcnote">— paper Fig. 1, live &amp; interactive</span></h2>
+    <!-- ═══════════ 6b · THE FORMAT IS THE BOTTLENECK ═══════════ -->
+    <!-- Deliberately a diagram and not a table: the full format comparison is
+         paper Table 1, three slides later. This slide only has to land one
+         causal claim, in about fifteen seconds. -->
+    <section class="slide vcenter" data-eyebrow="02 · Where the field stands" data-frags="3"
+      data-notes="So why did all three lose the same two things? It is not the model. It is what we asked the model to write. [CLICK] The page carries four axes. They all have to pass through one narrow place — the output format. Marker writes Markdown. The OCR VLMs write a flat text stream. GPT-5 and Qwen write generic HTML. [CLICK] And that is where two of them die. Markdown and plain text have no syntax for an x-y coordinate or a font colour — you literally cannot write it down. HTML does have the syntax, and this is the subtle case: a div with no style attribute is perfectly valid HTML, so position and style are optional, and what is optional gets dropped. Either way the information never reaches the page. [CLICK] So the sentence I want you to keep: what a format does not require, a system does not produce. The bottleneck is not the model. It is the target. Widen the target, and everything downstream changes — so that is what we did.">
+      <div class="kicker">Not a model failure — a format failure</div>
+      <h2>Four axes go in. <em>The output format only has room for two.</em></h2>
       <div class="slide-body">
-        <div class="embed"><iframe src="index.html?embed=teaser&part=compare" title="Teaser comparison (paper Fig. 1A)"></iframe></div>
-      </div>
-    </section>
+        <svg class="btl" viewBox="0 0 1620 560" aria-label="The output format is the bottleneck">
+          <defs>
+            <marker id="bhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0 0 L10 5 L0 10 z" fill="var(--navy-soft)"/>
+            </marker>
+            <pattern id="hatch" width="9" height="9" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+              <rect width="9" height="9" fill="#eceff3"/>
+              <line x1="0" y1="0" x2="0" y2="9" stroke="#cdd4dd" stroke-width="3"/>
+            </pattern>
+          </defs>
 
-    <!-- ═══════════ 6b · RADAR (paper Fig. 1B) ═══════════ -->
-    <section class="slide demo bleed vcenter" data-eyebrow="02 · Where the field stands" data-embed="radar"
-      data-notes="And here is the same story as one shape — Figure 1B. Four axes: text extraction, logical structure, physical structure, visual fidelity. Every baseline makes a lopsided shape: Marker and Qwen do fine on text and structure then collapse inward on position; Gemini and GPT-5 push out on visual fidelity but stay pinched on physical structure. REPLICA is the only one that stays near the rim on all four at once. That balanced shape is the contribution — not any single number.">
-      <div class="kicker">All four axes at once</div>
-      <h2>The baselines are <em>lopsided</em>. <span class="srcnote">— paper Fig. 1B, live</span></h2>
-      <div class="slide-body">
-        <div class="embed"><iframe src="index.html?embed=teaser&part=radar&hide=.method-pills,.teaser-i > .tp-label" title="Fidelity radar (paper Fig. 1B)"></iframe></div>
+          <!-- ───── left: the page and its four axes ───── -->
+          <text x="24" y="26" class="bl">The page carries</text>
+          <g class="bax">
+            <rect x="24" y="44"  width="330" height="92" rx="11" class="ax ok"/>
+            <text x="52" y="88"  class="axn">Text</text>
+            <text x="52" y="116" class="axd">the words themselves</text>
+
+            <rect x="24" y="152" width="330" height="92" rx="11" class="ax ok"/>
+            <text x="52" y="196" class="axn">Hierarchy</text>
+            <text x="52" y="224" class="axd">headings, tables, lists, order</text>
+
+            <rect x="24" y="310" width="330" height="92" rx="11" class="ax gold"/>
+            <text x="52" y="354" class="axn gold">Geometry</text>
+            <text x="52" y="382" class="axd">where each block sits — x, y</text>
+
+            <rect x="24" y="418" width="330" height="92" rx="11" class="ax gold"/>
+            <text x="52" y="462" class="axn gold">Style</text>
+            <text x="52" y="490" class="axd">size, weight, colour, rules</text>
+          </g>
+
+          <!-- ───── flow into the wall ───── -->
+          <g class="frag" data-frag="1">
+            <path d="M362 90  H 610" class="fl ok" marker-end="url(#bhead)"/>
+            <path d="M362 198 H 610" class="fl ok" marker-end="url(#bhead)"/>
+            <path d="M362 356 H 600" class="fl gold"/>
+            <path d="M362 464 H 600" class="fl gold"/>
+          </g>
+
+          <!-- ───── the wall: the format they are asked to write ───── -->
+          <g class="frag" data-frag="1">
+            <!-- open half: the two axes every one of these formats can carry -->
+            <rect x="620" y="40" width="322" height="224" rx="12" class="wall open"/>
+            <!-- closed half: hatched, because nothing gets through it -->
+            <rect x="620" y="300" width="322" height="222" rx="12" class="wall shut"/>
+            <text x="781" y="24" class="wl">The format they are asked to write</text>
+
+            <g class="fmt">
+              <text x="648" y="80"  class="fmtn">Marker</text>
+              <text x="648" y="108" class="fmtc">Markdown</text>
+              <text x="648" y="148" class="fmtn">olmOCR · GOT · Nanonets</text>
+              <text x="648" y="176" class="fmtc">plain text</text>
+              <text x="648" y="216" class="fmtn">GPT&#8209;5 · Qwen3&#8209;VL</text>
+              <text x="648" y="244" class="fmtc">generic HTML</text>
+            </g>
+
+            <text x="781" y="350" class="shutn">NO SLOT</text>
+            <text x="781" y="396" class="shutd">Markdown &amp; plain text have</text>
+            <text x="781" y="424" class="shutd"><tspan class="em">no syntax at all</tspan> for a coordinate.</text>
+            <text x="781" y="464" class="shutd">HTML has the syntax, but never</text>
+            <text x="781" y="492" class="shutd"><tspan class="em">requires</tspan> it — so models omit it.</text>
+          </g>
+
+          <!-- ───── blocked ───── -->
+          <g class="frag" data-frag="2">
+            <g class="xm"><line x1="568" y1="341" x2="600" y2="373"/><line x1="600" y1="341" x2="568" y2="373"/></g>
+            <g class="xm"><line x1="568" y1="449" x2="600" y2="481"/><line x1="600" y1="449" x2="568" y2="481"/></g>
+          </g>
+
+          <!-- ───── right: what actually comes out ───── -->
+          <g class="frag" data-frag="1">
+            <path d="M950 90  H 1218" class="fl ok" marker-end="url(#bhead)"/>
+            <path d="M950 198 H 1218" class="fl ok" marker-end="url(#bhead)"/>
+            <text x="1238" y="26" class="bl">What the system emits</text>
+            <rect x="1238" y="44"  width="352" height="92" rx="11" class="ax ok"/>
+            <text x="1266" y="88"  class="axn">Text</text>
+            <text x="1266" y="116" class="axd">recovered by every system</text>
+            <rect x="1238" y="152" width="352" height="92" rx="11" class="ax ok"/>
+            <text x="1266" y="196" class="axn">Hierarchy</text>
+            <text x="1266" y="224" class="axd">mostly recovered</text>
+          </g>
+          <g class="frag" data-frag="2">
+            <rect x="1238" y="310" width="352" height="92" rx="11" class="ax dead"/>
+            <text x="1266" y="354" class="axn dead">Geometry</text>
+            <text x="1266" y="382" class="axd dead">never written down</text>
+            <rect x="1238" y="418" width="352" height="92" rx="11" class="ax dead"/>
+            <text x="1266" y="462" class="axn dead">Style</text>
+            <text x="1266" y="490" class="axd dead">never written down</text>
+          </g>
+        </svg>
+        <div class="takeaway frag" data-frag="3">
+          What a format does not <b>require</b>, a system does not <b>produce</b>. The bottleneck is not the model — it is the <b>target</b>. So we changed the target.
+        </div>
       </div>
     </section>
 
     <!-- ═══════════ 7 · SECTION 03 ═══════════ -->
     <section class="slide section-slide" data-eyebrow="03 · FID-HTML"
-      data-notes="Section two. Before building a system, decide what it should output.">
+      data-notes="Section two. We just argued the format is the ceiling — so this is the format. Everything the four axes ask for, carried in one file that a browser renders and a model can read.">
       <h1>FID-HTML</h1>
-      <div class="q">What representation could preserve a page's text, hierarchy, geometry and style all at once — and still be web-native and machine-readable?</div>
+      <div class="q">One format that carries <b>all four axes at once</b> — text, hierarchy, geometry and style — and stays web-native and machine-readable.</div>
+    </section>
+
+    <!-- ═══════════ 7b · THE REVEAL — same page, rebuilt ═══════════ -->
+    <section class="slide demo bleed" data-eyebrow="03 · FID-HTML" data-embed="teaser" data-frags="1"
+      data-notes="So we changed the target. Same input page you just watched three systems fail on — this is what comes out when the format is required to carry position and style. Text, hierarchy, geometry, appearance: all four boxes. I have not told you how yet, and deliberately so — for the next two slides all that matters is that this output is a single HTML file that your browser renders, and that everything you can see about the original is still in it. We call it Fid-HTML.">
+      <div class="kicker">The same page, rebuilt</div>
+      <h2>Change the target, and <em>all four boxes tick</em></h2>
+      <div class="slide-body">
+        <div class="embed"><iframe src="index.html?embed=teaser&part=compare&only=replica" title="REPLICA reconstruction"></iframe></div>
+        <div class="axbar">
+          <span class="axb ok">Text <b>&#10003;</b></span>
+          <span class="axb ok">Hierarchy <b>&#10003;</b></span>
+          <span class="axb ok gold">Geometry <b>&#10003;</b></span>
+          <span class="axb ok gold">Visual <b>&#10003;</b></span>
+          <span class="axnote">— one HTML file, rendered by your browser. We call it <b>FID-HTML</b>.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ 9 · FID-HTML ANATOMY (paper Fig. 3) ═══════════ -->
+    <section class="slide demo bleed" data-eyebrow="03 · FID-HTML" data-embed="fidfig" data-nav="1" data-frags="6"
+      data-notes="Concretely, this is what Fid-HTML encodes — and the code on the right is the real source of the page on the left, not a mock-up. Six dimensions. One, textual content at word and block level. Two, hierarchical structure through nested divs. Three, semantic tags — li, table, tr, td — with meaningful class names. Four, positional information: global placement by absolute positioning, local alignment by relative containers and p wrappers. Five, styling metadata: font size, colour, bold, italic, underline, strikethrough, as inline CSS. Six, figures and backgrounds layered into the DOM with VLM-generated alt-text — which is also what makes the output screen-reader accessible. Click any dimension and it highlights exactly where it lives in the code; flip to Rendered and your browser draws that exact markup.">
+      <div class="kicker">What made that possible</div>
+      <h2>Six dimensions — <em>click one</em> to see where it lives in the source <span class="srcnote">— paper Fig. 3, live</span></h2>
+      <div class="slide-body">
+        <div class="embed"><iframe src="index.html?embed=fidhtml&part=figure" title="FID-HTML anatomy (paper Fig. 3)"></iframe></div>
+      </div>
     </section>
 
     <!-- ═══════════ 8 · FORMAT TABLE (paper Table 1) ═══════════ -->
     <section class="slide demo bleed" data-eyebrow="03 · FID-HTML" data-embed="fmt"
       data-notes="This is Table 1 from the paper, live. Read down the last two column groups. Markdown has no slot for position or style at all. LaTeX is expressive but partial on hierarchy and not web-native. DocTags and hOCR carry boxes but are partial on styling. And plain HTML — this is the important row — plain HTML CAN express fidelity but never REQUIRES it: two valid HTML documents with the same text can render completely differently. That is the gap. Fid-HTML is the only row full across every column, because position and style are mandatory, inline, per element. Fidelity becomes a property of the format rather than a hope.">
-      <div class="kicker">Comparing representations</div>
+      <div class="kicker">Why not just use an existing format?</div>
       <h2>Generic HTML <em>permits</em> fidelity. FID-HTML <em>guarantees</em> it. <span class="srcnote">— paper Table 1, live</span></h2>
       <div class="slide-body">
         <div class="embed">
@@ -520,47 +950,39 @@
       </div>
     </section>
 
-    <!-- ═══════════ 9 · FID-HTML ANATOMY (paper Fig. 3) ═══════════ -->
-    <section class="slide demo bleed" data-eyebrow="03 · FID-HTML" data-embed="fidfig" data-nav="1" data-frags="6"
-      data-notes="Concretely, this is what Fid-HTML encodes — and the code on the right is the real source of the page on the left, not a mock-up. Six dimensions. One, textual content at word and block level. Two, hierarchical structure through nested divs. Three, semantic tags — li, table, tr, td — with meaningful class names. Four, positional information: global placement by absolute positioning, local alignment by relative containers and p wrappers. Five, styling metadata: font size, colour, bold, italic, underline, strikethrough, as inline CSS. Six, figures and backgrounds layered into the DOM with VLM-generated alt-text — which is also what makes the output screen-reader accessible. Click any dimension and it highlights exactly where it lives in the code; flip to Rendered and your browser draws that exact markup.">
-      <div class="kicker">What FID-HTML encodes</div>
-      <h2>Six dimensions — <em>click one</em> to see where it lives in the source <span class="srcnote">— paper Fig. 3, live</span></h2>
-      <div class="slide-body">
-        <div class="embed"><iframe src="index.html?embed=fidhtml&part=figure" title="FID-HTML anatomy (paper Fig. 3)"></iframe></div>
-      </div>
-    </section>
-
     <!-- ═══════════ 10 · SECTION 04 ═══════════ -->
-    <section class="slide section-slide" data-eyebrow="04 · Why agentic"
+    <section class="slide section-slide" data-eyebrow="04 · The agentic"
       data-notes="Section three, and this is the part I most want to land: why this system is agentic, and what that actually means.">
-      <h1>Why agentic?</h1>
+      <h1>The Agentic</h1>
       <div class="q">A single model must jointly solve detection, recognition, ordering and styling — with no geometric grounding and no way to check its own render. What if we decomposed instead?</div>
     </section>
 
     <!-- ═══════════ 11 · AGENTS VS TOOLS ═══════════ -->
-    <section class="slide vcenter" data-eyebrow="04 · Why agentic" data-frags="2"
+    <section class="slide vcenter" data-eyebrow="04 · The agentic" data-frags="1"
       data-notes="First the vocabulary, because agentic is an overloaded word. We formalise the system as a coordination between two things. A TOOL is a fixed function: same input, same output, no judgment. A layout detector always returns boxes the same way; reading-order computation, font fitting, background extraction — deterministic, reproducible, cheap. An AGENT reasons: it decides which tool to call, when, and whether the result is good enough — then retries, overrides, reroutes or escalates. In the paper we write script-A for the set of agents and script-T for the set of tools; agents perform semantic reasoning, routing, grouping and generation, while tools execute structured reproducible operations. And the objective is precisely this: given a page image I, produce HTML H such that the RENDER of H aligns with I across all four axes. Note it is R of H — the rendering — not H itself. That single choice is what forces a refine stage to exist at all.">
       <div class="kicker">The vocabulary, precisely</div>
       <h2>Agents <em>reason</em>. Tools <em>execute</em>.</h2>
       <div class="slide-body">
-        <div class="at-grid" style="flex:0 0 auto;margin-bottom:20px;">
+        <div class="at-grid" style="flex:0 0 auto;margin-bottom:26px;">
           <div class="at-col">
-            <div class="at-head tl"><span class="sym">𝒯</span><span class="ttl">A tool</span><span class="sub">deterministic</span></div>
-            <div class="card tool">
-              <p style="font-size:20px;margin-bottom:10px;"><b>Fixed function, fixed input → fixed output. No judgment.</b></p>
-              <p>A layout detector always returns boxes the same way. It cannot notice that it merged two columns, or that the "table" it found is really a form.</p>
-              <div style="margin-top:12px;font-family:var(--mono);font-size:15.5px;color:var(--navy-soft);line-height:1.75;">
-                detectors · OCR · table structure recognition<br>reading order · font fitting · background restoration
+            <div class="at-head tl"><span class="sym">&#120021;</span><span class="ttl">A tool</span><span class="sub">deterministic</span></div>
+            <div class="card tool compact">
+              <div class="atline">same input <span class="arw">&rarr;</span> same output</div>
+              <div class="atsub">no judgment &nbsp;·&nbsp; cannot notice its own mistake</div>
+              <div class="chips">
+                <span class="chip">detectors</span><span class="chip">OCR</span><span class="chip">table structure</span>
+                <span class="chip">reading order</span><span class="chip">font fitting</span><span class="chip">background</span>
               </div>
             </div>
           </div>
           <div class="at-col">
-            <div class="at-head ag"><span class="sym">𝒜</span><span class="ttl">An agent</span><span class="sub">reasons</span></div>
-            <div class="card agent">
-              <p style="font-size:20px;margin-bottom:10px;"><b>Decides which tool, when — and whether the result is good enough.</b></p>
-              <p>Then retries, overrides an upstream label, reroutes to a different specialist, or injects a correction. It is allowed to disagree with what it was given.</p>
-              <div style="margin-top:12px;font-family:var(--mono);font-size:15.5px;color:var(--violet);line-height:1.75;">
-                labeling · grouping · routing<br>specialist generation · reading order · reflection
+            <div class="at-head ag"><span class="sym">&#119964;</span><span class="ttl">An agent</span><span class="sub">reasons</span></div>
+            <div class="card agent compact">
+              <div class="atline">decides <span class="arw">&middot;</span> checks <span class="arw">&middot;</span> retries <span class="arw">&middot;</span> overrides</div>
+              <div class="atsub">allowed to disagree with what it was given</div>
+              <div class="chips ag">
+                <span class="chip">labeling</span><span class="chip">grouping</span><span class="chip">routing</span>
+                <span class="chip">specialists</span><span class="chip">reading order</span><span class="chip">reflection</span>
               </div>
             </div>
           </div>
@@ -572,16 +994,12 @@
             &nbsp;<span class="op">across</span>&nbsp; TE, LS, PS, VF
           </div>
         </div>
-        <div class="takeaway frag" data-frag="2">
-          The objective is stated on <b>R(H)</b> — the <b>rendering</b> of the HTML, not the markup itself. That one choice is what makes a <b>Refine</b> stage necessary.
-        </div>
       </div>
     </section>
 
     <!-- ═══════════ THE PIPELINE, STAGE BY STAGE ═══════════ -->
     <section class="slide" data-eyebrow="04 · Approach" data-frags="4" id="stagesSlide"
       data-notes="So how does that decomposition actually run? Four questions, four stages — and I will build the pipeline figure up one stage at a time. [CLICK] Stage 1, Segment: how do we divide the document into meaningful components? A document-type tool decides digital or scanned; a detector ensemble — DocLayout-YOLO, IndicDLP-YOLO, Hi-SAM — proposes regions; then two agents take over. The Labeling agent uses Set-of-Mark prompting to assign types and catch mis-segmentation, and the Grouping agent builds the layout graph, resolving caption-figure binding and list nesting. Output: a hierarchical layout tree. [CLICK] Stage 2, Localize: how do we convert each component into HTML? The Router agent picks a specialist from the crop itself, overriding the upstream label when the visual contradicts it. Six specialists — text, table, image, form, list, equation — emit sub-HTML with position and style inline. Tools like OCR and table-structure recognition are called only when needed. Nodes are conditionally independent, so this stage parallelises. [CLICK] Stage 3, Assemble: how do we compose them? A position-aware merge tool works bottom-up over the tree, then the Reading-Order agent linearises semantically — because top-to-bottom sorting fails on multi-column pages. [CLICK] Stage 4, Refine: how do we make it actually look right? Font-size and background tools, and then the Reflection agent renders the HTML, compares it against the source image, and injects CSS until it stabilises. That is the only component that ever sees the final render — and it is why the objective is stated on R of H.">
-      <div class="kicker">Four questions, four stages</div>
       <h2>The pipeline, <em>stage by stage</em></h2>
       <div class="slide-body">
         <!-- the figure builds up; completed stages collapse to a numbered chip -->
@@ -765,155 +1183,140 @@
       <div class="q">We have a representation and a system. But no existing benchmark scores physical structure or rendered appearance — so we built one.</div>
     </section>
 
-    <!-- ═══════════ VFDR-BENCH SAMPLES ═══════════ -->
-    <section class="slide vcenter" data-eyebrow="05 · Evaluation" id="benchSamplesSlide"
-      data-notes="This is what is actually in VFDR-Bench. Five thousand documents spanning single and multi-column layouts, scanned and born-digital sources, fifteen-plus languages and twenty-plus document categories — newspapers, magazines, government forms, receipts, scientific papers, historical archives. Every one annotated in Fid-HTML by trained annotators, because you cannot score position or style against a Markdown reference.">
-      <div class="kicker">What is actually in the benchmark</div>
-      <h2>VFDR-Bench — <em>sample documents</em></h2>
+    <!-- ═══════════ VFDR-BENCH SAMPLE CAROUSEL ═══════════ -->
+    <section class="slide" data-eyebrow="05 · Evaluation" id="vfdrSlide"
+      data-notes="This is what is actually in VFDR-Bench — thirty real pages from the set, grouped by document type, playing on their own. Five thousand documents, twenty-two languages, seventeen domains, and every single one annotated in Fid-HTML by trained annotators, because you cannot score position or style against a Markdown reference. Newspapers and periodicals; government and official records — birth certificates, tenders, memoranda; textbooks and exam papers, including right-to-left scripts; business and finance — statements, invoices with handwriting and rubber stamps; Indic and archival material on aged paper; and magazines and lifestyle layouts. Shift-arrow steps, P pauses, and clicking a page enlarges it.">
+      <div class="kicker">What is actually in the benchmark &nbsp;·&nbsp;
+        <span class="chint">plays automatically &nbsp;·&nbsp; <b>P</b> pause &nbsp;·&nbsp; <b>&#8679;&larr; &#8679;&rarr;</b> step &nbsp;·&nbsp; click a page to enlarge</span></div>
+      <h2>VFDR-Bench — <em>5,000 documents</em>, annotated in FID-HTML</h2>
       <div class="slide-body">
-        <div class="imgbox plain" id="benchSamplesBox">
-          <img src="static/images/vfdr_samples.png" alt="VFDR-Bench sample documents"
-               onerror="this.closest('.imgbox').innerHTML='&lt;div class=&quot;assetgap&quot;&gt;&lt;b&gt;VFDR-Bench samples figure not yet added.&lt;/b&gt;&lt;br&gt;Drop the image at &lt;code&gt;static/images/vfdr_samples.png&lt;/code&gt; and it will appear here automatically.&lt;/div&gt;'">
-        </div>
-      </div>
-    </section>
-
-    <!-- ═══════════ 20 · VFDR-BENCH + METRICS ═══════════ -->
-    <section class="slide" data-eyebrow="05 · Evaluation" data-frags="3"
-      data-notes="VFDR-Bench: five thousand documents, single and multi-column, scanned and born-digital, fifteen-plus languages, twenty-plus document categories — and every ground-truth annotation is fully expert human annotated in Fid-HTML, which matters because you cannot score position or style against a Markdown reference. The metrics. Text extraction is character and word recognition rate. Logical structure is normalised tree edit distance, with TEDS for tables and CDM for formulas. Physical structure is where we introduce two: Global Position Score at the layout-block level and Local Position Score at the line level. Both do one-to-one matching between ground truth and prediction by maximum IoU, then compute area-normalised spatial precision and recall and report the harmonic mean — so it penalises both missed elements and hallucinated boxes. Visual fidelity is the Visual Fidelity Score, a VLM-as-a-judge comparing the rendered HTML against human-annotated ground truth. Overall is the mean of the four axes, with CRR and WRR clipped per sample so pathological OCR failures cannot dominate the multilingual aggregate. On human validation: Pearson correlation between seven expert annotators and the metric-induced rankings exceeds 0.8 across a hundred documents.">
-      <div class="kicker">The benchmark and the metrics</div>
-      <h2>VFDR-Bench — and two <em>new</em> axes to score</h2>
-      <div class="slide-body">
-        <div class="stats" style="flex:0 0 auto;margin-bottom:24px;">
+        <div class="stats caro-stats">
           <div class="stat"><div class="v">5,000</div><div class="k">documents</div></div>
-          <div class="stat"><div class="v">15+</div><div class="k">languages</div></div>
-          <div class="stat"><div class="v">20+</div><div class="k">document categories</div></div>
-          <div class="stat"><div class="v gold">100%</div><div class="k">expert human annotated<br>in FID-HTML</div></div>
+          <div class="stat"><div class="v">22</div><div class="k">languages</div></div>
+          <div class="stat"><div class="v">17</div><div class="k">domains</div></div>
+          <div class="stat"><div class="v gold">100%</div><div class="k">expert human annotated</div></div>
         </div>
-        <div class="grid2" style="flex:0 0 auto;">
-          <div class="card frag" data-frag="1">
-            <h3 style="margin-bottom:13px;">Established axes</h3>
-            <div class="mathrow">
-              <div><span class="math" style="font-size:20px;">TE = (CRR + WRR) / 2</span>
-                <div class="mathnote">Character and word recognition rate.</div></div>
-              <div><span class="math" style="font-size:20px;">LS = NTED</span> <span style="font-size:16.5px;color:var(--ink-3);">· TEDS (tables) · CDM (formulas)</span>
-                <div class="mathnote">Normalised tree edit distance over the DOM.</div></div>
-            </div>
-          </div>
-          <div class="card accent frag" data-frag="2">
-            <h3 style="margin-bottom:13px;">Introduced in this paper</h3>
-            <div class="mathrow">
-              <div><span class="math" style="font-size:20px;">PS = (GPS + LPS) / 2</span>
-                <div class="mathnote"><b>Global</b> (layout blocks) and <b>Local</b> (lines) Position Score. One-to-one matching by max IoU, then area-normalised precision/recall → F1, penalising <b>both</b> missed elements and hallucinated boxes.</div></div>
-              <div><span class="math" style="font-size:20px;">VF = VFS</span>
-                <div class="mathnote">Visual Fidelity Score — VLM-as-a-judge comparing <b>R(H)</b> against human-annotated ground truth.</div></div>
-            </div>
-          </div>
-        </div>
-        <div class="frag" data-frag="3" style="margin-top:20px;">
-          <div class="math big">Overall = ( TE + LS + PS + VF ) / 4 &nbsp;&nbsp;<span class="op">· CRR, WRR clipped at −1 per sample</span></div>
-          <div class="mathnote" style="text-align:center;margin-top:8px;font-size:18px;">Human validation: Pearson correlation with seven expert annotators <b>&gt; 0.8</b> across 100 documents.</div>
+        <div class="carowrap">
+          <div class="carotabs" id="caroTabs"></div>
+          <div class="carostage" id="caroStage"></div>
+          <div class="carocap" id="caroCap"></div>
+          <div class="carodots" id="caroDots"></div>
+          <div class="carostate on" id="caroState">&#9654; playing</div>
         </div>
       </div>
     </section>
 
-    <!-- ═══════════ 21 · MAIN TABLE (paper Table 2, full & live) ═══════════ -->
-    <section class="slide demo bleed" data-eyebrow="05 · Evaluation" data-embed="restable" data-frags="3"
-      data-notes="This is Table 2 in full — all sixteen methods, live. Read it column group by column group. [CLICK] First, text extraction: almost everyone is passable. Marker 0.68, Qwen 0.66, GPT-5 0.65. That problem is largely solved, and it is why the field feels finished. [CLICK] Now physical structure — LPS and GPS. The entire field collapses. The best baseline LPS is 0.22 and the best GPS is 0.43; most are under 0.3. Nobody is putting things where they belong. [CLICK] And visual fidelity: GPT-5 gets 0.86 and Gemini 0.82 — they produce good-looking pages — but with GPS of 0.43 and 0.31 those pages are not the source page. REPLICA is the bottom row: 0.88 and 0.93 on text, 0.20 tree edit distance, 0.73 and 0.86 on position, 0.93 visual fidelity, 0.86 overall. The claim is not that we win a column; it is that we are the only row strong in every column at once.">
-      <div class="kicker">Measured on VFDR-Bench — all 16 methods</div>
-      <h2>Everyone passes text. <em>The field collapses on position.</em> <span class="srcnote">— paper Table 2, live &amp; complete</span></h2>
+    <!-- ═══════════ 20 · WHICH METRIC MEASURES WHAT ═══════════ -->
+    <section class="slide vcenter" data-eyebrow="05 · Evaluation" data-frags="3"
+      data-notes="Same four axes, one metric family each — and this shape is the one to keep in your head, because every result from here on is read on it. [CLICK] The two established axes. Text extraction: character and word recognition rate. Logical structure: normalised tree edit distance, with TEDS for tables and CDM for formulas. Both standard, both already in the literature. [CLICK] The two we introduce. Physical structure: Global and Local Position Score — one-to-one matching by maximum IoU, then area-normalised precision and recall, so it penalises both missed elements and hallucinated boxes. Visual fidelity: the Visual Fidelity Score, a VLM judging the rendered page against human-annotated ground truth. Neither axis had any metric at all before this work. [CLICK] Overall is the mean of the four, so nothing can buy a good score by winning one axis. And on trust: Pearson correlation with seven expert annotators is above 0.8 across a hundred documents.">
+      <div class="kicker">Reading the scoreboard</div>
+      <h2>Which metric measures <em>what</em></h2>
       <div class="slide-body">
-        <div class="embed">
-          <iframe src="index.html?embed=results&part=main&grade=1&hide=.subhead,.table-note" title="Main results (paper Table 2)"></iframe>
-        </div>
-        <div class="trendbar">
-          <div class="tb frag" data-frag="1">
-            <span class="big">▸ Text extraction — everyone passes</span>
-            0.65–0.68 WRR for the strong baselines. This axis is largely solved, which is why the field feels finished.
-          </div>
-          <div class="tb red frag" data-frag="2">
-            <span class="big">▸ Physical structure — total collapse</span>
-            Best baseline LPS <b>0.22</b>, best GPS <b>0.43</b>, most under 0.30. Nothing lands where it belongs.
-          </div>
-          <div class="tb frag" data-frag="3">
-            <span class="big">▸ REPLICA — no weak column</span>
-            0.73 / 0.86 position <i>and</i> 0.93 VFS. Winning one axis is easy; winning all four at once is the contribution.
+        <div class="radarwrap">
+          <svg class="mradar" viewBox="150 18 1090 592" aria-label="The four axes of document reconstruction and the metric family on each">
+            <g class="rgrid">
+              <circle cx="620" cy="300" r="190"/><circle cx="620" cy="300" r="142"/>
+              <circle cx="620" cy="300" r="95"/><circle cx="620" cy="300" r="48"/>
+              <line x1="620" y1="300" x2="620" y2="110"/><line x1="620" y1="300" x2="810" y2="300"/>
+              <line x1="620" y1="300" x2="620" y2="490"/><line x1="620" y1="300" x2="430" y2="300"/>
+            </g>
+            <g class="rnode"><circle cx="620" cy="110" r="7" class="std"/><circle cx="810" cy="300" r="7" class="std"/>
+              <circle cx="620" cy="490" r="7" class="new"/><circle cx="430" cy="300" r="7" class="new"/></g>
+
+            <g class="rlab std frag" data-frag="1">
+              <text x="620" y="66" text-anchor="middle" class="ax">Text Extraction</text>
+              <text x="620" y="90" text-anchor="middle" class="qq">are the words right?</text>
+              <text x="828" y="288" class="ax">Logical Structure</text>
+              <text x="828" y="312" class="qq">is the structure right?</text>
+              <text x="828" y="340" class="mt">NTED &#8595; · TEDS &#8593; · CDM &#8593; <tspan class="chipstd" dx="9">standard</tspan></text>
+              <text x="620" y="44" text-anchor="middle" class="mt">WRR &#8593; · CRR &#8593; <tspan class="chipstd" dx="9">standard</tspan></text>
+            </g>
+            <g class="rlab new frag" data-frag="2">
+              <text x="620" y="528" text-anchor="middle" class="ax">Physical Structure</text>
+              <text x="620" y="552" text-anchor="middle" class="qq">is the position right?</text>
+              <text x="620" y="580" text-anchor="middle" class="mt">GPS &#8593; · LPS &#8593; <tspan class="chipnew" dx="9">NEW</tspan></text>
+              <text x="412" y="288" text-anchor="end" class="ax">Visual Fidelity</text>
+              <text x="412" y="312" text-anchor="end" class="qq">does it look right?</text>
+              <text x="412" y="340" text-anchor="end" class="mt">VFS &#8593; <tspan class="chipnew" dx="9">NEW</tspan></text>
+            </g>
+            <g class="rcentre frag" data-frag="3">
+              <circle cx="620" cy="300" r="44"/>
+              <text x="620" y="295" text-anchor="middle" class="os">OS</text>
+              <text x="620" y="318" text-anchor="middle" class="osn">mean of 4</text>
+            </g>
+          </svg>
+          <div class="radarside">
+            <div class="rs-card frag" data-frag="1">
+              <h4>Two axes already had metrics</h4>
+              <p><b>WRR / CRR</b> &#8593; — how many words and characters came back correct.<br>
+                 <b>NTED</b> &#8595; — how far the produced DOM is from the reference tree.</p>
+              <p class="rs-tiny">&#8593; higher is better &nbsp;·&nbsp; &#8595; lower is better</p>
+            </div>
+            <div class="rs-card gold frag" data-frag="2">
+              <h4>Two had none — so we built them</h4>
+              <p><b>GPS / LPS</b> &#8593; — overlap between where an element sits in the source and where it lands in the render. Blocks for GPS, text lines for LPS.</p>
+              <p><b>VFS</b> &#8593; — a VLM compares the two rendered pages and scores typography, colour and spacing.</p>
+              <p class="rs-tiny">Both read the <b>render</b>, never the markup — which is precisely how earlier benchmarks missed them.</p>
+            </div>
+            <div class="rs-card frag" data-frag="3">
+              <h4>Overall = the mean of the four</h4>
+              <p>No system can buy a good score by winning one axis. Agreement with seven expert annotators over 100 documents: Pearson <b>&gt; 0.8</b>.</p>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ═══════════ 22 · ABLATION (paper Table 3, full & live) ═══════════ -->
-    <section class="slide demo bleed vcenter" data-eyebrow="05 · Evaluation" data-embed="abl" data-nav="1" data-frags="9"
-      data-notes="Table 3, the ablation, built up cumulatively. Flat layout detection gives 0.53 overall. Hierarchical layout, Hi-SAM and Set-of-Mark take the Segment stage from 0.53 to 0.71 — steady gains from better geometry. [CLICK] Then the first big jump: monolithic localization, one model doing all regions, gives 0.76. Introducing the router and the specialists takes it to 0.86. That is a ten-point jump purely from agentic decomposition, at the same model scale. [CLICK] And the second: font fix, background restore and reflection take 0.86 to 0.93, with visual fidelity reaching 0.97. Those two jumps are the empirical case for the whole design — single-pass generation is not enough, and you have to look at the render.">
+    <!-- ═══════════ 21 · MAIN TABLE (paper Table 2, native & stepped) ═══════════ -->
+    <section class="slide" data-eyebrow="05 · Evaluation" data-frags="5" id="resSlide"
+      data-notes="This is Table 2 in full — all sixteen methods. Each category is collapsed to its best system; click any category to expand it. I will walk it one axis at a time. [CLICK] Text extraction: almost everyone is passable — Marker 0.68, Qwen 0.66, GPT-5 0.65. Largely solved, which is why the field feels finished. [CLICK] Logical structure: tree edit distance is passable for the better systems — but nothing about it says WHERE anything is. [CLICK] Now physical structure, and the entire field collapses. Best baseline LPS 0.22, best GPS 0.43, most under 0.30. Nothing lands where it belongs. [CLICK] Visual fidelity: GPT-5 reaches 0.86 and Gemini 0.82 — genuinely good-looking pages — but with GPS of 0.43 and 0.31, those pages are not the source page. [CLICK] And the whole board, graded. REPLICA: 0.73 and 0.86 on position, 0.93 visual fidelity, 0.86 overall. The claim is not that we win a column — it is that there is no weak column.">
+      <div class="kicker">Measured on VFDR-Bench — all 16 methods &nbsp;·&nbsp;
+        <span class="chint">click a category to expand it</span></div>
+      <h2>Everyone passes text. <em>The field collapses on position.</em> <span class="srcnote">— paper Table 2</span></h2>
+      <div class="slide-body">
+        <div class="rwrap"><table class="rtab" id="resTable"></table></div>
+        <div class="rnote">
+          <div class="rlegend" id="resLegend"><span>weakest</span><i style="background:#fdeceb"></i><i style="background:#fdf1dd"></i><i style="background:#eef5ef"></i><i style="background:#dcefe1"></i><span>strongest</span></div>
+          <div class="rline frag" data-frag="1"><span class="t">Text extraction</span><span class="d">Strong baselines sit at <b>0.65–0.68</b> WRR. Largely solved — which is why the field feels finished.</span></div>
+          <div class="rline bad frag" data-frag="2"><span class="t">Logical structure</span><span class="d">Tree-edit distance — <b>lower is better</b>. The OCR specialists sit near <b>0.9</b>: they emit a flat stream with almost no tree. The best baseline is GPT-5 at <b>0.49</b>; REPLICA is <b>0.20</b>.</span></div>
+          <div class="rline bad frag" data-frag="3"><span class="t">Physical structure</span><span class="d">Total collapse: best baseline LPS <b>0.22</b>, best GPS <b>0.43</b>, most under 0.30. Nothing lands where it belongs.</span></div>
+          <div class="rline frag" data-frag="4"><span class="t">Visual fidelity</span><span class="d">GPT-5 reaches <b>0.86</b> and Gemini <b>0.82</b> — good-looking pages that are <i>not the source page</i>, with GPS of 0.43 and 0.31.</span></div>
+          <div class="rline win frag" data-frag="5"><span class="t">REPLICA</span><span class="d">Position <b>0.73 / 0.86</b> and visual fidelity <b>0.93</b>, for <b>0.86</b> overall. The claim is not that we win a column — it is that there is <b>no weak column</b>.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ 22 · ABLATION (paper Table 3, as a chart) ═══════════ -->
+    <section class="slide vcenter" data-eyebrow="05 · Evaluation" data-frags="3" id="ablSlide"
+      data-notes="The ablation, built up cumulatively, and read on the same four axes as everything else — the navy line is Overall, gold is the visual-fidelity axis, violet is the physical-structure axis. The bands are our own pipeline stages. [CLICK] Stage one, Segment: hierarchical layout, Hi-SAM and Set-of-Mark take Overall from 0.53 to 0.71. Steady gains from better geometry — and notice the physical-structure line is what climbs, from 0.34 to 0.69. [CLICK] Stage two, Localize, and the first big jump. One model doing every region gives 0.76. Introducing the Router and the six specialists takes it to 0.86 — ten points, purely from agentic decomposition, at the same model scale. [CLICK] Stage four, Refine, and the second: font fix, background restore and reflection take 0.86 to 0.93, with the visual-fidelity axis reaching 0.97. Those two jumps are the empirical case for the whole design — single-pass generation is not enough, and you have to look at the render. Assemble has no row of its own here: it is not optional, so there is nothing to ablate.">
       <div class="kicker">Every component earns its place</div>
-      <h2>Two jumps carry the design <span class="srcnote">— paper Table 3, live &amp; complete</span></h2>
+      <h2>Two jumps carry the design <span class="srcnote">— paper Table 3</span></h2>
       <div class="slide-body">
-        <div class="embed">
-          <iframe src="index.html?embed=results&part=ablation&hide=.subhead" title="Ablation (paper Table 3)"></iframe>
-        </div>
-        <div class="trendbar two">
-          <div class="tb frag" data-frag="1">
-            <span class="big">▸ +0.10 — agentic Localize</span>
-            Monolithic localization 0.76 → Router + Specialists <b>0.86</b>, at the <i>same</i> model scale. Decomposition, not scale.
-          </div>
-          <div class="tb frag" data-frag="2">
-            <span class="big">▸ +0.07 — the Refine loop</span>
-            0.86 → <b>0.93</b> overall, VFS <b>0.97</b>. This is what looking at the render buys you.
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ═══════════ 23 · RELIABILITY (paper Table 4, live) ═══════════ -->
-    <section class="slide demo bleed vcenter" data-eyebrow="05 · Evaluation" data-embed="rel" data-frags="1"
-      data-notes="And can we trust the agents? Table 4 is a trace-based evaluation of every intermediate decision. Segment agent: agnostic text F1 0.98, visual F1 0.99, hierarchy consistency 0.98. Router accuracy 0.97 — it picks the right specialist almost always. Sub-HTML validity 0.96 — the fragments are well-formed DOM. Reflection gain plus 0.06 per iteration. And the tools: tool-call success 0.995, reading order accuracy 0.98 by Kendall tau, font fit 0.97, background stitch 0.96. The point: performance comes from dependable structured reasoning, not from one lucky component.">
-      <div class="kicker">Can we trust the agents?</div>
-      <h2>Agent &amp; tool reliability <span class="srcnote">— paper Table 4, live</span></h2>
-      <div class="slide-body">
-        <div class="embed">
-          <iframe src="index.html?embed=results&part=reliability&hide=.subhead" title="Agent and tool reliability (paper Table 4)"></iframe>
-        </div>
-        <div class="trendbar" style="grid-template-columns:1fr;">
-          <div class="tb frag" data-frag="1">
-            <span class="big">▸ Routing 0.97 · Sub-HTML validity 0.96 · Tool-call success 0.995 · Reading order 0.98</span>
-            Trace-based, evaluated per decision. Performance comes from <i>dependable structured reasoning</i> across every component — not one lucky part of the pipeline.
-          </div>
-        </div>
+        <div class="ablwrap"><svg id="ablChart" viewBox="0 0 1700 706" aria-label="Cumulative ablation: overall score, visual fidelity and global position across the pipeline stages"></svg></div>
       </div>
     </section>
 
     <!-- ═══════════ QUALITATIVE ═══════════ -->
-    <section class="slide demo" data-eyebrow="05 · Evaluation" data-embed="qual" data-frags="4" id="qualSlide"
-      data-notes="Spot the difference. On the left the source scan; on the right REPLICA's Fid-HTML rendered live by your browser — real selectable text and real inline CSS, not an image of our output. I will step through several document types. [CLICK] A government notice with a table. [CLICK] A dense receipt — small type, faint scan. [CLICK] A multi-column magazine spread. [CLICK] And a scientific paper with equations and figures. In every case the column boundaries, typography and spatial layout survive.">
-      <div class="kicker">Spot the difference &nbsp;·&nbsp; <span id="qualCounter" style="font-family:var(--mono);color:var(--gold);"></span></div>
+    <section class="slide" data-frags="4" data-eyebrow="05 · Evaluation" id="qualSlide"
+      data-notes="Spot the difference. On the left the source scan; on the right REPLICA's Fid-HTML rendered live by your browser — real selectable text and real inline CSS, not an image of our output. Both sides are forced into the same rectangle, so any size difference you see would be a real layout error. [CLICK] A government notice with a table, in Gujarati. [CLICK] A dense receipt — small type, faint scan. [CLICK] A multi-column magazine spread. [CLICK] And a scientific paper with equations and figures. In every case the column boundaries, typography and spatial layout survive.">
+      <div class="kicker">Spot the difference <span class="qdots" id="qualDots"></span></div>
       <h2>Source scan <em>vs</em> live FID-HTML render</h2>
       <div class="slide-body">
-        <div class="cols">
-          <div class="col">
-            <div class="imgbox"><img id="qualImg" src="static/images/qual/IndicDLP_1.png" alt="Original scanned document"></div>
-            <div class="cap"><b>Original</b> — <span id="qualCapL">scanned page</span></div>
+        <div class="qual">
+          <div class="qcol">
+            <div class="qbox"><img id="qualImg" src="static/images/qual/IndicDLP_1.png" alt="Original scanned document"></div>
+            <div class="cap"><b>Original</b> — <span id="qualCapL">government notice · Gujarati, tabular</span></div>
           </div>
-          <div class="col">
-            <div class="embed"><iframe id="qualFrame" src="static/images/qual/IndicDLP_1_corrected.html" title="REPLICA FID-HTML render" scrolling="no"></iframe></div>
+          <div class="qcol">
+            <div class="qbox"><iframe id="qualFrame" src="static/images/qual/IndicDLP_1_corrected.html" title="REPLICA FID-HTML render" scrolling="no"></iframe></div>
             <div class="cap"><b style="color:var(--navy)">REPLICA</b> — live FID-HTML: real DOM, selectable text, inline CSS</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ═══════════ 25 · DOWNSTREAM (paper Fig. 2) ═══════════ -->
-    <section class="slide demo bleed" data-eyebrow="06 · Applications" data-embed="down" data-nav="1" data-frags="6"
-      data-notes="Because Fid-HTML is web-native and carries both semantics and geometry, it is reusable well beyond reconstruction — this is Figure 2 from the paper, live; hover any application to zoom into it. Layout-preserving document translation: translate a form and it still looks like that form. Document preservation and archiving. Indexing and searchability. Grounded document intelligence — the nested DOM maps directly onto phrase inside line inside block containment, so you get pixel-level grounding for free. Semantic chunking for RAG, where chunks follow logical structure rather than character counts. And position-aware retrieval — query by where something sits on the page.">
-      <div class="kicker">Beyond reconstruction</div>
-      <h2>What FID-HTML <em>unlocks</em> <span class="srcnote">— paper Fig. 2, live · hover to zoom</span></h2>
-      <div class="slide-body">
-        <div class="embed"><iframe src="index.html?embed=downstream" title="Downstream applications (paper Fig. 2)"></iframe></div>
-      </div>
-    </section>
-
     <!-- ═══════════ 26 · LIMITATIONS ═══════════ -->
-    <section class="slide vcenter" data-eyebrow="07 · Limitations"
+    <section class="slide vcenter" data-eyebrow="06 · Limitations"
       data-notes="Being honest about the edges. First: single-page only — multi-page structures such as a table spanning a page break can fragment. Second: font identification. Bold, italic, underline and colour are recovered reliably, but exact font families are not; existing work covers mostly English and Chinese, and large-scale multilingual font recognition remains an open problem. Third: the refine loop's repeated browser rendering costs real latency against a single forward pass. Those are the three we state in the paper.">
       <div class="kicker">Being honest about the edges</div>
       <h2>Where REPLICA still falls short</h2>
@@ -935,8 +1338,91 @@
       </div>
     </section>
 
+    <!-- ═══════════ 25 · DOWNSTREAM (paper Fig. 2) ═══════════ -->
+    <section class="slide demo bleed" data-eyebrow="07 · Applications" data-embed="down" data-nav="1" data-frags="6"
+      data-notes="Because Fid-HTML is web-native and carries both semantics and geometry, it is reusable well beyond reconstruction — this is Figure 2 from the paper, live; hover any application to zoom into it. Layout-preserving document translation: translate a form and it still looks like that form. Document preservation and archiving. Indexing and searchability. Grounded document intelligence — the nested DOM maps directly onto phrase inside line inside block containment, so you get pixel-level grounding for free. Semantic chunking for RAG, where chunks follow logical structure rather than character counts. And position-aware retrieval — query by where something sits on the page.">
+      <div class="kicker">Beyond reconstruction</div>
+      <h2>What FID-HTML <em>unlocks</em> <span class="srcnote">— paper Fig. 2, live · hover to zoom</span></h2>
+      <div class="slide-body">
+        <div class="embed"><iframe src="index.html?embed=downstream" title="Downstream applications (paper Fig. 2)"></iframe></div>
+      </div>
+    </section>
+
+    <!-- ═══════════ 26b · WHERE REPLICA SITS ═══════════ -->
+    <section class="slide vcenter" data-eyebrow="08 · The bigger picture" data-frags="2"
+      data-notes="One last frame, because REPLICA does not stand alone. It sits at the head of a line of work on grounded document understanding. [CLICK] REPLICA rebuilds any page as Fid-HTML — text, structure, position and style, all explicit. That makes it a supervision engine: every reconstructed page is labelled by construction, at whatever scale you can run it. M3Grounder, at CVPR, uses masks as evidence for grounded answers. DoCoG, an oral at ECCV, does grounded reasoning — every claim tied back to a region. And DocLayout-VL treats the page as a tree. All three need exactly what Fid-HTML already carries. [CLICK] And it runs the other way too: better segmentation, better reading order and better grounding come straight back into REPLICA's own stages. Neither half stands alone — the representation makes the supervision, the supervision makes the models, and the models make the representation better.">
+      <div class="kicker">Where REPLICA sits</div>
+      <h2>One representation, <em>many grounded models</em></h2>
+      <div class="slide-body">
+        <div class="relwrap">
+          <svg class="relsvg" viewBox="0 0 1560 560" aria-label="REPLICA generates supervision for M3Grounder, DoCoG and DocLayout-VL, which in turn sharpen REPLICA">
+            <defs>
+              <marker id="arwG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--gold)"/></marker>
+              <marker id="arwN" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--navy-soft)"/></marker>
+            </defs>
+
+            <g class="relbox src">
+              <rect x="40" y="160" width="400" height="240" rx="20"/>
+              <rect class="cap" x="40" y="160" width="400" height="12" rx="6"/>
+              <text x="240" y="228" text-anchor="middle" class="bt">REPLICA</text>
+              <text x="240" y="266" text-anchor="middle" class="bs">rebuilds any page as</text>
+              <text x="240" y="308" text-anchor="middle" class="bf">FID-HTML</text>
+              <text x="240" y="344" text-anchor="middle" class="bn">text · structure · position · style</text>
+              <text x="240" y="378" text-anchor="middle" class="bn2">ICDAR 2026 · Oral</text>
+            </g>
+
+            <g class="relgroup frag" data-frag="1">
+              <rect x="1010" y="70" width="510" height="420" rx="22" class="grp"/>
+              <text x="1265" y="112" text-anchor="middle" class="grpt">GROUNDED DOCUMENT UNDERSTANDING</text>
+              <g class="relcard m3">
+                <rect x="1050" y="140" width="430" height="94" rx="14"/>
+                <text x="1078" y="180" class="ct">M3Grounder</text>
+                <text x="1078" y="208" class="cs">masks as evidence</text>
+                <g class="venue">
+                  <rect class="chip-dark" x="1300" y="154" width="156" height="48" rx="8"/>
+                  <image href="static/images/logos/cvpr_logo.svg" x="1309" y="160" width="138" height="36" preserveAspectRatio="xMidYMid meet"/>
+                  <text x="1378" y="224" text-anchor="middle" class="vy">CVPR 2026</text>
+                </g>
+              </g>
+              <g class="relcard dc">
+                <rect x="1050" y="256" width="430" height="94" rx="14"/>
+                <text x="1078" y="296" class="ct">DoCoG</text>
+                <text x="1078" y="324" class="cs">grounded reasoning</text>
+                <g class="venue">
+                  <rect class="chip-light" x="1300" y="270" width="156" height="48" rx="8"/>
+                  <image href="static/images/logos/eccv_logo.svg" x="1309" y="276" width="138" height="36" preserveAspectRatio="xMidYMid meet"/>
+                  <text x="1378" y="340" text-anchor="middle" class="vy">ECCV 2026 · Oral</text>
+                </g>
+              </g>
+              <g class="relcard dl">
+                <rect x="1050" y="372" width="430" height="94" rx="14"/>
+                <text x="1078" y="412" class="ct">DocLayout-VL</text>
+                <text x="1078" y="440" class="cs">the page as a tree</text>
+                <g class="venue">
+                  <rect class="chip-light" x="1300" y="386" width="156" height="48" rx="8"/>
+                  <image href="static/images/logos/eccv_logo.svg" x="1309" y="392" width="138" height="36" preserveAspectRatio="xMidYMid meet"/>
+                  <text x="1378" y="456" text-anchor="middle" class="vy">ECCV 2026</text>
+                </g>
+              </g>
+            </g>
+
+            <g class="relflow frag" data-frag="1">
+              <path d="M455 232 C 640 232, 800 190, 995 186" fill="none" marker-end="url(#arwG)"/>
+              <text x="725" y="150" text-anchor="middle" class="ft gold">generates the training data</text>
+              <text x="725" y="180" text-anchor="middle" class="fn">every page labelled by construction</text>
+            </g>
+            <g class="relflow back frag" data-frag="2">
+              <path d="M995 424 C 800 420, 640 380, 455 358" fill="none" marker-end="url(#arwN)"/>
+              <text x="725" y="424" text-anchor="middle" class="ft navy">sharpen every stage</text>
+              <text x="725" y="454" text-anchor="middle" class="fn">better segmentation, reading order, grounding</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
     <!-- ═══════════ 27 · SUMMARY ═══════════ -->
-    <section class="slide vcenter" data-eyebrow="08 · Conclusion"
+    <section class="slide vcenter" data-eyebrow="09 · Conclusion"
       data-notes="To summarise. Fid-HTML: a web-native representation where position and style are required rather than optional, so fidelity is a property of the format. VFDR-Bench with GPS, LPS and VFS: the first benchmark to score physical structure and rendered appearance. And REPLICA: Segment, Localize, Assemble, Refine — agents where judgment is needed, tools where determinism is needed — reaching 93% visual fidelity and 0.86 overall, ahead of GPT-5 and Gemini. And the headline for the agentic argument: REPLICA with an 8-billion-parameter backbone beats Qwen3-VL-30B by 39% overall, at 3.75 times smaller and comparable inference time. Structured decomposition beats brute-force scale.">
       <div class="kicker">One paradigm, three contributions</div>
       <h2>Represent → Measure → Generate</h2>
@@ -960,8 +1446,23 @@
       data-notes="Thank you. Happy to take questions. Everything — paper, code, dataset, models, and this deck — is linked from the project page.">
       <h1>Thank you</h1>
       <div class="sub">Questions?</div>
-      <div class="qr"><img src="static/images/qr_projectpage.png" alt="Project page QR code"></div>
-      <div class="url">replica-agents.github.io</div>
+      <div class="qrwall">
+        <div class="qrmain">
+          <img src="static/images/qr/replica.png" alt="REPLICA project page QR code"
+               onerror="this.src='static/images/qr_projectpage.png'">
+          <div class="qn">REPLICA</div>
+          <div class="qu">replica-agents.github.io</div>
+        </div>
+        <div class="qrcol">
+          <div class="qrgroup-label">Grounded document understanding</div>
+          <div class="qrs"><img src="static/images/qr/m3grounder.png" alt="M3Grounder QR code">
+            <div class="qtx"><div class="qn">M3Grounder</div><div class="qv">CVPR 2026</div></div></div>
+          <div class="qrs"><img src="static/images/qr/docog.png" alt="DoCoG QR code">
+            <div class="qtx"><div class="qn">DoCoG</div><div class="qv">ECCV 2026 · Oral</div></div></div>
+          <div class="qrs"><img src="static/images/qr/doclayoutvl.png" alt="DocLayout-VL QR code">
+            <div class="qtx"><div class="qn">DocLayout-VL</div><div class="qv">ECCV 2026</div></div></div>
+        </div>
+      </div>
       <div class="thanks-logos">
         <img src="static/images/logos/cvit_logo.png" alt="CVIT" onerror="this.style.display=&quot;none&quot;">
         <img src="static/images/logos/iiith_logo.jpeg" alt="IIIT Hyderabad">
@@ -1100,6 +1601,8 @@
     if(slides[cur].id === "ladderSlide") renderLadder();
     if(slides[cur].id === "stagesSlide") renderStages();
     if(slides[cur].id === "qualSlide") renderQual();
+    if(slides[cur].id === "resSlide")   renderResults();
+    if(slides[cur].id === "ablSlide")   renderAblation();
   }
 
   /* ---------- the live fidelity ladder ---------- */
@@ -1157,6 +1660,9 @@
     }
     applyFrags();
     fitEmbeds(s);
+    // the sample carousel only runs while its slide is on screen
+    if(s.id === "vfdrSlide") caro.enter(); else caro.leave();
+    if(s.id === "qualSlide") setTimeout(fitQual, 60);
     progress.style.width = (cur/(slides.length-1)*100) + "%";
     notesBody.textContent = s.dataset.notes || "—";
     history.replaceState(null, "", "#" + cur);
@@ -1187,25 +1693,92 @@
     return true;
   }
   // Qualitative slide cycles a local list of real source/render pairs.
+  // The scan and the FID-HTML render must occupy the SAME rectangle on screen —
+  // a size difference between them would read as a layout error in the
+  // reconstruction, which is the one thing this slide must not suggest. So we
+  // measure the rendered page, then force both sides into one rect taken from
+  // the source image's own aspect ratio.
   const QUAL_SET = [
     {img:"IndicDLP_1",   cap:"government notice · Gujarati, tabular"},
     {img:"X51005621482", cap:"retail receipt · dense small type"},
     {img:"00000087",     cap:"multi-column magazine spread"},
     {img:"LoRaLay_1",    cap:"scientific paper · figures &amp; equations"}
   ];
+  const docSizes = {};
+  function measureDoc(url){
+    // only successful measurements are cached — caching a failure would pin the
+    // wrong size for the rest of the talk
+    if(docSizes[url]) return Promise.resolve(docSizes[url]);
+    return new Promise(resolve=>{
+      const probe = document.createElement("iframe");
+      // 20px, not the display size: scrollWidth/scrollHeight can never report
+      // smaller than the frame itself, so measuring inside a full-size frame
+      // just returns the frame — and then feeds that back as the next size.
+      probe.style.cssText = "position:fixed;left:-9999px;top:0;width:20px;height:20px;border:0";
+      probe.onload = ()=>{
+        const read = ()=>{
+          const d = probe.contentDocument;
+          if(!d || !d.body) return null;
+          const w = Math.max(d.body.offsetWidth, d.body.scrollWidth, d.documentElement.scrollWidth);
+          const h = Math.max(d.body.offsetHeight, d.body.scrollHeight, d.documentElement.scrollHeight);
+          return (w > 40 && h > 40) ? [w,h] : null;
+        };
+        const finish = dim =>{ probe.remove(); if(dim) docSizes[url]=dim; resolve(dim); };
+        let tries = 0;
+        (function attempt(){
+          const dim = read();
+          if(dim || ++tries > 6) finish(dim); else setTimeout(attempt, 120);
+        })();
+      };
+      probe.onerror = ()=>{ probe.remove(); resolve(null); };
+      document.body.appendChild(probe);
+      probe.src = url;
+    });
+  }
+  function fitQual(){
+    const img = document.getElementById("qualImg"), f = document.getElementById("qualFrame");
+    if(!img || !f || !img.naturalWidth) return;
+    const box = f.parentElement;
+    const bw = box.clientWidth, bh = box.clientHeight;
+    if(!bw || !bh) return;
+    // one shared rectangle, sized from the source page
+    const ar = img.naturalWidth / img.naturalHeight;
+    const rw = Math.min(bw, bh*ar), rh = rw/ar;
+    Object.assign(img.style, {width:rw+"px", height:rh+"px", objectFit:"fill", maxWidth:"none", maxHeight:"none"});
+    // If the page could not be measured (file://, cross-origin), fall back to
+    // the scan's own pixel size: the FID-HTML page is authored to the source
+    // page's dimensions, so that is the right number — and it keeps the render
+    // from collapsing to an iframe's default 300x150.
+    const [dw, dh] = docSizes[f.getAttribute("src")] || [img.naturalWidth, img.naturalHeight];
+    Object.assign(f.style, {
+      width: dw+"px", height: dh+"px", transformOrigin:"top left",
+      transform: "scale(" + (rw/dw) + "," + (rh/dh) + ")",
+      left: Math.round((bw-rw)/2)+"px", top: Math.round((bh-rh)/2)+"px"
+    });
+  }
   function renderQual(){
-    const q = QUAL_SET[Math.min(frag, QUAL_SET.length-1)];
+    const n = Math.min(frag, QUAL_SET.length-1);
+    const q = QUAL_SET[n];
     const img = document.getElementById("qualImg"), fr = document.getElementById("qualFrame");
     if(!img || !fr) return;
-    const nsrc = "static/images/qual/" + q.img + ".png";
-    if(!img.src.endsWith(nsrc)) img.src = nsrc;
+    const isrc = "static/images/qual/" + q.img + ".png";
     const hsrc = "static/images/qual/" + q.img + "_corrected.html";
+    if(!img.getAttribute("src").endsWith(isrc)) img.setAttribute("src", isrc);
     if(!fr.getAttribute("src").endsWith(hsrc)) fr.setAttribute("src", hsrc);
     document.getElementById("qualCapL").innerHTML = q.cap;
-    document.getElementById("qualCounter").textContent =
-      (Math.min(frag, QUAL_SET.length-1) + 1) + " / " + QUAL_SET.length;
-    setTimeout(()=>fitEmbeds(slides[cur]), 250);
+    document.querySelectorAll("#qualDots .qdot").forEach((d,i)=>d.classList.toggle("on", i===n));
+    if(img.decode) img.decode().then(fitQual).catch(()=>{});
+    else img.addEventListener("load", fitQual, {once:true});
+    measureDoc(hsrc).then(()=>{ fitQual(); setTimeout(fitQual, 120); });
+    fr.addEventListener("load", fitQual, {once:true});
   }
+  (function buildQualDots(){
+    const d = document.getElementById("qualDots");
+    if(d) d.innerHTML = QUAL_SET.map((_,i)=>'<span class="qdot'+(i?'':' on')+'"></span>').join("");
+  })();
+  // measure every pair up front, so switching documents never shows a wrong size
+  QUAL_SET.forEach(q => measureDoc("static/images/qual/" + q.img + "_corrected.html"));
+
   function next(){
     if(frag < fragCount(cur)){
       frag++; applyFrags(); drivePipeline("step");
@@ -1259,10 +1832,408 @@
     ovGrid.appendChild(d);
   });
 
+  /* ═══════════ MAIN RESULTS TABLE (paper Table 2) ═══════════
+     Built natively rather than embedded, so the walk-through can light one axis
+     at a time and grade the whole board on the final beat. */
+  // v = [WRR, CRR, NTED, LPS, GPS, VFS, OS]
+  const RES_GROUPS = [
+    { name:"Pipeline tools", rows:[
+      { m:"Marker",  v:[0.68,0.82,0.61,0.19,0.34,0.74,0.53] },
+      { m:"Docling", v:[0.40,0.49,0.62,0.17,0.26,0.55,0.38] } ]},
+    { name:"Expert VLMs", rows:[
+      { m:"GOT-OCR-2.0",     v:[0.36,0.39,0.93,0.15,0.25,0.70,0.32] },
+      { m:"rolmOCR",         v:[0.54,0.67,0.95,0.15,0.07,0.56,0.34] },
+      { m:"olmOCR",          v:[0.49,0.64,0.93,0.21,0.09,0.33,0.31] },
+      { m:"smolDocling",     v:[0.37,0.54,0.89,0.16,0.23,0.54,0.28] },
+      { m:"Nanonets-OCR-s",  v:[0.25,0.42,0.94,0.18,0.10,0.56,0.26] },
+      { m:"ChatDoc-OCRFlux", v:[0.30,0.38,0.88,0.15,0.24,0.44,0.27] } ]},
+    { name:"General VLMs", rows:[
+      { m:"GPT-5",          v:[0.65,0.79,0.49,0.21,0.43,0.86,0.58] },
+      { m:"Qwen3-VL",       v:[0.66,0.79,0.59,0.22,0.30,0.43,0.47] },
+      { m:"Gemini-2.5-Pro", v:[0.67,0.42,0.56,0.14,0.31,0.82,0.47] },
+      { m:"Gemma3",         v:[0.58,0.59,0.85,0.19,0.25,0.38,0.36] },
+      { m:"InternVL3",      v:[0.06,0.30,0.82,0.19,0.29,0.31,0.22] } ]},
+    { name:"Screenshot \u2192 HTML", rows:[
+      { m:"Webcode2m",           v:[0.33,0.45,0.82,0.15,0.29,0.39,0.30] },
+      { m:"Waffle VLM Websight", v:[0.14,0.42,0.84,0.11,0.29,0.19,0.22] } ]},
+    { name:"Ours", ours:true, rows:[
+      { m:"REPLICA", v:[0.88,0.93,0.20,0.73,0.86,0.93,0.86], ours:true } ]}
+  ];
+  const RES_AXES = [
+    { ax:"TE", cols:[1,2] }, { ax:"LS", cols:[3] }, { ax:"PS", cols:[4,5] },
+    { ax:"VF", cols:[6] },   { ax:"OS", cols:[1,2,3,4,5,6,7] }
+  ];
+  // cells the spoken takeaway names — outlined so the claim and the table agree
+  const RES_MARKS = { TE:[["Marker",1]], LS:[["rolmOCR",3],["GPT-5",3]],
+    PS:[["Qwen3-VL",4],["GPT-5",5]], VF:[["GPT-5",6],["Gemini-2.5-Pro",6]] };
+
+  (function buildResults(){
+    const tb = document.getElementById("resTable"); if(!tb) return;
+    const head = '<thead><tr><th class="gh m"></th>' +
+      '<th class="gh b" colspan="2" data-ax="TE">Text extraction</th>' +
+      '<th class="gh b" data-ax="LS">Logical structure</th>' +
+      '<th class="gh b" colspan="2" data-ax="PS">Physical structure</th>' +
+      '<th class="gh b" data-ax="VF">Visual fidelity</th>' +
+      '<th class="gh b" data-ax="OS">Overall</th></tr>' +
+      '<tr class="hd2"><th class="m">Method</th>' +
+      ["WRR \u2191","CRR \u2191","NTED \u2193","LPS \u2191","GPS \u2191","VFS \u2191","OS \u2191"]
+        .map((c,i)=>'<th data-c="'+(i+1)+'">'+c+'</th>').join("") + '</tr></thead>';
+    let body = "<tbody>";
+    RES_GROUPS.forEach((g,gi)=>{
+      // rank within the category so the collapsed view shows its best system
+      const best = [...g.rows].sort((a,b)=>b.v[6]-a.v[6])[0];
+      if(!g.ours){
+        body += '<tr class="cat" data-g="'+gi+'"><td colspan="8"><span class="car">\u25b8</span>'+g.name+
+                '<span class="cn">'+g.rows.length+' systems — showing best</span></td></tr>';
+      }
+      g.rows.forEach(r=>{
+        const extra = (!g.ours && r !== best) ? " xtra" : "";
+        body += '<tr class="row'+extra+(r.ours?" ours":"")+'" data-g="'+gi+'" data-m="'+r.m+'">' +
+                '<td class="m" data-c="0">'+r.m+(r.ours?" <b>(ours)</b>":"")+'</td>' +
+                r.v.map((x,i)=>'<td data-c="'+(i+1)+'">'+x.toFixed(2)+'</td>').join("") + '</tr>';
+      });
+    });
+    tb.innerHTML = head + body + "</tbody>";
+    tb.querySelectorAll("tr.cat").forEach(tr=>{
+      tr.addEventListener("click", e=>{
+        e.stopPropagation();
+        const g = tr.dataset.g, open = tr.classList.toggle("open");
+        const n = tb.querySelectorAll('tr.row[data-g="'+g+'"]').length;
+        tr.querySelector(".car").textContent = open ? "\u25be" : "\u25b8";
+        tr.querySelector(".cn").textContent  = open ? n+" systems" : n+" systems — showing best";
+        tb.querySelectorAll('tr.xtra[data-g="'+g+'"]').forEach(r=>r.classList.toggle("open", open));
+      });
+    });
+  })();
+  function resExpandFor(method){
+    const tb = document.getElementById("resTable");
+    const row = tb && tb.querySelector('tr.row[data-m="'+method+'"]');
+    if(!row || !row.classList.contains("xtra") || row.classList.contains("open")) return;
+    const cat = tb.querySelector('tr.cat[data-g="'+row.dataset.g+'"]');
+    if(cat) cat.click();
+  }
+  function renderResults(){
+    const tb = document.getElementById("resTable"); if(!tb) return;
+    const n = frag;
+    tb.querySelectorAll("td,th").forEach(c=>c.classList.remove("lit","q","mark","good","g0","g1","g2","g3"));
+    tb.classList.toggle("focus", n > 0);
+    const legend = document.getElementById("resLegend");
+    if(n <= 0){ tb.classList.remove("graded"); if(legend) legend.classList.remove("on"); return; }
+    const step = RES_AXES[Math.min(n, RES_AXES.length) - 1];
+    const live = new Set(step.cols);
+    tb.querySelectorAll("td[data-c],th[data-c]").forEach(c=>{
+      const ci = +c.dataset.c; if(ci === 0) return;
+      c.classList.add(live.has(ci) ? "lit" : "q");
+    });
+    tb.querySelectorAll("th.gh[data-ax]").forEach(h=>{
+      h.classList.add(h.dataset.ax === step.ax || step.ax === "OS" ? "lit" : "q");
+    });
+    (RES_MARKS[step.ax] || []).forEach(([m,ci])=>{
+      resExpandFor(m);
+      const row = tb.querySelector('tr.row[data-m="'+m+'"]');
+      const cell = row && row.querySelector('td[data-c="'+ci+'"]');
+      if(cell) cell.classList.add("mark");
+    });
+    // Final beat: a flat table gives the audience nothing to scan while the
+    // speaker talks. Grade every cell instead, so the collapse on position
+    // reads as a block of red and REPLICA's row stays the one gold line.
+    const graded = step.ax === "OS";
+    tb.classList.toggle("graded", graded);
+    if(legend) legend.classList.toggle("on", graded);
+    if(!graded) return;
+    tb.querySelectorAll("td,th").forEach(c=>c.classList.remove("lit","q"));
+    tb.querySelectorAll("tbody tr.row").forEach(tr=>{
+      tr.querySelectorAll("td[data-c]").forEach(c=>{
+        const ci = +c.dataset.c; if(ci === 0) return;
+        const v = parseFloat(c.textContent); if(isNaN(v)) return;
+        const good = (ci === 3) ? 1 - v : v;   // NTED is the one column where lower is better
+        c.classList.add("g" + (good < 0.30 ? 0 : good < 0.55 ? 1 : good < 0.75 ? 2 : 3));
+      });
+    });
+  }
+
+  /* ═══════════ ABLATION CHART (paper Table 3) ═══════════
+     The table is replaced by the shape it implies: three of the four axes
+     plotted across the pipeline's own stages, so the audience reads *which
+     stage* bought *which axis* rather than scanning 27 numbers. */
+  const ABL = [
+    { k:"Flat layout",        st:0, os:0.53, vf:0.74, ps:0.34 },
+    { k:"+ Hierarchical",     st:0, os:0.60, vf:0.79, ps:0.48 },
+    { k:"+ Hi-SAM",           st:0, os:0.67, vf:0.82, ps:0.63 },
+    { k:"+ SoM",              st:0, os:0.71, vf:0.85, ps:0.69 },
+    { k:"Monolithic",         st:1, os:0.76, vf:0.88, ps:0.72 },
+    { k:"+ Router &amp;|specialists", st:1, os:0.86, vf:0.90, ps:0.77 },
+    { k:"+ Font fix",         st:2, os:0.89, vf:0.92, ps:0.79 },
+    { k:"+ Background",       st:2, os:0.90, vf:0.93, ps:0.80 },
+    { k:"+ Reflection",       st:2, os:0.93, vf:0.97, ps:0.83 }
+  ];
+  const ABL_BANDS = [
+    { st:0, n:"1", name:"Segment",  fill:"#e8eef7", ink:"#2f5480" },
+    { st:1, n:"2", name:"Localize", fill:"#f1eefc", ink:"#6b5bd2" },
+    { st:2, n:"4", name:"Refine",   fill:"#f9f0dc", ink:"#8a6510" }
+  ];
+  (function buildAblation(){
+    const svg = document.getElementById("ablChart"); if(!svg) return;
+    const NS = "http://www.w3.org/2000/svg";
+    const L=210, R=1560, T=70, B=470;            // plot rect
+    const x = i => L + i*(R-L)/(ABL.length-1);
+    const y = v => B - (v-0.30)/0.70*(B-T);
+    const el = (n,a,txt)=>{ const e=document.createElementNS(NS,n);
+      for(const k in a) e.setAttribute(k,a[k]); if(txt!=null) e.textContent=txt; return e; };
+    const add = (parent,n,a,txt)=>{ const e=el(n,a,txt); parent.appendChild(e); return e; };
+
+    // stage bands, drawn first so everything else sits on top
+    const GAP = 30;                      // breathing room between stage bands
+    ABL_BANDS.forEach(bd=>{
+      const idx = ABL.map((d,i)=>d.st===bd.st?i:-1).filter(i=>i>=0);
+      const x0 = idx[0]===0 ? L-70 : (x(idx[0]-1)+x(idx[0]))/2 + GAP;
+      const x1 = idx[idx.length-1]===ABL.length-1 ? R+70 : (x(idx[idx.length-1])+x(idx[idx.length-1]+1))/2 - GAP;
+      const g = add(svg,"g",{class:"band","data-st":bd.st});
+      add(g,"rect",{x:x0,y:T-34,width:x1-x0,height:(B-T)+34,rx:12,fill:bd.fill});
+      const lab = add(g,"text",{x:(x0+x1)/2,y:T-44,"text-anchor":"middle",class:"bandlab",fill:bd.ink});
+      lab.textContent = "STAGE " + bd.n + " · " + bd.name.toUpperCase();
+    });
+
+    // Stage 3 is in the pipeline but has no ablation row — it is not optional,
+    // so it gets a marked gap rather than being silently skipped.
+    (function assembleMarker(){
+      const xm = (x(5)+x(6))/2;
+      const g = add(svg,"g",{class:"asm"});
+      add(g,"line",{x1:xm,y1:T-30,x2:xm,y2:B,stroke:"#b9b2a2","stroke-width":2,"stroke-dasharray":"6 6"});
+      const lab = add(g,"text",{x:xm,y:T-52,"text-anchor":"middle",class:"bandlab asml",fill:"#8a8478"});
+      add(lab,"tspan",{x:xm,dy:0}).textContent = "STAGE 3";
+      add(lab,"tspan",{x:xm,dy:17}).textContent = "ASSEMBLE";
+      add(g,"text",{x:xm,y:T-18,"text-anchor":"middle",class:"asmn",fill:"#8a8478"}).textContent = "not ablated";
+    })();
+
+    // y grid + labels
+    [0.3,0.5,0.7,0.9,1.0].forEach(v=>{
+      add(svg,"line",{x1:L-70,y1:y(v),x2:R+70,y2:y(v),class:"gridline"});
+      add(svg,"text",{x:L-84,y:y(v)+6,"text-anchor":"end",class:"yl"}, v.toFixed(1));
+    });
+
+    // three series — each one is one of the four axes of reconstruction
+    [["ps","ps","Physical structure (GPS)"],["vf","vf","Visual fidelity (VFS)"],["os","os","Overall (OS)"]]
+      .forEach(([key,cls])=>{
+        const d = ABL.map((r,i)=>(i?"L":"M")+x(i).toFixed(1)+" "+y(r[key]).toFixed(1)).join(" ");
+        add(svg,"path",{d:d,class:"ln "+cls});
+        ABL.forEach((r,i)=>add(svg,"circle",{cx:x(i),cy:y(r[key]),r:6,class:"pt "+cls,
+          fill:cls==="os"?"#1e3a5f":cls==="vf"?"#d4a437":"#6b5bd2"}));
+      });
+
+    // x labels (two lines where the name is long)
+    ABL.forEach((r,i)=>{
+      const parts = r.k.split("|");
+      const tx = add(svg,"text",{x:x(i),y:B+34,"text-anchor":"middle",class:"xl","data-i":i});
+      parts.forEach((s,li)=>{ const ts=add(tx,"tspan",{x:x(i),dy:li?19:0}); ts.innerHTML=s; });
+    });
+
+    // end-point values, so the two jumps are readable as numbers too
+    // dy is chosen per point: above where the VFS line is far, below where it
+    // runs close — and every label carries a paper-coloured halo as insurance
+    [[0,"0.53",-20],[4,"0.76",-20],[5,"0.86",30],[8,"0.93",30]].forEach(([i,v,dy])=>{
+      add(svg,"text",{x:x(i),y:y(ABL[i].os)+dy,"text-anchor":"middle",
+        class:"osval",fill:"#1e3a5f","font-weight":"700","font-size":"20",
+        stroke:"#f5f3ee","stroke-width":"5","paint-order":"stroke"}, v);
+    });
+
+    // landmark callouts — the two jumps that carry the design
+    const LMK = [
+      { f:1, x:(x(0)+x(3))/2, w:480, t:"+0.18  from better segmentation",
+        d:"hierarchy · Hi-SAM · SoM \u2014 position 0.34 \u2192 0.69" },
+      { f:2, x:(x(4)+x(5))/2, w:430, t:"+0.10  from agentic routing",
+        d:"one model \u2192 Router + 6 specialists, same size" },
+      { f:3, x:(x(6)+x(8))/2, w:450, t:"+0.07  from seeing the render",
+        d:"font \u00b7 background \u00b7 reflection \u2014 VFS \u2192 0.97" }
+    ];
+    LMK.forEach(m=>{
+      const g = add(svg,"g",{class:"lmk","data-f":m.f});
+      const yy = 542;   // clears the two-line x labels (which end at y≈523)
+      add(g,"rect",{x:m.x-m.w/2,y:yy,width:m.w,height:76,rx:10});
+      add(g,"text",{x:m.x,y:yy+31,"text-anchor":"middle",class:"lt"}, m.t);
+      add(g,"text",{x:m.x,y:yy+58,"text-anchor":"middle",class:"ld"}, m.d);
+    });
+
+    // legend: ties the three lines back to the axes of reconstruction
+    const lg = add(svg,"g",{});
+    [["#1e3a5f","Overall",L],["#d4a437","Visual fidelity axis (VFS)",L+210],["#6b5bd2","Physical structure axis (GPS)",L+560]]
+      .forEach(([c,label,px])=>{
+        add(lg,"line",{x1:px,y1:640,x2:px+34,y2:640,stroke:c,"stroke-width":5,"stroke-linecap":"round"});
+        add(lg,"text",{x:px+44,y:646,class:"lgd"}, label);
+      });
+    add(lg,"text",{x:R+70,y:692,"text-anchor":"end",class:"note"},
+      "Assemble has no row of its own here — it is not optional, so there is nothing to ablate.");
+  })();
+  function renderAblation(){
+    const svg = document.getElementById("ablChart"); if(!svg) return;
+    // frag 0 shows the whole curve cold; 1..3 light each stage in turn
+    svg.querySelectorAll(".band").forEach(b=>b.classList.toggle("on", frag === 0 || (+b.dataset.st) < frag));
+    svg.querySelectorAll(".lmk").forEach(m=>m.classList.toggle("on", (+m.dataset.f) <= frag));
+    svg.querySelectorAll("text.xl").forEach(x=>{
+      const i = +x.dataset.i;
+      x.classList.toggle("hot", frag > 0 && ABL[i].st === frag - 1);
+    });
+  }
+
+  /* ═══════════ VFDR-BENCH SAMPLE CAROUSEL ═══════════
+     Thirty real pages from the benchmark, grouped by document type. The centre
+     page is shown as large as the slide allows; the two either side sit behind
+     it so the audience still reads it as a collection. It advances on its own
+     so the speaker never has to drive it. */
+  const VFDR = [
+    ["Newspapers &amp; periodicals", [
+      [3,"National daily","English · dense multi-column"],
+      [22,"Letters page","English · editorial columns"],
+      [18,"Feature spread","English · dark art-directed layout"],
+      [28,"Illustrated weekly","Chinese · full-bleed photography"],
+      [8,"Photo essay","Chinese · image-led with captions"] ]],
+    ["Government &amp; official records", [
+      [1,"Birth certificate","Hindi + English · seals, QR, barcode"],
+      [11,"University tender notice","English · letterhead, stamp, signature"],
+      [19,"Ministry memorandum","English · degraded carbon scan"],
+      [9,"Regulatory report","English · statutory tables"],
+      [15,"Application form","Japanese · boxed fields and flowchart"] ]],
+    ["Textbooks &amp; examination papers", [
+      [4,"Primary worksheet","English · colour blocks, exercises"],
+      [13,"Chemistry paper","Chinese · formulae and diagrams"],
+      [16,"Medical examination","Hebrew · right-to-left script"],
+      [17,"Clinical MCQs","English · numbered option lists"],
+      [23,"School textbook","Hindi · highlighted passages"] ]],
+    ["Business, finance &amp; marketing", [
+      [10,"Financial statement","English · wide dense spreadsheet"],
+      [14,"Scanned invoice","English · handwriting and rubber stamps"],
+      [24,"Corporate feature","Chinese · article plus full-page advert"],
+      [29,"Industry report","English · pull-quotes and infographics"],
+      [30,"Card benefits leaflet","Spanish · brand colour, bulleted offers"] ]],
+    ["Indic &amp; archival material", [
+      [5,"Community bulletin","Kannada · decorative border, photo"],
+      [20,"Archival record","Gujarati · aged paper"],
+      [21,"Manuscript page","Tamil · aged paper, tight leading"],
+      [25,"Health circular","Bengali · illustration with body text"],
+      [27,"Isa Upanishad","Sanskrit + English · verse and commentary"] ]],
+    ["Magazines &amp; lifestyle", [
+      [2,"Skills-mission feature","English · infographic panels"],
+      [6,"Culture magazine","Malayalam · reversed-out dark page"],
+      [7,"Food feature","English · illustrated dishes, tinted ground"],
+      [12,"Wellness column","Chinese · pastel panels, sidebars"],
+      [26,"Assembly manual","Danish · technical line drawings"] ]]
+  ];
+  const VFDR_EXT = {16:"png"};                  // one sample came out of the PDF as PNG
+  const caroFlat = [];
+  VFDR.forEach(([g,items],gi)=>items.forEach(([n,ti,d])=>
+    caroFlat.push({gi, group:g, n, title:ti, detail:d,
+      src:"static/images/vfdr/s" + String(n).padStart(2,"0") + "." + (VFDR_EXT[n] || "jpeg")})));
+
+  const caro = (function(){
+    const stage_ = document.getElementById("caroStage");
+    if(!stage_) return { step(){}, toggle(){}, enter(){}, leave(){} };
+    const tabs = document.getElementById("caroTabs");
+    const cap  = document.getElementById("caroCap");
+    const dots = document.getElementById("caroDots");
+    const state= document.getElementById("caroState");
+    const LAST = caroFlat.length - 1;
+    let cur_ = 0, timer = null, userPaused = false, offSlide = true;
+
+    VFDR.forEach(([g,items],gi)=>{
+      const b = document.createElement("button");
+      b.className = "carotab";
+      b.innerHTML = g + '<span class="n">' + items.length + '</span>';
+      b.addEventListener("click", e=>{ e.stopPropagation(); go(caroFlat.findIndex(f=>f.gi===gi)); });
+      tabs.appendChild(b);
+    });
+    caroFlat.forEach((f,i)=>{
+      const d = document.createElement("span");
+      d.className = "carodot";
+      d.addEventListener("click", e=>{ e.stopPropagation(); go(i); });
+      dots.appendChild(d);
+      const elx = document.createElement("div");
+      elx.className = "caroitem off";
+      // not lazy: off-stage items never enter the viewport, so a lazy image
+      // would still be blank at the moment it slides into the centre
+      elx.innerHTML = '<img src="' + f.src + '" alt="' + f.title + ' — ' + f.detail + '">';
+      elx.addEventListener("click", e=>{ if(i===cur_){ e.stopPropagation(); zoom(f); } });
+      stage_.appendChild(elx);
+      f.el = elx;
+    });
+
+    // three pages side by side, all fully legible — the neighbours are only
+    // slightly smaller, not faded, so the audience can read all three
+    const SLOT = [{dx:-0.62,sc:0.78,z:2},{dx:0,sc:1.00,z:5},{dx:0.62,sc:0.78,z:2}];
+    function layout(){
+      const H = stage_.clientHeight, W = stage_.clientWidth;
+      if(!H) return;
+      caroFlat.forEach((f,i)=>{
+        const rel = i - cur_, elx = f.el;
+        // clear the inline opacity too — a class cannot override an inline
+        // style, so an item leaving the stage would otherwise stay on screen
+        if(Math.abs(rel) > 1){ elx.classList.add("off"); elx.style.opacity="0"; return; }
+        elx.classList.remove("off");
+        const s = SLOT[rel+1], im = elx.querySelector("img");
+        const ar = (im.naturalWidth && im.naturalHeight) ? im.naturalWidth/im.naturalHeight : 0.72;
+        const h = H*0.98, w = h*ar;
+        elx.style.height=h+"px"; elx.style.width=w+"px";
+        elx.style.zIndex=s.z; elx.style.opacity="1";
+        elx.classList.toggle("mid", rel===0);
+        elx.style.transform = "translate(-50%,-50%) translateX(" + (s.dx*W*0.5) + "px) scale(" + s.sc + ")";
+      });
+      const f = caroFlat[cur_];
+      cap.innerHTML = '<span class="t">'+f.title+'</span><span class="d">'+f.detail+
+                      '</span><span class="ix">'+(cur_+1)+' / '+caroFlat.length+'</span>';
+      [...tabs.children].forEach((x,gi)=>x.classList.toggle("on", gi===f.gi));
+      [...dots.children].forEach((d,i)=>d.classList.toggle("on", i===cur_));
+    }
+    // The set does not wrap: it plays from the first page to the last and stops
+    // there — the speaker is walking a collection, not spinning a wheel.
+    const running = ()=> !userPaused && !offSlide && cur_ < LAST;
+    function paint(){
+      if(!state) return;
+      state.textContent = cur_ >= LAST ? "\u25cf end of set" : running() ? "\u25b6 playing" : "\u275a\u275a paused";
+      state.className = "carostate" + (running() ? " on" : "");
+    }
+    function restart(){
+      clearInterval(timer); timer = null;
+      if(running()) timer = setInterval(()=>step(1), 2600);
+      paint();
+    }
+    function step(d){
+      const n = Math.min(LAST, Math.max(0, cur_ + d));
+      if(n === cur_){ restart(); return; }        // already at an end — stay put
+      cur_ = n; layout(); restart();
+    }
+    function go(i){ cur_ = Math.min(LAST, Math.max(0,i)); layout(); restart(); }
+    function zoom(f){
+      let z = document.getElementById("caroZoom");
+      if(!z){
+        z = document.createElement("div"); z.id = "caroZoom";
+        z.innerHTML = '<img><div class="z-cap"></div>';
+        z.addEventListener("click", ()=>{ z.classList.remove("on"); restart(); });
+        document.body.appendChild(z);
+      }
+      z.querySelector("img").src = f.src;
+      z.querySelector(".z-cap").textContent = f.title + " — " + f.detail + "  ·  click to close";
+      z.classList.add("on");
+      clearInterval(timer); timer = null; paint();
+    }
+    return {
+      step, 
+      toggle(){ userPaused = !userPaused; restart(); },
+      enter(){ offSlide = false; layout(); restart(); setTimeout(layout, 260); },
+      leave(){ offSlide = true; clearInterval(timer); timer = null; }
+    };
+  })();
+
   /* ---------- keyboard / presenter remote ---------- */
   window.addEventListener("keydown", (e)=>{
     const k = e.key;
     if(k === "Escape"){ helpEl.classList.remove("on"); overview.classList.remove("on"); srcview.classList.remove("on"); return; }
+    // On the sample carousel: Shift+arrows walk the set and P pauses it. Plain
+    // arrows are left to the deck, so moving on is the same key as everywhere else.
+    if(slides[cur].id === "vfdrSlide"){
+      if(e.shiftKey && (k === "ArrowRight" || k === "ArrowLeft")){
+        e.preventDefault(); caro.step(k === "ArrowRight" ? 1 : -1); return;
+      }
+      if(k === "p" || k === "P"){ e.preventDefault(); caro.toggle(); return; }
+    }
     switch(k){
       case "ArrowRight": case " ": case "Spacebar": case "PageDown": e.preventDefault(); next(); break;
       case "ArrowLeft":  case "PageUp": e.preventDefault(); prev(); break;
@@ -1291,7 +2262,7 @@
   document.getElementById("btnNotes").addEventListener("click", e=>{e.stopPropagation();notesEl.classList.toggle("on");});
   document.getElementById("btnHelp").addEventListener("click", e=>{e.stopPropagation();helpEl.classList.toggle("on");});
 
-  window.addEventListener("resize", ()=>{ fit(); fitEmbeds(slides[cur]); });
+  window.addEventListener("resize", ()=>{ fit(); fitEmbeds(slides[cur]); if(slides[cur].id==="qualSlide") fitQual(); });
   window.addEventListener("hashchange", ()=>{
     const n = parseInt(location.hash.slice(1),10);
     if(!isNaN(n) && n !== cur) goto(n,false);

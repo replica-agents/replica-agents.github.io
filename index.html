@@ -861,6 +861,10 @@
       font-size: 12.5px; border-bottom: 2px solid var(--border-strong); z-index: 2;
     }
     table.data td:first-child, table.data th:first-child { text-align: left; font-weight: 600; }
+    /* the four axes read as four blocks, not ten loose columns */
+    table.data th.axg { font-size: 12.5px; letter-spacing: .04em; }
+    table.data th.axsep, table.data td.axsep { border-left: 2.5px solid var(--border-strong); }
+    table.data thead tr.grp th.axg { background: var(--bg-alt); }
     table.data td.td-group { vertical-align: middle; text-align: left; font-weight: 700; color: var(--text); background: var(--bg-alt); border-right: 1px solid var(--border); }
     /* ablation chart ⇄ table hover link */
     #ablationTable tbody tr { transition: background .12s; }
@@ -972,7 +976,15 @@
     .fid-flip button.on { background: var(--accent); color: #fff; }
     .fid-render { height: 640px; overflow: auto; background: #fff; position: relative; }
     .fid-render iframe { display: block; border: 0; transform-origin: top left; background: #fff; }
-    .fid-chips { display: flex; flex-direction: column; gap: 9px; }
+    .fid-chips { display: flex; flex-direction: column; gap: 7px; }
+    .fid-axhead { display: flex; align-items: center; gap: 9px; margin: 9px 0 2px; }
+    .fid-axhead:first-child { margin-top: 0; }
+    .fid-axhead .ax-tag { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 800;
+      letter-spacing: .1em; color: #fff; background: var(--axc); padding: 3px 9px; border-radius: 5px; }
+    .fid-axhead .ax-name { font-size: 13px; font-weight: 700; color: var(--text-2);
+      text-transform: uppercase; letter-spacing: .07em; }
+    .fid-axhead::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+    .fid-chip { margin-left: 14px; border-left: 3px solid var(--axc); }
     .fid-chip { display: flex; gap: 12px; align-items: flex-start; border: 1px solid var(--border); background: var(--card); border-radius: 12px; padding: 12px 14px; cursor: pointer; transition: all .15s; text-align: left; width: 100%; font-family: inherit; }
     .fid-chip:hover { border-color: var(--accent); transform: translateX(2px); }
     .fid-chip.active { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 3px var(--accent-soft); }
@@ -1554,28 +1566,38 @@
 
   // ---- Interactive teaser: methods + fidelity axes -------------------
   // Each expects an output image under static/images/teaser/{id}_output.png
+  // Order is the narrative order used in the talk: pipeline tool first, then
+  // the two strong VLMs, then ours — so the comparison builds to the payoff.
   const TEASER_METHODS = [
-    { id: "replica", name: "REPLICA (Ours)", ours: true, img: "static/images/teaser/13031_rendered.png", axes: { TE: true, LS: true, PS: true,  VF: true  } },
-    { id: "qwen",    name: "Qwen3-VL-30B",             img: "static/images/teaser/13031_rendered_qwen.png",    axes: { TE: true, LS: true, PS: false, VF: false } },
-    { id: "gpt5",    name: "GPT-5",                    img: "static/images/teaser/13031_rendered_gpt5.png",    axes: { TE: true, LS: true, PS: false, VF: false } },
     { id: "marker",  name: "Marker",                   img: "static/images/teaser/13031_rendered_marker.png",  axes: { TE: true, LS: true, PS: false, VF: false } },
+    { id: "gpt5",    name: "GPT-5",                    img: "static/images/teaser/13031_rendered_gpt5.png",    axes: { TE: true, LS: true, PS: false, VF: false } },
+    { id: "qwen",    name: "Qwen3-VL-30B",             img: "static/images/teaser/13031_rendered_qwen.png",    axes: { TE: true, LS: true, PS: false, VF: false } },
+    { id: "replica", name: "REPLICA (Ours)", ours: true, img: "static/images/teaser/13031_rendered.png", axes: { TE: true, LS: true, PS: true,  VF: true  } },
   ];
 
   // ---- FID-HTML interactive callouts (6 dimensions) ------------------
   // Each dimension maps to data-dim tokens in the live Fid-HTML code panel
   // (see highlightFidHtml). Clicking a chip spotlights its tokens in the code.
+  // Each dimension is tagged with the axis of document reconstruction it
+  // serves, so the six dimensions read as "two per axis" rather than a list.
+  const FIDHTML_AXES = {
+    TE: { name: 'Text Extraction',     short: 'T.E.', color: '#2f5480' },
+    LS: { name: 'Logical Structure',   short: 'L.S.', color: '#2f5480' },
+    PS: { name: 'Physical Structure',  short: 'P.S.', color: '#d4a437' },
+    VF: { name: 'Visual Fidelity',     short: 'V.F.', color: '#d4a437' },
+  };
   const FIDHTML_CALLOUTS = [
-    { id: 1, label: 'Textual Content',
+    { id: 1, ax: 'TE', label: 'Textual Content',
       desc: 'Complete text retained at word and block levels with line breaks and indents.' },
-    { id: 2, label: 'Hierarchical Structure',
+    { id: 2, ax: 'LS', label: 'Hierarchical Structure',
       desc: 'Nested <div> containers reflecting sections, subsections, and logical groupings.' },
-    { id: 3, label: 'Semantic Tags',
+    { id: 3, ax: 'LS', label: 'Semantic Tags',
       desc: 'Structured elements (&lt;h1&gt;, &lt;p&gt;, &lt;figure&gt;) with meaningful class names.' },
-    { id: 4, label: 'Positional Information',
+    { id: 4, ax: 'PS', label: 'Positional Information',
       desc: 'Global placement via absolute position, left/top, and width/height on every block.' },
-    { id: 5, label: 'Styling Metadata',
+    { id: 5, ax: 'VF', label: 'Styling Metadata',
       desc: 'Font size, color, and text attributes (bold, italic, underline) via inline CSS.' },
-    { id: 6, label: 'Figures & Backgrounds',
+    { id: 6, ax: 'VF', label: 'Figures & Backgrounds',
       desc: 'Images layered into the DOM via &lt;figure&gt;/&lt;img&gt; with accessibility alt-text.' },
   ];
 
@@ -1739,7 +1761,8 @@
 
   // ---- FID-HTML vs other formats (two-level header) ------------------
   const FIDHTML_FORMATS = {
-    groups: [ { name: "T.E.", span: 2 }, { name: "L.S.", span: 5 }, { name: "P.S.", span: 2 }, { name: "V.F.", span: 1 } ],
+    groups: [ { name: "T.E. · Text Extraction", span: 2 }, { name: "L.S. · Logical Structure", span: 5 },
+              { name: "P.S. · Physical Structure", span: 2 }, { name: "V.F. · Visual Fidelity", span: 1 } ],
     sub: ["Content", "R.O.", "L.H.", "Tables", "Lists", "Figures", "Formula", "Hierarchy", "BBoxes", "Styling"],
     rows: [
       { fmt: "Markdown", sub: "md",           v: ["✓","P","✓","×","×","P","P","P","×","×"] },
@@ -4262,11 +4285,22 @@
     return out;
   }
   function renderFidhtml() {
-    $("#fidChips").innerHTML = FIDHTML_CALLOUTS.map(c => `
-      <button class="fid-chip" data-fc="${c.id}">
+    // grouped by axis: the six dimensions are two-per-axis, and saying so
+    // turns a flat list into the same four-part frame used everywhere else
+    let chips = "", lastAx = null;
+    FIDHTML_CALLOUTS.forEach(c => {
+      if (c.ax !== lastAx) {
+        const a = FIDHTML_AXES[c.ax];
+        chips += `<div class="fid-axhead" style="--axc:${a.color}">
+            <span class="ax-tag">${a.short}</span><span class="ax-name">${a.name}</span></div>`;
+        lastAx = c.ax;
+      }
+      chips += `<button class="fid-chip ax-${c.ax}" data-fc="${c.id}" style="--axc:${FIDHTML_AXES[c.ax].color}">
         <span class="fc-num d${c.id}">${c.id}</span>
         <span><span class="fc-name">${c.label}</span><span class="fc-desc">${c.desc}</span></span>
-      </button>`).join("");
+      </button>`;
+    });
+    $("#fidChips").innerHTML = chips;
     $$("#fidChips .fid-chip").forEach(ch => ch.addEventListener("click", () => toggleFid(parseInt(ch.dataset.fc, 10))));
     const code = $("#fidCode");
     if (code) code.innerHTML = highlightFidHtml(FIDHTML_SRC);
@@ -4316,9 +4350,13 @@
     const mark = v => v === "✓" ? '<span class="check">✓</span>'
       : v === "P" ? '<span class="pchar">P</span>' : '<span class="cross">×</span>';
     let html = "<thead><tr class='grp'><th rowspan='2'>Format</th><th rowspan='2'>Subtype</th>";
-    F.groups.forEach(g => { html += `<th colspan="${g.span}">${g.name}</th>`; });
+    // index of the first sub-column of each axis group — those cells carry the
+    // divider rule, so the four axes read as four blocks rather than 10 columns
+    const axStart = new Set(); let acc = 0;
+    F.groups.forEach(g => { axStart.add(acc); acc += g.span; });
+    F.groups.forEach((g, gi) => { html += `<th class="axg${gi ? " axsep" : ""}" colspan="${g.span}">${g.name}</th>`; });
     html += "</tr><tr>";
-    F.sub.forEach(s => { html += `<th>${s}</th>`; });
+    F.sub.forEach((s, i) => { html += `<th class="${axStart.has(i) && i ? "axsep" : ""}">${s}</th>`; });
     html += "</tr></thead><tbody>";
     // group consecutive rows sharing a format into one rowspanned cell
     F.rows.forEach((r, i) => {
@@ -4328,7 +4366,7 @@
       html += `<tr class="${r.ours ? "ours" : ""}">` +
         (first ? `<td rowspan="${span}" class="td-group">${r.fmt}</td>` : "") +
         `<td>${r.sub}</td>` +
-        r.v.map(v => `<td>${mark(v)}</td>`).join("") + "</tr>";
+        r.v.map((v, i) => `<td class="${axStart.has(i) && i ? "axsep" : ""}">${mark(v)}</td>`).join("") + "</tr>";
     });
     html += "</tbody>";
     $("#fidFormatTable").innerHTML = html;
@@ -4519,6 +4557,19 @@
       sec.querySelectorAll("[data-part]").forEach(n => {
         if (!keep.has(n.dataset.part)) n.style.display = "none";
       });
+    }
+    // ?only=<id>,<id> — restrict the teaser to a subset of methods, in the
+    // order given. The talk shows the baselines first with our own result
+    // withheld, so the failure lands before the fix does.
+    const only = params.get("only");
+    if (only) {
+      const want = only.split(",").filter(Boolean);
+      const subset = want.map(id => TEASER_METHODS.find(m => m.id === id)).filter(Boolean);
+      if (subset.length) {
+        TEASER_METHODS.length = 0;
+        subset.forEach(m => TEASER_METHODS.push(m));
+        renderTeaser();
+      }
     }
     // ?hide=<sel>,<sel> — ad-hoc removal of anything else.
     (params.get("hide") || "").split(",").filter(Boolean).forEach(sel => {
