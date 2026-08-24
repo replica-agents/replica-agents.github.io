@@ -61,9 +61,11 @@ body::before {
   padding: var(--margin);
   display: grid;
   /* 1037 mm of bands + 6 × 16 mm gaps = 1133 mm = the live height exactly.
-     Band E lost the ablation column (author's call); the height went to Band C,
-     where the Fig. 1A comparison strip was too small to read. */
-  grid-template-rows: 128mm 236mm 216mm 202mm 142mm 100mm 13mm;
+     Second pass: Bands C and F were clipping their figures (117 mm and 221 mm
+     of overflow), so height moved out of the hero and the footer into them.
+     A grew for the larger codes; D gave back what the pipeline figure did not
+     need once it was set 22 mm narrower. */
+  grid-template-rows: 136mm 194mm 200mm 180mm 154mm 158mm 15mm;
   row-gap: 16mm;
 }
 
@@ -131,12 +133,17 @@ b, strong { font-weight: 600; }
 .on-screen { background: var(--screen); color: var(--ink-s); }
 
 /* ===== BAND A — title ===================================================== */
-.bandA { display: grid; grid-template-columns: 1fr 140mm; column-gap: 16mm;
+.bandA { display: grid; grid-template-columns: 1fr 156mm; column-gap: 16mm;
          align-items: start; padding-top: 5mm; }
-.bandA .rail { display: flex; flex-direction: column; gap: 6mm; }
-.bandA .logo img { width: 120mm; display: block; }
+.bandA .rail { display: flex; flex-direction: column; gap: 4mm; align-items: center; }
+.bandA .logo img { width: 88mm; display: block; }
+/* the project mark, set to the title's own cap height */
+.title .mark {
+  height: 24mm; width: auto; display: inline-block; vertical-align: -4.4mm;
+  margin-right: 5mm;
+}
 .title {
-  font-family: var(--serif); font-weight: 600; font-size: 76pt;
+  font-family: var(--serif); font-weight: 600; font-size: 72pt;
   line-height: 1.02; letter-spacing: -.015em; margin: 0;
 }
 /* full caps at the SAME size, distinguished by weight -- font-variant-caps:
@@ -144,23 +151,28 @@ b, strong { font-weight: 600; }
 .title .sys { font-weight: 700; letter-spacing: .005em; color: #287653; }
 .title .visual { color: #B63831; }
 .thesis {
-  font-size: 40pt; font-weight: 400; color: var(--mark);
-  margin: 3mm 0 0; line-height: 1.12;
+  font-size: 46pt; font-weight: 600; color: var(--mark);
+  margin: 2.5mm 0 0; line-height: 1.05;
 }
-.authors { font-size: 28pt; line-height: 1.16; letter-spacing: -.025em; margin: 3mm 0 0; white-space: nowrap; }
+.thesis small { display: block; margin-top: 1mm; font-size: 30pt; font-weight: 400; color: var(--dim); }
+.authors { font-size: 27pt; line-height: 1.14; letter-spacing: -.028em; margin: 2mm 0 0; white-space: nowrap; }
 .authors sup, .affils sup { font-size: 24pt; }
 .affils { font-size: 26pt; color: var(--dim); margin: 1.5mm 0 0; }
-.project-url {
-  font-family: var(--mono); font-size: 25pt; font-weight: 600; letter-spacing: .015em;
-  color: var(--mark); line-height: 1.05; margin: 2.5mm 0 0;
-}
-.codes { display: flex; gap: 10mm; justify-content: flex-start; }
+.codes { display: grid; grid-template-columns: 68mm 68mm; gap: 14mm; justify-content: center; align-items: start; }
 .codes figure { margin: 0; text-align: center; }
-.codes svg, .codes img, .codes .qr-slot { display: block; }
+.codes svg, .codes img, .codes .qr-slot { display: block; width: 68mm !important; height: 68mm !important; }
 .codes figcaption {
   font-family: var(--mono); font-size: 24pt; color: var(--dim);
-  margin-top: 3mm; line-height: 1.1; white-space: nowrap;
+  margin-top: 2mm; line-height: 1.1; white-space: nowrap;
 }
+/* the URL is the one thing a passer-by copies down, so it is set at reading
+   size with a globe in front of it — it no longer needs a footer repeat */
+.project-link {
+  display: flex; align-items: center; justify-content: center; gap: 3.5mm;
+  font-family: var(--mono); font-size: 26pt; font-weight: 600; color: var(--mark);
+  line-height: 1; letter-spacing: -.01em; margin: 0; white-space: nowrap;
+}
+.project-link .webicon { width: 9mm; height: 9mm; flex: none; color: var(--mark); }
 .qr-slot {
   border: .8mm dashed var(--rule); box-sizing: border-box;
   display: flex; align-items: center; justify-content: center;
@@ -169,18 +181,18 @@ b, strong { font-weight: 600; }
 }
 
 /* ===== BAND B — the seam ================================================== */
-.bandB { display: grid; grid-template-columns: 480mm 1fr; column-gap: 15mm; }
+.bandB { display: grid; grid-template-columns: 386mm 1fr; column-gap: 18mm; }
 .seamwrap { position: relative; height: 100%; }
 /* The two substrates, made visible behind the whole hero: warm paper to the
    left of the seam, cool screen to the right. This is what makes the idea
    readable from ten metres, and it is what teaches the code the rest of the
    poster then relies on. */
 .seamwrap::before {
-  content: ''; position: absolute; left: -6mm; top: -5mm; width: 246mm; bottom: 22mm;
+  content: ''; position: absolute; left: -6mm; top: -5mm; width: 240mm; bottom: 4mm;
   background: var(--paper); z-index: 0;
 }
 
-.plate { position: absolute; top: 0; height: 202mm; width: 150mm; overflow: hidden; }
+.plate { position: absolute; top: 0; height: 169mm; width: 118mm; overflow: hidden; }
 .plate img { width: 100%; display: block; }
 .plate.src   { left: 0;     background: #fff; padding: 4mm; box-sizing: border-box; z-index: 2; }
 .plate.dst   { right: 0;    background: #fff; z-index: 2; }
@@ -190,7 +202,7 @@ b, strong { font-weight: 600; }
 }
 /* minimal browser chrome on the output plate, matching Fig. 1 */
 .chrome {
-  position: absolute; right: 0; top: 0; width: 150mm; height: 11mm; z-index: 2;
+  position: absolute; left: 253mm; top: 0; width: 109mm; height: 9mm; z-index: 2;
   background: #E5E4DF; border: .5mm solid rgba(20,26,33,.28); border-bottom: 0;
   box-sizing: border-box; display: flex; align-items: center; gap: 2.6mm;
   padding: 0 4mm;
@@ -200,11 +212,11 @@ b, strong { font-weight: 600; }
   flex: 1; height: 5.6mm; border-radius: 1mm; background: #FCFCFA;
   border: .35mm solid rgba(20,26,33,.20);
 }
-.plate.dst { top: 11mm; height: 191mm; border: .5mm solid rgba(20,26,33,.28);
-             box-sizing: border-box; }
+.plate.dst { top: 9mm; left: 253mm; right: auto; height: 160mm; width: 109mm;
+             border: .5mm solid rgba(20,26,33,.28); box-sizing: border-box; }
 
 /* the seam itself */
-.seam { position: absolute; left: 239mm; top: -5mm; width: 1.4mm; height: 220mm;
+.seam { position: absolute; left: 233mm; top: -5mm; width: 1.4mm; height: 181mm;
         background: var(--mark); z-index: 6; }
 .seam::before, .seam::after {
   content: ''; position: absolute; top: 0; width: 11mm; height: 100%;
@@ -213,9 +225,9 @@ b, strong { font-weight: 600; }
 .seam::after  { left: 1.4mm;  background: linear-gradient(to right, rgba(97,36,188,.30), transparent); }
 
 /* the decomposition, three layers at different offsets */
-.decomp { position: absolute; left: 158mm; top: 2mm; width: 170mm; height: 196mm; z-index: 3; }
+.decomp { position: absolute; left: 128mm; top: 2mm; width: 172mm; height: 163mm; z-index: 3; }
 .decomp .boxes {
-  position: absolute; left: 0; top: 8mm; width: 96mm; height: 148mm; overflow: hidden;
+  position: absolute; left: 0; top: 5mm; width: 96mm; height: 126mm; overflow: hidden;
   box-shadow: 0 0 0 .5mm rgba(20,26,33,.24);
 }
 .decomp .boxes img { width: 100%; display: block; }
@@ -233,29 +245,32 @@ b, strong { font-weight: 600; }
   background: linear-gradient(to right,
      var(--paper) 0 var(--split), #FFFFFF var(--split) 100%);
 }
-.frag.f1 { left: 46mm;  top: 26mm;  --split: 62%; }
-.frag.f2 { left: 58mm;  top: 96mm;  --split: 44%; }
-.frag.f3 { left: 40mm;  top: 166mm; --split: 78%; }
+/* each chip must cross the seam (233 mm) and stop short of the render plate
+   (253 mm), so it reads as in flight rather than dropped on the output */
+.frag.f1 { left: 12mm;  top: 22mm;  --split: 78%; }
+.frag.f2 { left: 30mm;  top: 80mm;  --split: 62%; }
+.frag.f3 { left: 38mm;  top: 136mm; --split: 55%; }
 
 .seamlabel {
-  position: absolute; bottom: 0; font-family: var(--mono); font-size: 24pt;
-  color: var(--dim); line-height: 1.2; z-index: 5;
+  position: absolute; top: 172mm; z-index: 5; color: var(--dim);
+  display: flex; align-items: center;
 }
-.seamlabel.l { left: 0; }
-.seamlabel.r { right: 0; text-align: right; }
+.seamlabel svg { width: 19mm; height: 19mm; display: block; }
+.seamlabel.l { left: 0; color: var(--ink-p); }
+.seamlabel.r { left: 253mm; color: var(--mark); }
 
 /* stat strip */
 /* Four stats, one size, one grid. The earlier 176 pt hero over three at 72 pt
    read as inconsistent rather than hierarchical. */
-.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12mm 10mm;
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm 10mm;
          align-content: start; }
 .stats .num {
   font-family: var(--mono); font-variant-numeric: tabular-nums;
-  font-size: 104pt; font-weight: 500; line-height: .92; letter-spacing: -.02em;
+  font-size: 92pt; font-weight: 500; line-height: .92; letter-spacing: -.02em;
   margin: 0;
 }
 .stat .unit { font-size: 34%; vertical-align: baseline; }  /* 24.5 pt: the 24 pt floor beats the 30% guideline */
-.stat .cap { margin-top: 3mm; line-height: 1.22; }
+.stat .cap { margin-top: 2mm; line-height: 1.18; }
 .statmore {
   grid-column: 1 / -1; background: rgba(97,36,188,.07); border-left: 2mm solid var(--mark);
   padding: 3.5mm 5mm 3mm; margin-top: -2mm;
@@ -269,63 +284,73 @@ b, strong { font-weight: 600; }
 .stat-keys span { font-family: var(--mono); font-size: 19pt; font-weight: 600; color: var(--dim); white-space: nowrap; }
 
 /* ===== BAND C ============================================================= */
-.bandC { display: grid; grid-template-columns: 452.9mm 320.1mm; column-gap: var(--gut); }
-.strip { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 9mm; }
+.bandC { display: grid; grid-template-columns: 288mm 485mm; column-gap: var(--gut); }
+/* the pages are portrait in landscape slots, so the columns are sized to what
+   a whole page needs at this height rather than to equal thirds */
+.strip { display: flex; gap: 12mm; align-items: flex-start; }
 .strip figure { margin: 0; }
 .strip .shot {
-  height: 125mm; overflow: hidden; background: #fff; display: grid; place-items: center;
-  border: .5mm solid rgba(20,26,33,.26);
+  height: 144mm; width: auto; display: inline-block;
+  background: #fff; border: .5mm solid rgba(20,26,33,.26); box-sizing: content-box;
 }
 .strip .shot.paper { background: var(--paper); }
-.strip .shot img { width: auto; height: 100%; max-width: 100%; display: block; object-fit: contain; }
+.strip .shot img { height: 144mm; width: auto; max-width: none; display: block; }
 .strip figcaption { margin-top: 3mm; line-height: 1.06; }
-.strip figcaption { white-space: nowrap; }
+.strip figcaption { white-space: nowrap; max-width: none; }
 .strip figcaption b { display: inline; font-size: 26pt; }
 .strip figcaption span { display: inline; margin: 0; font-size: 22pt; line-height: 1.06; color: var(--dim); }
 .strip .ours { color: var(--mark); }
 
-.dims { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2mm 5mm; margin: 0 0 2mm; }
-.dim { display: flex; gap: 3mm; align-items: flex-start; }
-.dim p { font-size: 27pt; line-height: 1.16; margin: 0; }
-.dim b { display: block; }
+.axes { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm 5mm; margin: 0 0 5mm; }
+.axis { border-left: 2mm solid var(--axis); padding: 3mm 4mm; background: color-mix(in srgb, var(--axis) 10%, transparent); }
+.axis b { display: block; font-size: 29pt; line-height: 1.02; white-space: nowrap; }
+.axis b span { color: var(--axis); font-family: var(--mono); margin-right: 1.8mm; }
+.axis em { display: block; font-family: var(--serif); font-size: 27pt; line-height: 1.05; margin-top: 1.2mm; }
+.axis p { font-size: 24pt; line-height: 1.05; color: var(--dim); margin: 1.2mm 0 0; }
+.axis.te { --axis: var(--seg-d); }
+.axis.ls { --axis: var(--loc-d); }
+.axis.ps { --axis: var(--asm-d); }
+.axis.vf { --axis: var(--ref-d); }
 
 table.t { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
 table.t th, table.t td {
-  font-family: var(--mono); font-size: 25pt; padding: .65mm 1.6mm; text-align: right;
+  font-family: var(--mono); font-size: 25pt; padding: .35mm 1.6mm; text-align: right;
   border-bottom: .35mm solid var(--rule);
 }
 table.t th { font-weight: 600; color: var(--ink-s); font-size: 25pt; line-height: 1.05; }
 table.t td:first-child, table.t th:first-child { text-align: left; font-family: var(--sans); }
 table.t tr.ours td { background: rgba(97,36,188,.10); font-weight: 600; }
 table.t tr.ours td:first-child { color: var(--mark); }
-.results-table .metric-groups th {
-  background: rgba(97,36,188,.08); font-family: var(--sans); font-size: 19pt;
-  letter-spacing: -.018em; line-height: 1; padding: 1.3mm .8mm .9mm;
-  text-align: center; white-space: nowrap; border-bottom: .2mm solid var(--rule);
-}
-.results-table .metric-groups th:first-child { text-align: left; }
-.results-table .metric-labels th { font-size: 22pt; padding-top: .8mm; }
-.results-table .metric-groups th:nth-child(2),
-.results-table .metric-labels th:nth-child(-n+2) { background: rgba(74,107,165,.13); color: #355783; }
-.results-table .metric-groups th:nth-child(3),
-.results-table .metric-labels th:nth-child(3) { background: rgba(104,149,88,.15); color: #496C3D; }
-.results-table .metric-groups th:nth-child(4),
-.results-table .metric-labels th:nth-child(4),
-.results-table .metric-labels th:nth-child(5) { background: rgba(201,168,63,.19); color: #725F20; }
-.results-table .metric-groups th:nth-child(5),
-.results-table .metric-labels th:nth-child(6) { background: rgba(182,56,49,.12); color: #92342E; }
-.results-table .metric-groups th:nth-child(6),
-.results-table .metric-labels th:nth-child(7) { background: rgba(97,36,188,.10); color: var(--mark); }
+.format-table th, .format-table td { font-size: 26pt; padding: 1mm 1.2mm; }
+.format-table .format-groups th { font-size: 24pt; text-align: center; padding: 1.4mm .8mm; }
+.format-table .format-groups th:first-child { text-align: left; }
+.format-table .format-labels th { font-size: 22pt; text-align: center; padding: 1mm .6mm; }
+.format-table .format-groups th:nth-child(2), .format-table .format-labels th:nth-child(-n+2) { background: rgba(74,107,165,.14); color: #355783; }
+.format-table .format-groups th:nth-child(3), .format-table .format-labels th:nth-child(n+3):nth-child(-n+5) { background: rgba(104,149,88,.16); color: #496C3D; }
+.format-table .format-groups th:nth-child(4), .format-table .format-labels th:nth-child(6) { background: rgba(201,168,63,.20); color: #725F20; }
+.format-table .format-groups th:nth-child(5), .format-table .format-labels th:nth-child(7) { background: rgba(198,119,54,.16); color: #8A4D21; }
+.format-table td:nth-child(2) { border-left: .8mm solid var(--seg-d); }
+.format-table td:nth-child(4) { border-left: .8mm solid var(--loc-d); }
+.format-table td:nth-child(7) { border-left: .8mm solid var(--asm-d); }
+.format-table td:nth-child(8) { border-left: .8mm solid var(--ref-d); }
+.results-table .axis-head th { font-family: var(--sans); font-size: 27pt; text-align: center; padding: 2mm 1mm; }
+.results-table .axis-head th:first-child { text-align: left; }
+.results-table .axis-head th:nth-child(2) { background: rgba(74,107,165,.14); color: #355783; }
+.results-table .axis-head th:nth-child(3) { background: rgba(104,149,88,.16); color: #496C3D; }
+.results-table .axis-head th:nth-child(4) { background: rgba(201,168,63,.20); color: #725F20; }
+.results-table .axis-head th:nth-child(5) { background: rgba(198,119,54,.16); color: #8A4D21; }
+.results-table .axis-head th:nth-child(6) { background: rgba(97,36,188,.10); color: var(--mark); }
+.results-table td:nth-child(n+2) { text-align: center; }
 .results-table td:nth-child(2) { border-left: 1mm solid var(--seg-d); }
-.results-table td:nth-child(4) { border-left: 1mm solid var(--loc-d); }
-.results-table td:nth-child(5) { border-left: 1mm solid var(--asm-d); }
-.results-table td:nth-child(7) { border-left: 1mm solid #B63831; }
-.results-table td:nth-child(8) { border-left: 1mm solid var(--mark); }
+.results-table td:nth-child(3) { border-left: 1mm solid var(--loc-d); }
+.results-table td:nth-child(4) { border-left: 1mm solid var(--asm-d); }
+.results-table td:nth-child(5) { border-left: 1mm solid var(--ref-d); }
+.results-table td:nth-child(6) { border-left: 1mm solid var(--mark); }
 
 /* ===== BAND D — pipeline ================================================== */
 .bandD { display: grid; place-items: center; height: 100%; }
-.original-pipeline { width: 640mm; height: 202mm; margin: 0; position: relative; }
-.original-pipeline img { display: block; width: 640mm; height: 202mm; object-fit: contain; }
+.original-pipeline { width: 570mm; height: 180mm; margin: 0; position: relative; }
+.original-pipeline img { display: block; width: 570mm; height: 180mm; object-fit: contain; }
 .original-pipeline figcaption { position: absolute; right: 0; bottom: 0; margin: 0; padding: 1.2mm 2mm; background: rgba(247,246,242,.88);
   font-family: var(--mono); font-size: 18pt; line-height: 1; color: var(--dim); }
 
@@ -349,6 +374,35 @@ dl.defs dd { margin: 0; font-size: 26pt; line-height: 1.16; }
   border-top: .35mm solid var(--rule); border-bottom: .35mm solid var(--rule);
   margin: 0 0 3mm;
 }
+/* the chain reads left to right and the three hops sum to the headline number:
+   0.53 + 0.18 + 0.15 + 0.07 = 0.93, which is the whole ablation in one line */
+.ablrow { margin-top: 2mm; border-top: .5mm solid var(--rule); padding-top: 2mm; }
+.abl-kicker {
+  font-family: var(--mono); font-size: 19pt; font-weight: 600; letter-spacing: .07em;
+  color: var(--mark); margin: 0 0 1.5mm;
+}
+.chain { display: flex; align-items: center; gap: 3mm; }
+.chain .v0, .chain .v {
+  font-family: var(--mono); font-variant-numeric: tabular-nums;
+  font-size: 27pt; font-weight: 500; line-height: 1; color: var(--dim);
+}
+.chain .vend { color: var(--mark); font-weight: 600; font-size: 33pt; }
+.chain .hop {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  border-bottom: 1.4mm solid var(--hop); padding-bottom: 1mm;
+}
+.chain .hop b {
+  font-family: var(--mono); font-size: 23pt; font-weight: 600; color: var(--hop);
+  line-height: 1;
+}
+.chain .hop i {
+  font-style: normal; font-size: 16pt; color: var(--dim); line-height: 1; margin-top: .5mm;
+  white-space: nowrap;
+}
+.chain .hop.seg { --hop: var(--seg-d); }
+.chain .hop.loc { --hop: var(--loc-d); }
+.chain .hop.ref { --hop: var(--ref-d); }
+
 .bar { position: relative; }
 .bar::before {
   content: ''; position: absolute; left: 0; top: .8mm; bottom: .8mm;
@@ -382,38 +436,35 @@ dl.defs dd { margin: 0; font-size: 26pt; line-height: 1.16; }
 }
 
 /* ===== BAND F ============================================================= */
-.bandF { display: grid; grid-template-columns: 452.9mm 320.1mm; column-gap: var(--gut); }
-.tiles { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 9mm; }
+.bandF { display: grid; grid-template-columns: 470mm 303mm; column-gap: var(--gut); }
+/* 1.302fr : 2.320fr — the two figures' own aspect ratios, so a single shot
+   height fits both whole with no crop and no letterbox gutters */
+.tiles { display: grid; grid-template-columns: 1.302fr 2.320fr; column-gap: 10mm; }
 .tiles figure { margin: 0; }
 .tiles .shot {
-  height: 64mm; overflow: hidden; background: #fff;
+  height: 125mm; background: #fff; box-sizing: border-box;
   border: .4mm solid rgba(20,26,33,.22);
 }
 .tiles .shot img {
   width: 100%; height: 100%; display: block;
   object-fit: contain; object-position: center;
 }
-.tiles .shot { position: relative; }
-.tiles .retrieval .shot img,
-.tiles .qa .shot img { position: absolute; max-width: none; object-fit: initial; }
-/* Close-ups deliberately use the original paper figure, not a new illustration:
-   each crop enlarges the task outcome that is otherwise illegible at poster scale. */
-.tiles .retrieval .shot img { width: 560mm; height: auto; right: 0; top: -70mm; }
-.tiles .qa .shot img { width: 650mm; height: auto; right: 0; top: -15mm; }
-.tiles figcaption { font-size: 24pt; line-height: 1.06; margin-top: 2.4mm; font-weight: 600; white-space: nowrap; }
-.limits > p:not(.takeaway) { font-size: 24pt; line-height: 1.08; margin: 0 0 2mm; white-space: nowrap; }
-.takeaway {
-  background: var(--paper); color: var(--ink-p);
-  font-family: var(--serif); font-size: 32pt; line-height: 1.20;
-  padding: 3mm 5mm; margin: 2mm 0 0;
-}
+.tiles figcaption { font-size: 25pt; line-height: 1.06; margin-top: 2.4mm; font-weight: 600; white-space: nowrap; }
+.limit-list { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm 6mm; }
+.limit-list div { border-left: 1.5mm solid var(--rule); padding: 1.4mm 0 1.4mm 4mm; }
+.limit-list div:nth-child(1) { border-color: var(--seg-d); }
+.limit-list div:nth-child(2) { border-color: var(--loc-d); }
+.limit-list div:nth-child(3) { border-color: var(--asm-d); }
+.limit-list div:nth-child(4) { border-color: var(--ref-d); }
+.limit-list b { display: block; font-family: var(--mono); font-size: 26pt; line-height: 1.05; }
+.limit-list span { display: block; font-size: 23pt; color: var(--dim); line-height: 1.1; margin-top: 1mm; }
 
 /* ===== footer ============================================================= */
 .footer {
-  display: flex; align-items: center; justify-content: space-between; gap: 8mm;
-  border-top: .5mm solid var(--rule); padding-top: 2mm;
-  font-size: 26pt; line-height: 1.05; color: var(--dim);
+  display: flex; align-items: center; justify-content: center; gap: 8mm;
+  border-top: .5mm solid var(--rule); padding-top: .5mm;
+  font-size: 28pt; line-height: 1.05; color: var(--dim);
 }
-.footer .legend-type { font-family: var(--mono); font-size: 24pt; }
-.footer .logos { display: flex; align-items: center; gap: 8mm; }
-.footer .logos img { height: 9mm; display: block; }
+.footer .logos { display: flex; align-items: center; gap: 16mm; }
+.footer .logos img { height: 12mm; width: auto; display: block; }
+.footer .logos img:last-child { height: 10mm; background: #192E50; padding: 2mm 3mm; }

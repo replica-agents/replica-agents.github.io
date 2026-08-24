@@ -19,6 +19,34 @@
   <symbol id="arr" viewBox="0 0 24 12"><path d="M1 6 H20 M15 1.5 L20.5 6 L15 10.5"
     fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
     stroke-linejoin="round"/></symbol>
+  <symbol id="ic-pdf" viewBox="0 0 48 56">
+    <path d="M4 3.5h27L44 16v36.5H4z" fill="#fff" stroke="currentColor" stroke-width="2.6"
+      stroke-linejoin="round"/>
+    <path d="M31 3.5V16h13" fill="none" stroke="currentColor" stroke-width="2.6"
+      stroke-linejoin="round"/>
+    <rect x="9" y="30" width="30" height="15" rx="2.5" fill="currentColor"/>
+    <text x="24" y="42" text-anchor="middle" font-family="IBM Plex Sans, Helvetica, Arial, sans-serif"
+      font-size="11" font-weight="700" fill="#fff" letter-spacing=".5">PDF</text>
+    <path d="M11 22h18M11 26.5h13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="ic-html" viewBox="0 0 56 48">
+    <rect x="2.5" y="4" width="51" height="40" rx="3.5" fill="#fff"
+      stroke="currentColor" stroke-width="2.6"/>
+    <path d="M2.5 14.5h51" stroke="currentColor" stroke-width="2.6"/>
+    <circle cx="9" cy="9.3" r="1.9" fill="currentColor"/>
+    <circle cx="15.5" cy="9.3" r="1.9" fill="currentColor"/>
+    <circle cx="22" cy="9.3" r="1.9" fill="currentColor"/>
+    <path d="M21 22.5 L14.5 29.5 L21 36.5 M35 22.5 L41.5 29.5 L35 36.5"
+      fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+      stroke-linejoin="round"/>
+    <path d="M30.5 21 L25.5 38" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="ic-web" viewBox="0 0 48 48">
+    <circle cx="24" cy="24" r="20.5" fill="none" stroke="currentColor" stroke-width="3.2"/>
+    <ellipse cx="24" cy="24" rx="9" ry="20.5" fill="none" stroke="currentColor" stroke-width="3.2"/>
+    <path d="M4.6 17.5h38.8M4.6 30.5h38.8" stroke="currentColor" stroke-width="3.2"
+      stroke-linecap="round"/>
+  </symbol>
 </defs></svg>
 
 <div class="poster">
@@ -26,34 +54,30 @@
 <!-- ============================ BAND A — TITLE ======================== -->
 <header class="band bandA">
   <div>
-    <h1 class="title"><span class="sys">REPLICA</span>: An Agentic Framework
+    <h1 class="title"><img class="mark" src="logo.png" alt=""><span class="sys">REPLICA</span>: An Agentic Framework
       for <span class="visual">Visually Faithful</span> Document Reconstruction</h1>
-    <p class="thesis">Rebuild any page as HTML that still looks like the page.</p>
+    <p class="thesis"><span>Reimagining OCR beyond text extraction.</span>
+      <small>Rebuild any page as HTML that still looks like the page.</small></p>
     <p class="authors">Raghuveer R<sup>1</sup>*, Anirudh Srinivasan<sup>1</sup>*,
       Venkata Kesav Venna<sup>1</sup>*, Sreevatsa S<sup>2</sup>, Aryan Jain<sup>2</sup>,
       Sahithi Kukkala<sup>2</sup>, Ravi Kiran Sarvadevabhatla<sup>1,2</sup></p>
     <p class="affils"><sup>1</sup> BharatGen &middot; <sup>2</sup> IIIT Hyderabad
       &middot; * Equal contribution</p>
-    <p class="project-url">replica-agents.github.io</p>
   </div>
 
   <div class="rail">
   <div class="logo"><img src="assets/logos/icdar26.png" alt="ICDAR 2026, Vienna"></div>
   <div class="codes">
     <figure>
-      <img src="assets/qr/project.svg" alt="" width="170" height="170"
-           style="width:45mm;height:45mm">
+      <img src="assets/qr/project.svg" alt="">
       <figcaption>Project page</figcaption>
     </figure>
     <figure>
-      <!-- mailto: with all seven authors. v16, 0.56 mm/module at 50 mm --
-           placed larger than the project code to keep that above the ~0.50 mm
-           floor a phone needs at poster distance. -->
-      <img src="assets/qr/contact.svg" alt="" width="190" height="190"
-           style="width:50mm;height:50mm">
+      <img src="assets/qr/contact.svg" alt="">
       <figcaption>Contact us</figcaption>
     </figure>
   </div>
+  <p class="project-link"><svg class="webicon" aria-hidden="true"><use href="#ic-web"/></svg><span>replica-agents.github.io</span></p>
   </div>
 </header>
 
@@ -83,8 +107,8 @@
       <img src="assets/figures/qual-magazine-render.png" alt="REPLICA Fid-HTML render of the same Cadillac magazine page">
     </div>
 
-    <div class="seamlabel l">Source magazine page<br>ink on paper</div>
-    <div class="seamlabel r">Fid-HTML render<br>made of DOM</div>
+    <div class="seamlabel l"><svg aria-hidden="true"><use href="#ic-pdf"/></svg></div>
+    <div class="seamlabel r"><svg aria-hidden="true"><use href="#ic-html"/></svg></div>
   </div>
 
   <div class="stats">
@@ -124,47 +148,39 @@
     <div class="strip">
       <figure>
         <div class="shot paper"><img src="assets/figures/fig1a-source.png" alt=""></div>
-        <figcaption><b>Source page</b><span>&mdash; three-column editorial layout</span></figcaption>
+        <figcaption><b>Source</b><span>&mdash; three columns</span></figcaption>
       </figure>
       <figure>
         <div class="shot"><img src="assets/figures/fig1a-marker.png" alt=""></div>
-        <figcaption><b>Marker</b><span>&mdash; collapses three columns into one</span></figcaption>
+        <figcaption><b>Marker</b><span>&mdash; collapsed to one</span></figcaption>
       </figure>
     </div>
 
-    <p class="cap" style="margin-top:3mm">Compare this with the large source/Fid-HTML pair above: REPLICA preserves the page as a page; a conventional converter retains words but loses its structure.</p>
   </div>
 
   <div>
     <p class="eyebrow">Fid-HTML</p>
-    <h2 class="head" style="font-size:34pt;margin-bottom:3mm">Six dimensions of fidelity</h2>
+    <h2 class="head" style="font-size:34pt;margin-bottom:3mm">Four axes of reconstruction</h2>
 
-    <div class="dims">
-      <div class="dim"><span class="som sm">1</span><p><b>Textual content</b>
-        word- and block-level text</p></div>
-      <div class="dim"><span class="som sm">2</span><p><b>Hierarchical structure</b>
-        nested <span class="mono">&lt;div&gt;</span> containers</p></div>
-      <div class="dim"><span class="som sm">3</span><p><b>Semantic tags</b>
-        <span class="mono">&lt;li&gt; &lt;table&gt; &lt;tr&gt; &lt;td&gt;</span> + classes</p></div>
-      <div class="dim"><span class="som sm">4</span><p><b>Positional information</b>
-        absolute global, relative local</p></div>
-      <div class="dim"><span class="som sm">5</span><p><b>Styling and metadata</b>
-        size, colour, weight via inline CSS</p></div>
-      <div class="dim"><span class="som sm">6</span><p><b>Figures and backgrounds</b>
-        layered into the DOM, with alt text</p></div>
+    <div class="axes">
+      <div class="axis te"><b><span>TE</span> Text extraction</b><em>Are the words right?</em><p>Content + reading order</p></div>
+      <div class="axis ls"><b><span>LS</span> Logical structure</b><em>Is the hierarchy right?</em><p>Tags, tables + nesting</p></div>
+      <div class="axis ps"><b><span>PS</span> Physical structure</b><em>Is the position right?</em><p>Global + local geometry</p></div>
+      <div class="axis vf"><b><span>VF</span> Visual fidelity</b><em>Does it look right?</em><p>Type, colour + styling</p></div>
     </div>
 
-    <table class="t">
-      <thead><tr><th>Format</th><th>R.O.</th><th>Tables</th><th>Figures</th>
-        <th>Hier.</th><th>BBoxes</th><th>V.F.</th></tr></thead>
+    <table class="t format-table">
+      <thead>
+        <tr class="format-groups"><th rowspan="2">Format</th><th colspan="2">TE</th><th colspan="3">LS</th><th>PS</th><th>VF</th></tr>
+        <tr class="format-labels"><th>Content</th><th>R.O.</th><th>Tables</th><th>Figures</th><th>Hier.</th><th>BBoxes</th><th>Styling</th></tr>
+      </thead>
       <tbody>
-        <tr><td>Markdown</td><td>P</td><td>&#215;</td><td>P</td><td>P</td><td>&#215;</td><td>&#215;</td></tr>
-        <tr><td>LaTeX</td><td>P</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>P</td><td>&#10003;</td></tr>
-        <tr><td>Qwen-HTML</td><td>P</td><td>&#10003;</td><td>P</td><td>P</td><td>&#215;</td><td>&#10003;</td></tr>
-        <tr class="ours"><td>Fid-HTML (Ours)</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td></tr>
+        <tr><td>Markdown</td><td>&#10003;</td><td>P</td><td>&#215;</td><td>P</td><td>P</td><td>&#215;</td><td>&#215;</td></tr>
+        <tr><td>LaTeX</td><td>&#10003;</td><td>P</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>P</td><td>&#10003;</td></tr>
+        <tr><td>Qwen-HTML</td><td>&#10003;</td><td>P</td><td>&#10003;</td><td>P</td><td>P</td><td>&#215;</td><td>&#10003;</td></tr>
+        <tr class="ours"><td>Fid-HTML</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td></tr>
       </tbody>
     </table>
-    <p class="cap" style="margin-top:1.5mm">Selected Fid-HTML capabilities &middot; P = partial</p>
   </div>
 </section>
 
@@ -204,20 +220,30 @@
   <div>
     <p class="eyebrow">Results</p>
     <table class="t results-table">
-      <thead>
-        <tr class="metric-groups"><th rowspan="2">Method</th><th colspan="2">Text extraction</th><th>Logical<br>structure</th><th colspan="2">Physical structure</th><th>Visual<br>fidelity</th><th>Overall</th></tr>
-        <tr class="metric-labels"><th>WRR</th><th>CRR</th><th>NTED</th><th>LPS</th><th>GPS</th><th>VFS</th><th>OS_all</th></tr>
-      </thead>
+      <thead><tr class="axis-head"><th>Method</th><th>TE</th><th>LS</th><th>PS</th><th>VF</th><th>Overall</th></tr></thead>
       <tbody>
-        <tr><td>Marker</td><td>0.68</td><td>0.82</td><td>0.61</td><td>0.19</td><td>0.34</td><td>0.74</td><td class="bar" style="--w:53"><span>0.53</span></td></tr>
-        <tr><td>Docling</td><td>0.40</td><td>0.49</td><td>0.62</td><td>0.17</td><td>0.26</td><td>0.55</td><td class="bar" style="--w:38"><span>0.38</span></td></tr>
-        <tr><td>Qwen3-VL</td><td>0.66</td><td>0.79</td><td>0.59</td><td>0.22</td><td>0.30</td><td>0.43</td><td class="bar" style="--w:47"><span>0.47</span></td></tr>
-        <tr><td>Gemini-2.5-Pro</td><td>0.67</td><td>0.42</td><td>0.56</td><td>0.14</td><td>0.31</td><td>0.82</td><td class="bar" style="--w:47"><span>0.47</span></td></tr>
-        <tr><td>GPT-5</td><td>0.65</td><td>0.79</td><td>0.49</td><td>0.21</td><td>0.43</td><td>0.86</td><td class="bar" style="--w:58"><span>0.58</span></td></tr>
-        <tr class="ours"><td>REPLICA (Ours)</td><td>0.88</td><td>0.93</td><td>0.20</td><td>0.73</td><td>0.86</td><td>0.93</td><td class="bar" style="--w:86"><span>0.86</span></td></tr>
+        <tr><td>Marker</td><td>0.68 / 0.82</td><td>0.61</td><td>0.19 / 0.34</td><td>0.74</td><td class="bar" style="--w:53"><span>0.53</span></td></tr>
+        <tr><td>Docling</td><td>0.40 / 0.49</td><td>0.62</td><td>0.17 / 0.26</td><td>0.55</td><td class="bar" style="--w:38"><span>0.38</span></td></tr>
+        <tr><td>Qwen3-VL</td><td>0.66 / 0.79</td><td>0.59</td><td>0.22 / 0.30</td><td>0.43</td><td class="bar" style="--w:47"><span>0.47</span></td></tr>
+        <tr><td>Gemini-2.5-Pro</td><td>0.67 / 0.42</td><td>0.56</td><td>0.14 / 0.31</td><td>0.82</td><td class="bar" style="--w:47"><span>0.47</span></td></tr>
+        <tr><td>GPT-5</td><td>0.65 / 0.79</td><td>0.49</td><td>0.21 / 0.43</td><td>0.86</td><td class="bar" style="--w:58"><span>0.58</span></td></tr>
+        <tr class="ours"><td>REPLICA (Ours)</td><td>0.88 / 0.93</td><td>0.20</td><td>0.73 / 0.86</td><td>0.93</td><td class="bar" style="--w:86"><span>0.86</span></td></tr>
       </tbody>
     </table>
-    <p class="cap" style="margin-top:2mm">Best in every column &middot; NTED lower is better &middot; 16 methods in the paper</p>
+    <p class="cap" style="margin-top:2mm">TE = WRR / CRR &middot; PS = LPS / GPS &middot; NTED lower is better</p>
+
+    <div class="ablrow">
+      <p class="abl-kicker">ABLATION &mdash; WHERE THE 0.93 COMES FROM</p>
+      <div class="chain">
+        <span class="v0">0.53</span>
+        <span class="hop seg"><b>+0.18</b><i>Segment</i></span>
+        <span class="v">0.71</span>
+        <span class="hop loc"><b>+0.15</b><i>Localise &mdash; +0.10 is routing</i></span>
+        <span class="v">0.86</span>
+        <span class="hop ref"><b>+0.07</b><i>Refine</i></span>
+        <span class="v vend">0.93</span>
+      </div>
+    </div>
   </div>
 
   </section>
@@ -227,8 +253,8 @@
   <div>
     <p class="eyebrow">What it unlocks</p>
     <div class="tiles">
-      <figure class="retrieval"><div class="shot"><img src="assets/figures/fig2-app-f.png" alt=""></div>
-        <figcaption>Position-aware retrieval</figcaption></figure>
+      <figure class="semantic"><div class="shot"><img src="assets/figures/fig2-app-e.png" alt=""></div>
+        <figcaption>Semantic document chunking for RAG</figcaption></figure>
       <figure class="qa"><div class="shot"><img src="assets/figures/fig2-app-d.png" alt=""></div>
         <figcaption>Grounded document QA</figcaption></figure>
     </div>
@@ -236,19 +262,17 @@
 
   <div class="limits">
     <p class="eyebrow">Limitations</p>
-    <p>No cross-page consistency yet &mdash; spanning tables and figures can fragment.</p>
-    <p>Precise font identification remains unresolved.</p>
-    <p class="takeaway">REPLICA makes Qwen3-VL-8B (0.86) stronger than direct
-      Qwen3-VL-30B (0.47) on the overall score.</p>
+    <div class="limit-list">
+      <div><b>01 &middot; Multi-page</b><span>Cross-page tables and figures</span></div>
+      <div><b>02 &middot; Font identity</b><span>Exact multilingual families</span></div>
+      <div><b>03 &middot; Data skew</b><span>High-resource scripts dominate</span></div>
+      <div><b>04 &middot; Render cost</b><span>Refinement adds latency</span></div>
+    </div>
   </div>
 </section>
 
 <!-- ============================ FOOTER =============================== -->
 <footer class="band footer">
-  <span class="legend-type">serif = source document &middot; sans = Fid-HTML
-    &middot; mono = representation</span>
-  <span class="mono">replica-agents.github.io</span>
-  <span>Supported by BharatGen at IIIT Hyderabad</span>
   <span class="logos">
     <img src="assets/logos/bharatgen.png" alt="BharatGen">
     <img src="assets/logos/iiith.jpeg" alt="IIIT Hyderabad">
