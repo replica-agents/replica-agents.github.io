@@ -331,6 +331,9 @@
   .thanks-logos{display:flex;gap:46px;align-items:center;justify-content:center;margin-top:34px;
     background:#fff;padding:16px 34px;border-radius:12px;}
   .thanks-logos img{height:54px;width:auto;object-fit:contain;}
+  /* a compact square mark needs more height than a wordmark to carry the same
+     visual weight beside BharatGen's wide lockup */
+  .thanks-logos img.sq{height:70px;}
 
   /* ---------- source viewer: the deck showing its own markup ---------- */
   #srcview{position:fixed;inset:0;background:rgba(10,13,18,.97);z-index:99;display:none;flex-direction:column;padding:24px 32px;}
@@ -485,7 +488,10 @@
   /* our row is deliberately the heaviest line on the board — it is the one the
      audience is being asked to compare everything else against */
   .rtab tr.ours td{background:var(--gold-soft);font-weight:800;color:#8a6510;border-bottom:none;
-    font-size:24px;padding:14px 10px;border-top:2.5px solid var(--gold);}
+    font-size:23px;padding:13px 10px;border-top:2.5px solid var(--gold);
+    /* the table scrolls once a category is expanded, and our row lives at the
+       bottom of it — pinned, so expanding a category can never push it off */
+    position:sticky;bottom:0;z-index:3;box-shadow:0 -6px 14px rgba(30,58,95,.10);}
   .rtab tr.ours td.m{color:#8a6510;font-size:21px;}
   /* green = REPLICA leads this column, lit as each axis is walked */
   .rtab tr.ours td.best{background:#d3efdb;color:#0d5c32;
@@ -660,10 +666,13 @@
     fill:var(--navy);font-weight:700;text-anchor:middle;}
   .btl .fmtn{font-family:var(--sans);font-size:16px;fill:var(--ink-3);font-weight:600;}
   .btl .fmtc{font-family:var(--mono);font-size:23px;fill:var(--navy);font-weight:700;}
-  .btl .shutn{font-family:var(--mono);font-size:26px;letter-spacing:.2em;fill:var(--red);
+  .btl .shutn{font-family:var(--mono);font-size:17px;letter-spacing:.16em;fill:var(--red);
     font-weight:800;text-anchor:middle;}
-  .btl .shutd{font-family:var(--sans);font-size:19px;fill:#8f5348;text-anchor:middle;}
-  .btl .shutd .em{fill:var(--red);font-weight:700;}
+  /* deliberately the same left edge and rhythm as the open half above, so the
+     two halves read as one ledger rather than a diagram plus an error box */
+  .btl .shutf{font-family:var(--mono);font-size:20px;fill:var(--red);font-weight:700;}
+  .btl .shutr{font-family:var(--sans);font-size:18px;fill:#8f5348;}
+  .btl .shutr .em{fill:var(--red);font-weight:700;}
   .btl .xm line{stroke:var(--red);stroke-width:6;stroke-linecap:round;}
 
   /* ═══════════ THANK-YOU QR WALL ═══════════ */
@@ -871,7 +880,7 @@
          paper Table 1, three slides later. This slide only has to land one
          causal claim, in about fifteen seconds. -->
     <section class="slide vcenter" data-eyebrow="02 · Where the field stands" data-frags="3"
-      data-notes="So why did all three lose the same two things? It is not the model. It is what we asked the model to write. [CLICK] The page carries four axes. They all have to pass through one narrow place — the output format. Marker writes Markdown. The OCR VLMs write a flat text stream. GPT-5 and Qwen write generic HTML. [CLICK] And that is where two of them die. Markdown and plain text have no syntax for an x-y coordinate or a font colour — you literally cannot write it down. HTML does have the syntax, and this is the subtle case: a div with no style attribute is perfectly valid HTML, so position and style are optional, and what is optional gets dropped. Either way the information never reaches the page. [CLICK] So the sentence I want you to keep: what a format does not require, a system does not produce. The bottleneck is not the model. It is the target. Widen the target, and everything downstream changes — so that is what we did.">
+      data-notes="So why did all three lose the same two things? It is not the model. It is what we asked the model to write. [CLICK] The page carries four axes. They all have to pass through one narrow place — the output format. Marker writes Markdown. The OCR VLMs write a flat text stream. GPT-5 and Qwen write generic HTML. [CLICK] And that is where two of them die. Markdown and plain text have no syntax for an x-y coordinate or a font colour — you literally cannot write it down. HTML does have the syntax, and this is the subtle case: the syntax exists, but a div with no style attribute is perfectly valid HTML — so it is optional, and what is optional gets left out. Either way there is no place to put position and style, and the information never reaches the page. [CLICK] So the sentence I want you to keep: what a format does not require, a system does not produce. The bottleneck is not the model. It is the target. Widen the target, and everything downstream changes — so that is what we did.">
       <div class="kicker">Not a model failure — a format failure</div>
       <h2>Four axes go in. <em>The output format only has room for two.</em></h2>
       <div class="slide-body">
@@ -931,11 +940,12 @@
               <text x="648" y="244" class="fmtc">generic HTML</text>
             </g>
 
-            <text x="781" y="350" class="shutn">NO SLOT</text>
-            <text x="781" y="396" class="shutd">Markdown &amp; plain text have</text>
-            <text x="781" y="424" class="shutd"><tspan class="em">no syntax at all</tspan> for a coordinate.</text>
-            <text x="781" y="464" class="shutd">HTML has the syntax, but never</text>
-            <text x="781" y="492" class="shutd"><tspan class="em">requires</tspan> it — so models omit it.</text>
+            <text x="781" y="338" class="shutn">NO PLACE TO PUT THEM</text>
+            <text x="648" y="386" class="shutf">Markdown &#183; plain text</text>
+            <text x="648" y="412" class="shutr">the syntax <tspan class="em">does not exist</tspan></text>
+            <text x="648" y="460" class="shutf">generic HTML</text>
+            <text x="648" y="486" class="shutr">the syntax exists, but is <tspan class="em">optional</tspan></text>
+            <text x="648" y="510" class="shutr">&#8212; so the model leaves it out</text>
           </g>
 
           <!-- ───── blocked ───── -->
@@ -1007,9 +1017,9 @@
 
     <!-- ═══════════ 8 · FORMAT TABLE (paper Table 1) ═══════════ -->
     <section class="slide demo bleed" data-eyebrow="03 · FID-HTML" data-embed="fmt"
-      data-notes="This is Table 1 from the paper, live. Read down the last two column groups. Markdown has no slot for position or style at all. LaTeX is expressive but partial on hierarchy and not web-native. DocTags and hOCR carry boxes but are partial on styling. And plain HTML — this is the important row — plain HTML CAN express fidelity but never REQUIRES it: two valid HTML documents with the same text can render completely differently. That is the gap. Fid-HTML is the only row full across every column, because position and style are mandatory, inline, per element. Fidelity becomes a property of the format rather than a hope.">
-      <div class="kicker">Why not just use an existing format?</div>
-      <h2>Generic HTML <em>permits</em> fidelity. FID-HTML <em>guarantees</em> it. <span class="srcnote">— paper Table 1</span></h2>
+      data-notes="We saw three formats hit that wall. This is the full ledger — every representation the field uses, scored on the same four axes. Read down the last two column groups. Markdown has no slot for position or style at all. LaTeX is expressive but partial on hierarchy and not web-native. DocTags and hOCR carry boxes but are partial on styling. And plain HTML — this is the important row — plain HTML CAN express fidelity but never REQUIRES it: two valid HTML documents with the same text can render completely differently. That is the gap. Fid-HTML is the only row full across every column, because position and style are mandatory, inline, per element. Fidelity becomes a property of the format rather than a hope.">
+      <div class="kicker">The same wall, for every format</div>
+      <h2>Comparison with <em>existing representations</em> <span class="srcnote">— paper Table 1</span></h2>
       <div class="slide-body">
         <div class="embed">
           <iframe src="index.html?embed=fidhtml&part=table" title="Format comparison (paper Table 1)"></iframe>
@@ -1355,7 +1365,7 @@
 
     <!-- ═══════════ 22 · ABLATION (paper Table 3, as a chart) ═══════════ -->
     <section class="slide vcenter" data-eyebrow="05 · Evaluation" data-frags="3" id="ablSlide"
-      data-notes="The ablation, built up cumulatively, and read on the same four axes as everything else — the navy line is Overall, gold is the visual-fidelity axis, violet is the physical-structure axis. The bands are our own four stages. [CLICK] Stage one, Segment: hierarchical layout, Hi-SAM and Set-of-Mark take Overall from 0.53 to 0.71. Steady gains from better geometry — and notice the physical-structure line is what climbs, from 0.34 to 0.69. [CLICK] Stage two, Localize, and the first big jump. One model doing every region gives 0.76. Introducing the Router and the six specialists takes it to 0.86 — ten points, purely from agentic decomposition, at the same model scale. [CLICK] Stage four, Refine, and the second: font fix, background restore and reflection take 0.86 to 0.93, with the visual-fidelity axis reaching 0.97. Those two jumps are the empirical case for the whole design — single-pass generation is not enough, and you have to look at the render. Assemble has no row of its own here: it is not optional, so there is nothing to ablate.">
+      data-notes="The ablation, built up cumulatively, and read on the same four axes as everything else — the navy line is Overall, gold is the visual-fidelity axis, violet is the physical-structure axis. The bands are our own four stages. Three stages, three numbers, and they add up: 0.53 at the start, 0.93 at the end. [CLICK] Stage one, Segment: hierarchical layout, Hi-SAM and Set-of-Mark take us from 0.53 to 0.71 — plus eighteen. Notice it is the physical-structure line that climbs, 0.34 to 0.69: better segmentation buys geometry. [CLICK] Stage two, Localize: 0.71 to 0.86, plus fifteen. And here is the part that matters — a single monolithic generator only reaches 0.76. The remaining ten points come from routing to six specialists, at the same model size. That is the agentic decomposition paying for itself. [CLICK] Stage four, Refine: 0.86 to 0.93, plus seven, with visual fidelity reaching 0.97. Eighteen, fifteen, seven — forty points in total, and the two biggest are decomposition and looking at the render. Assemble has no row of its own here: it is not optional, so there is nothing to ablate.">
       <div class="kicker">Every component earns its place &nbsp;·&nbsp; <span class="chint">two jumps carry the design</span></div>
       <h2>Ablation studies <span class="srcnote">— paper Table 3</span></h2>
       <div class="slide-body">
@@ -1480,8 +1490,8 @@
     <!-- ═══════════ 26b · WHERE REPLICA SITS ═══════════ -->
     <section class="slide vcenter" data-eyebrow="08 · The bigger picture" data-frags="2"
       data-notes="That was what the representation lets you do. This is what it has already done. Three papers are built on Fid-HTML supervision and all three are through review. [CLICK] REPLICA rebuilds any page as Fid-HTML — text, structure, position and style, all explicit — so every reconstructed page is labelled by construction, at whatever scale you can run it. M3Grounder, at CVPR, uses masks as evidence for grounded answers. DoCoG, an oral at ECCV, does grounded reasoning — every claim tied back to a region. And DocLayout-VL treats the page as a tree. None of them had to annotate a thing. [CLICK] And it runs the other way too: better segmentation, better reading order and better grounding come straight back into REPLICA's own stages. Neither half stands alone — the representation makes the supervision, the supervision makes the models, and the models make the representation better.">
-      <div class="kicker">Not a proposal — already built</div>
-      <h2>Three papers <em>already running on FID-HTML</em></h2>
+      <div class="kicker">REPLICA as a data generator</div>
+      <h2>Supervision for <em>grounded document models</em></h2>
       <div class="slide-body">
         <div class="relwrap">
           <svg class="relsvg" viewBox="0 0 1560 560" aria-label="REPLICA generates supervision for M3Grounder, DoCoG and DocLayout-VL, which in turn sharpen REPLICA">
@@ -1544,9 +1554,9 @@
               <text x="725" y="180" text-anchor="middle" class="fn">every page labelled by construction</text>
             </g>
             <g class="relflow back frag" data-frag="2">
-              <path d="M995 424 C 800 420, 640 380, 455 358" fill="none" marker-end="url(#arwN)"/>
-              <text x="725" y="424" text-anchor="middle" class="ft navy">sharpen every stage</text>
-              <text x="725" y="454" text-anchor="middle" class="fn">better segmentation, reading order, grounding</text>
+              <path d="M995 438 C 812 444, 652 406, 458 372" fill="none" marker-end="url(#arwN)"/>
+              <text x="725" y="496" text-anchor="middle" class="ft navy">and they sharpen every stage</text>
+              <text x="725" y="526" text-anchor="middle" class="fn">better segmentation, reading order, grounding</text>
             </g>
           </svg>
         </div>
@@ -1596,7 +1606,7 @@
         </div>
       </div>
       <div class="thanks-logos">
-        <img src="static/images/logos/cvit_logo.png" alt="CVIT" onerror="this.style.display=&quot;none&quot;">
+        <img class="sq" src="static/images/logos/cvit_logo_trim.png" alt="CVIT" onerror="this.style.display=&quot;none&quot;">
         <img src="static/images/logos/iiith_logo.jpeg" alt="IIIT Hyderabad">
         <img src="static/images/logos/bgen_logo.png" alt="BharatGen">
       </div>
@@ -2186,7 +2196,7 @@
     // end-point values, so the two jumps are readable as numbers too
     // dy is chosen per point: above where the VFS line is far, below where it
     // runs close — and every label carries a paper-coloured halo as insurance
-    [[0,"0.53",-20],[4,"0.76",-20],[5,"0.86",30],[8,"0.93",30]].forEach(([i,v,dy])=>{
+    [[0,"0.53",-20],[3,"0.71",-20],[4,"0.76",-20],[5,"0.86",30],[8,"0.93",30]].forEach(([i,v,dy])=>{
       add(svg,"text",{x:x(i),y:y(ABL[i].os)+dy,"text-anchor":"middle",
         class:"osval",fill:"#1e3a5f","font-weight":"700","font-size":"20",
         stroke:"#f5f3ee","stroke-width":"5","paint-order":"stroke"}, v);
@@ -2194,12 +2204,12 @@
 
     // landmark callouts — the two jumps that carry the design
     const LMK = [
-      { f:1, x:(x(0)+x(3))/2, w:480, t:"+0.18  from better segmentation",
-        d:"hierarchy · Hi-SAM · SoM \u2014 position 0.34 \u2192 0.69" },
-      { f:2, x:(x(4)+x(5))/2, w:430, t:"+0.10  from agentic routing",
-        d:"one model \u2192 Router + 6 specialists, same size" },
-      { f:3, x:(x(6)+x(8))/2, w:450, t:"+0.07  from seeing the render",
-        d:"font \u00b7 background \u00b7 reflection \u2014 VFS \u2192 0.97" }
+      { f:1, x:(x(0)+x(3))/2, w:470, t:"0.53 \u2192 0.71   (+0.18)",
+        d:"hierarchy \u00b7 Hi-SAM \u00b7 Set-of-Mark" },
+      { f:2, x:(x(4)+x(5))/2, w:480, t:"0.71 \u2192 0.86   (+0.15)",
+        d:"of which +0.10 from routing to 6 specialists" },
+      { f:3, x:(x(6)+x(8))/2, w:450, t:"0.86 \u2192 0.93   (+0.07)",
+        d:"font \u00b7 background \u00b7 reflection" }
     ];
     LMK.forEach(m=>{
       const g = add(svg,"g",{class:"lmk","data-f":m.f});
@@ -2217,7 +2227,7 @@
         add(lg,"text",{x:px+44,y:646,class:"lgd"}, label);
       });
     add(lg,"text",{x:R+70,y:692,"text-anchor":"end",class:"note"},
-      "Assemble has no row of its own here — it is not optional, so there is nothing to ablate.");
+      "0.53 \u2192 0.93 overall  =  +0.18 + 0.15 + 0.07.    Assemble is not optional, so there is nothing to ablate.");
   })();
   function renderAblation(){
     const svg = document.getElementById("ablChart"); if(!svg) return;
