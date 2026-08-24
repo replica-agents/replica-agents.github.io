@@ -16,12 +16,18 @@
     --mono: "SFMono-Regular", Menlo, Consolas, "Courier New", monospace;
   }
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#0d1016;}
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--bg);}
   body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased;}
 
-  #deck{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;}
+  /* The stage is a fixed 1920x1080; on any screen that is not exactly 16:9 the
+     scale-to-fit leaves a band above and below. Painting #deck in the CURRENT
+     slide's own colour makes that band invisible, so the deck looks full-bleed
+     in fullscreen without ever cropping authored content. */
+  #deck{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+        background:var(--bg);transition:background .25s;}
+  #deck.dark{background:var(--navy);}
   #stage{width:1920px;height:1080px;flex:none;position:relative;background:var(--bg);
-         overflow:hidden;transform-origin:center center;box-shadow:0 0 60px rgba(0,0,0,.5);}
+         overflow:hidden;transform-origin:center center;}
 
   .slide{position:absolute;inset:0;padding:96px 88px 78px;display:none;flex-direction:column;}
   .slide.current{display:flex;}
@@ -67,7 +73,13 @@
     text-transform:uppercase;font-weight:700;margin-bottom:30px;}
   .venue-chip .oral{background:var(--gold);color:var(--navy-deep);padding:4px 13px;border-radius:999px;}
   .title-slide h1{font-size:108px;letter-spacing:.02em;margin-bottom:10px;}
-  .title-slide .subtitle{font-family:var(--serif);font-size:36px;color:var(--ink-2);margin-bottom:34px;line-height:1.3;}
+  .title-slide .subtitle{font-family:var(--serif);font-size:36px;color:var(--ink-2);margin-bottom:26px;line-height:1.3;}
+  .roadmap{display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:32px;}
+  .roadmap .rm{display:flex;flex-direction:column;align-items:center;gap:3px;
+    border:1.5px solid var(--gold-line);background:var(--gold-soft);border-radius:11px;padding:11px 26px;}
+  .roadmap .rm b{font-family:var(--mono);font-size:17px;letter-spacing:.14em;text-transform:uppercase;color:#8a6510;}
+  .roadmap .rm{font-family:var(--sans);font-size:16px;color:var(--ink-2);}
+  .roadmap .rmar{color:var(--gold);font-size:26px;font-weight:700;}
   .authors{font-size:22px;color:var(--ink);line-height:1.8;max-width:1400px;}
   .authors sup{color:var(--gold);font-weight:700;}
   .affil{font-size:18px;color:var(--ink-3);margin-top:10px;}
@@ -121,8 +133,6 @@
   .embed{flex:1;min-height:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;
     background:var(--paper);position:relative;}
   .embed iframe{position:absolute;top:0;left:0;border:0;transform-origin:top left;background:var(--bg);}
-  .embed::after{content:"LIVE";position:absolute;right:10px;top:9px;z-index:5;font-family:var(--mono);
-    font-size:10px;letter-spacing:.16em;color:#fff;background:var(--green);padding:3px 8px;border-radius:4px;opacity:.85;}
   .slide.demo{padding:88px 60px 54px;}
   .slide.demo h2{font-size:38px;margin-bottom:8px;}
   .slide.demo .kicker{font-size:14px;margin-bottom:6px;}
@@ -171,7 +181,13 @@
     font-family:var(--mono);font-size:18px;font-weight:700;flex:none;}
   .sc-t{font-family:var(--serif);font-size:26px;font-weight:700;color:var(--navy);white-space:nowrap;}
   .stagecard:not(.open) .sc-t{writing-mode:vertical-rl;transform:rotate(180deg);font-size:22px;}
-  .sc-q{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--ink-2);margin-left:auto;text-align:right;max-width:52%;}
+  .sc-ax{margin-left:auto;font-family:var(--mono);font-size:13px;letter-spacing:.09em;
+    text-transform:uppercase;font-weight:700;color:var(--sc);background:var(--scbg);
+    border:1.5px solid var(--sc);border-radius:999px;padding:5px 13px;white-space:nowrap;}
+  .sc-ax i{font-style:normal;opacity:.6;font-weight:400;margin-right:5px;}
+  .stagecard:not(.open) .sc-ax{display:none;}
+  .sc-q{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--ink-2);
+    margin-left:18px;text-align:right;max-width:40%;}
   .stagecard:not(.open) .sc-q{display:none;}
   .sc-body{flex:1;min-height:0;display:flex;flex-direction:column;padding:14px 16px;gap:12px;overflow:hidden;}
   .stagecard:not(.open) .sc-body{display:none;}
@@ -400,7 +416,7 @@
   .carotab .n{opacity:.6;font-size:13px;margin-left:6px;font-family:var(--mono);}
   .carostage{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
   .caroitem{position:absolute;top:50%;left:50%;cursor:zoom-in;
-    transition:transform .55s cubic-bezier(.22,.7,.3,1),opacity .55s;
+    transition:transform .28s cubic-bezier(.22,.7,.3,1),opacity .28s;
     background:var(--paper);border:1px solid var(--line);border-radius:8px;overflow:hidden;
     box-shadow:0 8px 26px rgba(20,30,50,.16);}
   .caroitem.mid{box-shadow:0 14px 44px rgba(20,30,50,.3);border-color:var(--gold);}
@@ -466,8 +482,14 @@
   .rtab tr.cat .car{display:inline-block;width:18px;color:var(--gold);}
   .rtab tr.cat .cn{font-size:13px;color:var(--ink-3);letter-spacing:0;text-transform:none;margin-left:10px;font-weight:400;}
   .rtab tr.xtra{display:none;} .rtab tr.xtra.open{display:table-row;}
-  .rtab tr.ours td{background:var(--gold-soft);font-weight:800;color:#8a6510;border-bottom:none;}
-  .rtab tr.ours td.m{color:#8a6510;}
+  /* our row is deliberately the heaviest line on the board — it is the one the
+     audience is being asked to compare everything else against */
+  .rtab tr.ours td{background:var(--gold-soft);font-weight:800;color:#8a6510;border-bottom:none;
+    font-size:24px;padding:14px 10px;border-top:2.5px solid var(--gold);}
+  .rtab tr.ours td.m{color:#8a6510;font-size:21px;}
+  /* green = REPLICA leads this column, lit as each axis is walked */
+  .rtab tr.ours td.best{background:#d3efdb;color:#0d5c32;
+    box-shadow:inset 0 0 0 3px #2f9e63;border-radius:7px;}
   .rtab.focus td.q,.rtab.focus th.q{opacity:.22;}
   .rtab.focus tr.ours td.q{opacity:1;}
   .rtab td.lit,.rtab th.lit{background:#e9eff7;}
@@ -550,7 +572,7 @@
   .relsvg .cs{font-family:var(--sans);font-size:16px;fill:var(--ink-3);}
   /* venue chip: a typographic badge, with a real logo layered on top if one
      is dropped in at static/images/logos/{cvpr,eccv}_logo.png */
-  .relsvg .venue .vy{font-family:var(--mono);font-size:12.5px;font-weight:700;fill:var(--ink-3);letter-spacing:.07em;}
+  .relsvg .vy{font-family:var(--mono);font-size:13px;font-weight:700;fill:var(--ink-3);letter-spacing:.09em;}
   .relsvg .venue rect.chip-dark{fill:var(--navy);}
   .relsvg .venue rect.chip-light{fill:#fff;stroke:var(--line);stroke-width:1.5;}
   .relsvg .relflow path{stroke:var(--gold);stroke-width:4.5;}
@@ -573,6 +595,44 @@
   .axb.no{border-color:var(--red);color:var(--red);background:#fbeceb;}
   .axnote{font-size:18px;color:var(--ink-2);font-style:italic;margin-left:6px;}
   .axnote b{font-style:normal;color:var(--navy);}
+
+  /* ═══════════ LIMITATIONS — one worked example per edge ═══════════ */
+  .limgrid .card.lim{border-left:5px solid var(--red);display:flex;flex-direction:column;}
+  .limfig{width:100%;height:auto;margin:4px 0 14px;display:block;}
+  .limfig .pg{fill:var(--paper);stroke:var(--line);stroke-width:2;}
+  .limfig .pg.out{stroke:var(--red);stroke-dasharray:5 4;}
+  .limfig .pl{font-family:var(--mono);font-size:10px;letter-spacing:.11em;
+    text-transform:uppercase;fill:var(--ink-3);font-weight:700;text-anchor:middle;}
+  .limfig text.pl[x="8"]{text-anchor:start;}
+  .limfig .ln{fill:#dfe3e8;}
+  .limfig .thd{fill:var(--navy);}
+  .limfig .tht{font-family:var(--mono);font-size:7px;fill:#fff;text-anchor:middle;letter-spacing:.04em;}
+  .limfig .trw{fill:#eef1f5;stroke:#dfe3e8;stroke-width:1;}
+  .limfig .orph{fill:#fdeceb;stroke:#e9b4ad;stroke-width:1;}
+  .limfig .miss{fill:none;stroke:var(--red);stroke-width:2;stroke-dasharray:5 4;}
+  .limfig .misst{font-family:var(--mono);font-size:9px;letter-spacing:.09em;fill:var(--red);
+    font-weight:700;text-anchor:middle;}
+  .limfig .brk{stroke:var(--red);stroke-width:2;stroke-dasharray:6 5;}
+  .limfig .brkt{font-family:var(--mono);font-size:9px;letter-spacing:.1em;fill:var(--red);font-weight:700;}
+  /* the point of this one is that the two words are set in different families */
+  .limfig .fsrc{font-family:Georgia,"Times New Roman",serif;font-size:24px;font-weight:700;
+    fill:var(--navy);text-anchor:middle;}
+  .limfig .fout{font-family:"Trebuchet MS",Verdana,sans-serif;font-size:23px;font-weight:700;
+    fill:var(--red);text-anchor:middle;}
+  .limfig .neq{font-size:26px;fill:var(--red);font-weight:700;}
+  .limfig .attr rect.ok{fill:#eaf5f0;stroke:var(--green);stroke-width:1.5;}
+  .limfig .attr rect.no{fill:#fbeceb;stroke:var(--red);stroke-width:1.5;}
+  .limfig .at{font-family:var(--sans);font-size:11px;font-weight:700;text-anchor:middle;}
+  .limfig .at.ok{fill:var(--green);} .limfig .at.no{fill:var(--red);}
+  .limfig .lcap{font-family:var(--sans);font-size:11px;fill:var(--ink-3);font-style:italic;}
+  .limfig .lbx{fill:#fbeee2;stroke:#cf8a52;stroke-width:1.5;}
+  .limfig .lt{font-family:var(--sans);font-size:12px;font-weight:700;fill:#8a5a12;text-anchor:middle;}
+  .limfig .lar{stroke:var(--red);stroke-width:2;fill:none;}
+  .limfig .lar.back{stroke-dasharray:5 4;}
+  .limfig .lx{font-family:var(--mono);font-size:11px;letter-spacing:.1em;fill:var(--red);font-weight:700;}
+  .limfig .bar.fast{fill:var(--navy-soft);}
+  .limfig .bar.slow{fill:var(--red);}
+  .limgrid .card.lim p{margin-top:auto;font-size:17.5px;}
 
   /* ═══════════ THE FORMAT BOTTLENECK (slide 5) ═══════════ */
   /* An SVG rather than a table: the exhaustive format comparison is paper
@@ -632,10 +692,17 @@
   <div id="stage">
 
     <!-- ═══════════ 0 · TITLE ═══════════ -->
-    <section class="slide title-slide" data-notes="Good morning. REPLICA — an agentic framework for visually faithful document reconstruction. Joint work between BharatGen and IIIT Hyderabad. The one-line version: we turn documents into HTML that doesn't just read like the original, it looks like it.">
+    <section class="slide title-slide" data-notes="Good morning. REPLICA — an agentic framework for visually faithful document reconstruction. Joint work between BharatGen and IIIT Hyderabad. The one-line version: we turn documents into HTML that doesn't just read like the original, it looks like it. Three contributions, and the talk follows them in order: a representation, Fid-HTML; a benchmark that can actually score it, VFDR-Bench; and the agentic framework that produces it, REPLICA.">
       <div class="venue-chip">ICDAR 2026 <span class="oral">Oral</span></div>
       <h1>REPLICA</h1>
       <div class="subtitle">An Agentic Framework for<br>Visually Faithful Document Reconstruction</div>
+      <div class="roadmap">
+        <span class="rm"><b>Represent</b>FID-HTML</span>
+        <span class="rmar">&rarr;</span>
+        <span class="rm"><b>Measure</b>VFDR-Bench</span>
+        <span class="rmar">&rarr;</span>
+        <span class="rm"><b>Generate</b>REPLICA</span>
+      </div>
       <div class="authors">
         Raghuveer R<sup>1*</sup>, Anirudh Srinivasan<sup>1*</sup>, Venkata Kesav Venna<sup>1*</sup>,
         Sreevatsa S<sup>2</sup>,<br>Aryan Jain<sup>2</sup>, Sahithi Kukkala<sup>2</sup>, Ravi Kiran Sarvadevabhatla<sup>1,2</sup>
@@ -786,7 +853,7 @@
     <section class="slide demo bleed" data-eyebrow="02 · Where the field stands" data-embed="teaser" data-nav="1" data-frags="2"
       data-notes="So how does the field do against that checklist? This is Figure 1A from the paper, running live. On the left the input page; on the right one system at a time. Marker, a strong pipeline tool, linearises three columns into one — the words survive, the page does not. [CLICK] GPT-5 gets the text largely right, then drifts on placement, font attributes and column count. [CLICK] Qwen3-VL-30B, same story. Every one of them ticks text and roughly ticks structure — and every one of them fails geometry and appearance. Notice I am not showing you our system yet. I want the failure to be the thing you remember, because the failure is the same in every case, and it is not a failure of the model.">
       <div class="kicker">Against the checklist</div>
-      <h2>Everyone recovers the words. <em>Nobody recovers the page.</em> <span class="srcnote">— paper Fig. 1A, live</span></h2>
+      <h2>Everyone recovers the words. <em>Nobody recovers the page.</em> <span class="srcnote">— paper Fig. 1A</span></h2>
       <div class="slide-body">
         <div class="embed"><iframe src="index.html?embed=teaser&part=compare&only=marker,gpt5,qwen" title="Baseline comparison (paper Fig. 1A)"></iframe></div>
         <div class="axbar">
@@ -932,7 +999,7 @@
     <section class="slide demo bleed" data-eyebrow="03 · FID-HTML" data-embed="fidfig" data-nav="1" data-frags="6"
       data-notes="Concretely, this is what Fid-HTML encodes — and the code on the right is the real source of the page on the left, not a mock-up. Six dimensions. One, textual content at word and block level. Two, hierarchical structure through nested divs. Three, semantic tags — li, table, tr, td — with meaningful class names. Four, positional information: global placement by absolute positioning, local alignment by relative containers and p wrappers. Five, styling metadata: font size, colour, bold, italic, underline, strikethrough, as inline CSS. Six, figures and backgrounds layered into the DOM with VLM-generated alt-text — which is also what makes the output screen-reader accessible. Click any dimension and it highlights exactly where it lives in the code; flip to Rendered and your browser draws that exact markup.">
       <div class="kicker">What made that possible</div>
-      <h2>Six dimensions — <em>click one</em> to see where it lives in the source <span class="srcnote">— paper Fig. 3, live</span></h2>
+      <h2>Six dimensions — <em>click one</em> to see where it lives in the source <span class="srcnote">— paper Fig. 3</span></h2>
       <div class="slide-body">
         <div class="embed"><iframe src="index.html?embed=fidhtml&part=figure" title="FID-HTML anatomy (paper Fig. 3)"></iframe></div>
       </div>
@@ -942,7 +1009,7 @@
     <section class="slide demo bleed" data-eyebrow="03 · FID-HTML" data-embed="fmt"
       data-notes="This is Table 1 from the paper, live. Read down the last two column groups. Markdown has no slot for position or style at all. LaTeX is expressive but partial on hierarchy and not web-native. DocTags and hOCR carry boxes but are partial on styling. And plain HTML — this is the important row — plain HTML CAN express fidelity but never REQUIRES it: two valid HTML documents with the same text can render completely differently. That is the gap. Fid-HTML is the only row full across every column, because position and style are mandatory, inline, per element. Fidelity becomes a property of the format rather than a hope.">
       <div class="kicker">Why not just use an existing format?</div>
-      <h2>Generic HTML <em>permits</em> fidelity. FID-HTML <em>guarantees</em> it. <span class="srcnote">— paper Table 1, live</span></h2>
+      <h2>Generic HTML <em>permits</em> fidelity. FID-HTML <em>guarantees</em> it. <span class="srcnote">— paper Table 1</span></h2>
       <div class="slide-body">
         <div class="embed">
           <iframe src="index.html?embed=fidhtml&part=table" title="Format comparison (paper Table 1)"></iframe>
@@ -953,7 +1020,7 @@
     <!-- ═══════════ 10 · SECTION 04 ═══════════ -->
     <section class="slide section-slide" data-eyebrow="04 · The agentic"
       data-notes="Section three, and this is the part I most want to land: why this system is agentic, and what that actually means.">
-      <h1>The Agentic</h1>
+      <h1>The agentic framework</h1>
       <div class="q">A single model must jointly solve detection, recognition, ordering and styling — with no geometric grounding and no way to check its own render. What if we decomposed instead?</div>
     </section>
 
@@ -997,16 +1064,16 @@
       </div>
     </section>
 
-    <!-- ═══════════ THE PIPELINE, STAGE BY STAGE ═══════════ -->
+    <!-- ═══════════ THE AGENTIC FRAMEWORK, STAGE BY STAGE ═══════════ -->
     <section class="slide" data-eyebrow="04 · Approach" data-frags="4" id="stagesSlide"
-      data-notes="So how does that decomposition actually run? Four questions, four stages — and I will build the pipeline figure up one stage at a time. [CLICK] Stage 1, Segment: how do we divide the document into meaningful components? A document-type tool decides digital or scanned; a detector ensemble — DocLayout-YOLO, IndicDLP-YOLO, Hi-SAM — proposes regions; then two agents take over. The Labeling agent uses Set-of-Mark prompting to assign types and catch mis-segmentation, and the Grouping agent builds the layout graph, resolving caption-figure binding and list nesting. Output: a hierarchical layout tree. [CLICK] Stage 2, Localize: how do we convert each component into HTML? The Router agent picks a specialist from the crop itself, overriding the upstream label when the visual contradicts it. Six specialists — text, table, image, form, list, equation — emit sub-HTML with position and style inline. Tools like OCR and table-structure recognition are called only when needed. Nodes are conditionally independent, so this stage parallelises. [CLICK] Stage 3, Assemble: how do we compose them? A position-aware merge tool works bottom-up over the tree, then the Reading-Order agent linearises semantically — because top-to-bottom sorting fails on multi-column pages. [CLICK] Stage 4, Refine: how do we make it actually look right? Font-size and background tools, and then the Reflection agent renders the HTML, compares it against the source image, and injects CSS until it stabilises. That is the only component that ever sees the final render — and it is why the objective is stated on R of H.">
-      <h2>The pipeline, <em>stage by stage</em></h2>
+      data-notes="So how does that decomposition actually run? Four questions, four stages — and I will build the framework figure up one stage at a time. [CLICK] Stage 1, Segment: how do we divide the document into meaningful components? A document-type tool decides digital or scanned; a detector ensemble — DocLayout-YOLO, IndicDLP-YOLO, Hi-SAM — proposes regions; then two agents take over. The Labeling agent uses Set-of-Mark prompting to assign types and catch mis-segmentation, and the Grouping agent builds the layout graph, resolving caption-figure binding and list nesting. Output: a hierarchical layout tree. [CLICK] Stage 2, Localize: how do we convert each component into HTML? The Router agent picks a specialist from the crop itself, overriding the upstream label when the visual contradicts it. Six specialists — text, table, image, form, list, equation — emit sub-HTML with position and style inline. Tools like OCR and table-structure recognition are called only when needed. Nodes are conditionally independent, so this stage parallelises. [CLICK] Stage 3, Assemble: how do we compose them? A position-aware merge tool works bottom-up over the tree, then the Reading-Order agent linearises semantically — because top-to-bottom sorting fails on multi-column pages. [CLICK] Stage 4, Refine: how do we make it actually look right? Font-size and background tools, and then the Reflection agent renders the HTML, compares it against the source image, and injects CSS until it stabilises. That is the only component that ever sees the final render — and it is why the objective is stated on R of H.">
+      <h2>The agentic framework, <em>stage by stage</em></h2>
       <div class="slide-body">
         <!-- the figure builds up; completed stages collapse to a numbered chip -->
         <div class="stagerow" id="stageRow">
           <div class="stagecard s1" data-st="1">
             <div class="sc-head"><span class="sc-n">1</span><span class="sc-t">Segment</span>
-              <span class="sc-q">"How to divide the document into meaningful components?"</span></div>
+              <span class="sc-ax"><i>buys</i> Hierarchy · Geometry</span><span class="sc-q">"How to divide the document into meaningful components?"</span></div>
             <div class="sc-body">
               <div class="sc-fig"><img src="static/images/stages/stage1.png" alt="Segment stage of the pipeline"></div>
               <ul class="sc-list">
@@ -1019,7 +1086,7 @@
           </div>
           <div class="stagecard s2" data-st="2">
             <div class="sc-head"><span class="sc-n">2</span><span class="sc-t">Localize</span>
-              <span class="sc-q">"How to convert each component into equivalent HTML?"</span></div>
+              <span class="sc-ax"><i>buys</i> Text · Style</span><span class="sc-q">"How to convert each component into equivalent HTML?"</span></div>
             <div class="sc-body">
               <div class="sc-fig"><img src="static/images/stages/stage2.png" alt="Localize stage of the pipeline"></div>
               <ul class="sc-list">
@@ -1032,7 +1099,7 @@
           </div>
           <div class="stagecard s3" data-st="3">
             <div class="sc-head"><span class="sc-n">3</span><span class="sc-t">Assemble</span>
-              <span class="sc-q">"How to assemble components into a coherent structure?"</span></div>
+              <span class="sc-ax"><i>buys</i> Hierarchy · Geometry</span><span class="sc-q">"How to assemble components into a coherent structure?"</span></div>
             <div class="sc-body">
               <div class="sc-fig"><img src="static/images/stages/stage3.png" alt="Assemble stage of the pipeline"></div>
               <ul class="sc-list">
@@ -1044,7 +1111,7 @@
           </div>
           <div class="stagecard s4" data-st="4">
             <div class="sc-head"><span class="sc-n">4</span><span class="sc-t">Refine</span>
-              <span class="sc-q">"How to refine structure for visual and structural fidelity?"</span></div>
+              <span class="sc-ax"><i>buys</i> Style</span><span class="sc-q">"How to refine structure for visual and structural fidelity?"</span></div>
             <div class="sc-body">
               <div class="sc-fig"><img src="static/images/stages/stage4.png" alt="Refine stage of the pipeline"></div>
               <ul class="sc-list">
@@ -1166,13 +1233,13 @@
 ##>
 ═════════════════════════════════════════════════════════════════════ -->
 
-    <!-- ═══════════ 18 · LIVE PIPELINE DEMO ═══════════ -->
+    <!-- ═══════════ 18 · LIVE FRAMEWORK DEMO ═══════════ -->
     <section class="slide demo bleed" data-eyebrow="04 · Approach · Demo" data-embed="pipeline" data-frags="0"
-      data-notes="Rather than describe it further — here is the pipeline running on a real page with every intermediate output. Step through with the clicker, or hit Play for the full walkthrough. Each beat spotlights the corresponding part of Figure 4 on the left.">
+      data-notes="Rather than describe it further — here is the whole framework running on a real page with every intermediate output. Step through with the clicker, or hit Play for the full walkthrough. Each beat spotlights the corresponding part of Figure 4 on the left.">
       <div class="kicker">Interactive walkthrough</div>
-      <h2>The pipeline, running on a real page <span class="srcnote">— live · plays automatically at 1.5×</span></h2>
+      <h2>The framework, running on a real page <span class="srcnote">— plays automatically at 1.5×</span></h2>
       <div class="slide-body">
-        <div class="embed"><iframe src="index.html?embed=demo&doc=magazine&autoplay=1&rate=1.5" title="REPLICA pipeline demo"></iframe></div>
+        <div class="embed"><iframe src="index.html?embed=demo&doc=magazine&autoplay=1&rate=1.5" title="REPLICA framework demo"></iframe></div>
       </div>
     </section>
 
@@ -1272,7 +1339,7 @@
       data-notes="This is Table 2 in full — all sixteen methods. Each category is collapsed to its best system; click any category to expand it. I will walk it one axis at a time. [CLICK] Text extraction: almost everyone is passable — Marker 0.68, Qwen 0.66, GPT-5 0.65. Largely solved, which is why the field feels finished. [CLICK] Logical structure: tree edit distance is passable for the better systems — but nothing about it says WHERE anything is. [CLICK] Now physical structure, and the entire field collapses. Best baseline LPS 0.22, best GPS 0.43, most under 0.30. Nothing lands where it belongs. [CLICK] Visual fidelity: GPT-5 reaches 0.86 and Gemini 0.82 — genuinely good-looking pages — but with GPS of 0.43 and 0.31, those pages are not the source page. [CLICK] And the whole board, graded. REPLICA: 0.73 and 0.86 on position, 0.93 visual fidelity, 0.86 overall. The claim is not that we win a column — it is that there is no weak column.">
       <div class="kicker">Measured on VFDR-Bench — all 16 methods &nbsp;·&nbsp;
         <span class="chint">click a category to expand it</span></div>
-      <h2>Everyone passes text. <em>The field collapses on position.</em> <span class="srcnote">— paper Table 2</span></h2>
+      <h2>Quantitative results <span class="srcnote">— paper Table 2</span></h2>
       <div class="slide-body">
         <div class="rwrap"><table class="rtab" id="resTable"></table></div>
         <div class="rnote">
@@ -1288,11 +1355,11 @@
 
     <!-- ═══════════ 22 · ABLATION (paper Table 3, as a chart) ═══════════ -->
     <section class="slide vcenter" data-eyebrow="05 · Evaluation" data-frags="3" id="ablSlide"
-      data-notes="The ablation, built up cumulatively, and read on the same four axes as everything else — the navy line is Overall, gold is the visual-fidelity axis, violet is the physical-structure axis. The bands are our own pipeline stages. [CLICK] Stage one, Segment: hierarchical layout, Hi-SAM and Set-of-Mark take Overall from 0.53 to 0.71. Steady gains from better geometry — and notice the physical-structure line is what climbs, from 0.34 to 0.69. [CLICK] Stage two, Localize, and the first big jump. One model doing every region gives 0.76. Introducing the Router and the six specialists takes it to 0.86 — ten points, purely from agentic decomposition, at the same model scale. [CLICK] Stage four, Refine, and the second: font fix, background restore and reflection take 0.86 to 0.93, with the visual-fidelity axis reaching 0.97. Those two jumps are the empirical case for the whole design — single-pass generation is not enough, and you have to look at the render. Assemble has no row of its own here: it is not optional, so there is nothing to ablate.">
-      <div class="kicker">Every component earns its place</div>
-      <h2>Two jumps carry the design <span class="srcnote">— paper Table 3</span></h2>
+      data-notes="The ablation, built up cumulatively, and read on the same four axes as everything else — the navy line is Overall, gold is the visual-fidelity axis, violet is the physical-structure axis. The bands are our own four stages. [CLICK] Stage one, Segment: hierarchical layout, Hi-SAM and Set-of-Mark take Overall from 0.53 to 0.71. Steady gains from better geometry — and notice the physical-structure line is what climbs, from 0.34 to 0.69. [CLICK] Stage two, Localize, and the first big jump. One model doing every region gives 0.76. Introducing the Router and the six specialists takes it to 0.86 — ten points, purely from agentic decomposition, at the same model scale. [CLICK] Stage four, Refine, and the second: font fix, background restore and reflection take 0.86 to 0.93, with the visual-fidelity axis reaching 0.97. Those two jumps are the empirical case for the whole design — single-pass generation is not enough, and you have to look at the render. Assemble has no row of its own here: it is not optional, so there is nothing to ablate.">
+      <div class="kicker">Every component earns its place &nbsp;·&nbsp; <span class="chint">two jumps carry the design</span></div>
+      <h2>Ablation studies <span class="srcnote">— paper Table 3</span></h2>
       <div class="slide-body">
-        <div class="ablwrap"><svg id="ablChart" viewBox="0 0 1700 706" aria-label="Cumulative ablation: overall score, visual fidelity and global position across the pipeline stages"></svg></div>
+        <div class="ablwrap"><svg id="ablChart" viewBox="0 0 1700 706" aria-label="Cumulative ablation: overall score, visual fidelity and global position across the four stages"></svg></div>
       </div>
     </section>
 
@@ -1321,19 +1388,81 @@
       <div class="kicker">Being honest about the edges</div>
       <h2>Where REPLICA still falls short</h2>
       <div class="slide-body">
-        <div class="grid3" style="flex:0 0 auto;">
-          <div class="card" style="border-left:5px solid var(--red);">
+        <div class="grid3 limgrid" style="flex:0 0 auto;">
+
+          <div class="card lim">
             <h3>Single-page only</h3>
+            <!-- a table straddling the page break: the continuation arrives
+                 with no header, which is exactly how the fragment shows up -->
+            <svg class="limfig" viewBox="0 0 320 158" aria-label="A table split across a page break loses its header on the continuation">
+              <rect class="pg" x="8" y="10" width="136" height="138" rx="6"/>
+              <rect class="pg" x="176" y="10" width="136" height="138" rx="6"/>
+              <text x="76" y="30" class="pl">page 1</text>
+              <text x="244" y="30" class="pl">page 2</text>
+              <rect class="ln" x="24" y="40" width="104" height="5" rx="2.5"/>
+              <rect class="ln" x="24" y="52" width="86"  height="5" rx="2.5"/>
+              <rect class="thd" x="24" y="72"  width="104" height="16" rx="3"/>
+              <text x="76" y="84" class="tht">ITEM   QTY   TOTAL</text>
+              <rect class="trw" x="24" y="92"  width="104" height="14"/>
+              <rect class="trw" x="24" y="108" width="104" height="14"/>
+              <rect class="trw" x="24" y="124" width="104" height="24"/>
+              <rect class="orph" x="192" y="40" width="104" height="14"/>
+              <rect class="orph" x="192" y="56" width="104" height="14"/>
+              <rect class="miss" x="192" y="80" width="104" height="20" rx="4"/>
+              <text x="244" y="94" class="misst">HEADER LOST</text>
+              <path class="brk" d="M160 8 V 150"/>
+              <text x="160" y="158" class="brkt" text-anchor="middle">break</text>
+            </svg>
             <p>No multi-page consistency yet — structures spanning a page break (continued tables, figures) can <b>fragment</b>.</p>
           </div>
-          <div class="card" style="border-left:5px solid var(--red);">
+
+          <div class="card lim">
             <h3>Font identification</h3>
-            <p>Bold, italic, underline and colour are recovered reliably; <b>exact font families are not</b>. Existing methods cover mostly English/Chinese — large-scale multilingual font recognition remains open.</p>
+            <!-- attributes survive, the family does not: shown by rendering the
+                 same word in two different families side by side -->
+            <svg class="limfig" viewBox="0 0 320 158" aria-label="Font attributes are recovered but the exact family is not">
+              <rect class="pg" x="8" y="10" width="130" height="66" rx="6"/>
+              <text x="73" y="30" class="pl">source</text>
+              <text x="73" y="62" class="fsrc">Meridian</text>
+              <text x="160" y="52" class="neq" text-anchor="middle">&#8800;</text>
+              <rect class="pg out" x="182" y="10" width="130" height="66" rx="6"/>
+              <text x="247" y="30" class="pl">output</text>
+              <text x="247" y="62" class="fout">Meridian</text>
+              <g class="attr">
+                <rect class="ok"  x="8"   y="96" width="72" height="26" rx="13"/><text x="44"  y="113" class="at ok">bold &#10003;</text>
+                <rect class="ok"  x="86"  y="96" width="72" height="26" rx="13"/><text x="122" y="113" class="at ok">italic &#10003;</text>
+                <rect class="ok"  x="164" y="96" width="76" height="26" rx="13"/><text x="202" y="113" class="at ok">colour &#10003;</text>
+                <rect class="no"  x="246" y="96" width="66" height="26" rx="13"/><text x="279" y="113" class="at no">family &#10007;</text>
+              </g>
+              <text x="160" y="144" class="lcap" text-anchor="middle">attributes recovered · family not</text>
+            </svg>
+            <p>Bold, italic, underline and colour are recovered reliably; <b>exact font families are not</b>. Existing methods cover mostly English/Chinese.</p>
           </div>
-          <div class="card" style="border-left:5px solid var(--red);">
+
+          <div class="card lim">
             <h3>Rendering cost</h3>
+            <!-- the refine loop is a real browser render per iteration; the two
+                 bars are the honest comparison against one forward pass -->
+            <svg class="limfig" viewBox="0 0 320 166" aria-label="The refine loop renders in a browser up to five times, costing latency">
+              <g class="loop">
+                <rect class="lbx" x="10"  y="16" width="80" height="34" rx="7"/><text x="50"  y="38" class="lt">render</text>
+                <rect class="lbx" x="120" y="16" width="80" height="34" rx="7"/><text x="160" y="38" class="lt">compare</text>
+                <rect class="lbx" x="230" y="16" width="80" height="34" rx="7"/><text x="270" y="38" class="lt">patch CSS</text>
+                <path class="lar" d="M92 33 H 116" marker-end="url(#limA)"/>
+                <path class="lar" d="M202 33 H 226" marker-end="url(#limA)"/>
+                <path class="lar back" d="M270 54 V 68 H 50 V 54" marker-end="url(#limA)"/>
+                <text x="160" y="82" class="lx" text-anchor="middle">up to &#215;5</text>
+              </g>
+              <text x="8" y="108" class="pl">single forward pass</text>
+              <rect class="bar fast" x="8" y="114" width="52" height="12" rx="6"/>
+              <text x="8" y="142" class="pl">REPLICA, with refine</text>
+              <rect class="bar slow" x="8" y="148" width="300" height="12" rx="6"/>
+              <defs><marker id="limA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                <path d="M0 0 L10 5 L0 10 z" fill="#c0392b"/></marker></defs>
+            </svg>
             <p>The refine loop renders in a browser repeatedly — <b>real latency</b> versus a single forward pass.</p>
           </div>
+
         </div>
       </div>
     </section>
@@ -1342,7 +1471,7 @@
     <section class="slide demo bleed" data-eyebrow="07 · Applications" data-embed="down" data-nav="1" data-frags="6"
       data-notes="Because Fid-HTML is web-native and carries both semantics and geometry, it is reusable well beyond reconstruction — this is Figure 2 from the paper, live; hover any application to zoom into it. Layout-preserving document translation: translate a form and it still looks like that form. Document preservation and archiving. Indexing and searchability. Grounded document intelligence — the nested DOM maps directly onto phrase inside line inside block containment, so you get pixel-level grounding for free. Semantic chunking for RAG, where chunks follow logical structure rather than character counts. And position-aware retrieval — query by where something sits on the page.">
       <div class="kicker">Beyond reconstruction</div>
-      <h2>What FID-HTML <em>unlocks</em> <span class="srcnote">— paper Fig. 2, live · hover to zoom</span></h2>
+      <h2>What FID-HTML <em>unlocks</em> <span class="srcnote">— paper Fig. 2 · hover to zoom</span></h2>
       <div class="slide-body">
         <div class="embed"><iframe src="index.html?embed=downstream" title="Downstream applications (paper Fig. 2)"></iframe></div>
       </div>
@@ -1350,9 +1479,9 @@
 
     <!-- ═══════════ 26b · WHERE REPLICA SITS ═══════════ -->
     <section class="slide vcenter" data-eyebrow="08 · The bigger picture" data-frags="2"
-      data-notes="One last frame, because REPLICA does not stand alone. It sits at the head of a line of work on grounded document understanding. [CLICK] REPLICA rebuilds any page as Fid-HTML — text, structure, position and style, all explicit. That makes it a supervision engine: every reconstructed page is labelled by construction, at whatever scale you can run it. M3Grounder, at CVPR, uses masks as evidence for grounded answers. DoCoG, an oral at ECCV, does grounded reasoning — every claim tied back to a region. And DocLayout-VL treats the page as a tree. All three need exactly what Fid-HTML already carries. [CLICK] And it runs the other way too: better segmentation, better reading order and better grounding come straight back into REPLICA's own stages. Neither half stands alone — the representation makes the supervision, the supervision makes the models, and the models make the representation better.">
-      <div class="kicker">Where REPLICA sits</div>
-      <h2>One representation, <em>many grounded models</em></h2>
+      data-notes="That was what the representation lets you do. This is what it has already done. Three papers are built on Fid-HTML supervision and all three are through review. [CLICK] REPLICA rebuilds any page as Fid-HTML — text, structure, position and style, all explicit — so every reconstructed page is labelled by construction, at whatever scale you can run it. M3Grounder, at CVPR, uses masks as evidence for grounded answers. DoCoG, an oral at ECCV, does grounded reasoning — every claim tied back to a region. And DocLayout-VL treats the page as a tree. None of them had to annotate a thing. [CLICK] And it runs the other way too: better segmentation, better reading order and better grounding come straight back into REPLICA's own stages. Neither half stands alone — the representation makes the supervision, the supervision makes the models, and the models make the representation better.">
+      <div class="kicker">Not a proposal — already built</div>
+      <h2>Three papers <em>already running on FID-HTML</em></h2>
       <div class="slide-body">
         <div class="relwrap">
           <svg class="relsvg" viewBox="0 0 1560 560" aria-label="REPLICA generates supervision for M3Grounder, DoCoG and DocLayout-VL, which in turn sharpen REPLICA">
@@ -1373,35 +1502,38 @@
 
             <g class="relgroup frag" data-frag="1">
               <rect x="1010" y="70" width="510" height="420" rx="22" class="grp"/>
-              <text x="1265" y="112" text-anchor="middle" class="grpt">GROUNDED DOCUMENT UNDERSTANDING</text>
+              <text x="1265" y="110" text-anchor="middle" class="grpt">GROUNDED DOCUMENT UNDERSTANDING</text>
+              <!-- taller cards with the venue year moved to its own line, so the
+                   logo chip owns the full card height. The ECCV mark is a 2.3:1
+                   skyline and was height-starved in the old 48px-tall chip. -->
               <g class="relcard m3">
-                <rect x="1050" y="140" width="430" height="94" rx="14"/>
-                <text x="1078" y="180" class="ct">M3Grounder</text>
-                <text x="1078" y="208" class="cs">masks as evidence</text>
+                <rect x="1050" y="134" width="430" height="108" rx="14"/>
+                <text x="1074" y="176" class="ct">M3Grounder</text>
+                <text x="1074" y="204" class="cs">masks as evidence</text>
+                <text x="1074" y="228" class="vy">CVPR 2026</text>
                 <g class="venue">
-                  <rect class="chip-dark" x="1300" y="154" width="156" height="48" rx="8"/>
-                  <image href="static/images/logos/cvpr_logo.svg" x="1309" y="160" width="138" height="36" preserveAspectRatio="xMidYMid meet"/>
-                  <text x="1378" y="224" text-anchor="middle" class="vy">CVPR 2026</text>
+                  <rect class="chip-dark" x="1268" y="148" width="200" height="80" rx="10"/>
+                  <image href="static/images/logos/cvpr_logo.svg" x="1276" y="156" width="184" height="64" preserveAspectRatio="xMidYMid meet"/>
                 </g>
               </g>
               <g class="relcard dc">
-                <rect x="1050" y="256" width="430" height="94" rx="14"/>
-                <text x="1078" y="296" class="ct">DoCoG</text>
-                <text x="1078" y="324" class="cs">grounded reasoning</text>
+                <rect x="1050" y="256" width="430" height="108" rx="14"/>
+                <text x="1074" y="298" class="ct">DoCoG</text>
+                <text x="1074" y="326" class="cs">grounded reasoning</text>
+                <text x="1074" y="350" class="vy">ECCV 2026 &#183; ORAL</text>
                 <g class="venue">
-                  <rect class="chip-light" x="1300" y="270" width="156" height="48" rx="8"/>
-                  <image href="static/images/logos/eccv_logo.svg" x="1309" y="276" width="138" height="36" preserveAspectRatio="xMidYMid meet"/>
-                  <text x="1378" y="340" text-anchor="middle" class="vy">ECCV 2026 · Oral</text>
+                  <rect class="chip-light" x="1268" y="270" width="200" height="80" rx="10"/>
+                  <image href="static/images/logos/eccv_logo.svg" x="1276" y="278" width="184" height="64" preserveAspectRatio="xMidYMid meet"/>
                 </g>
               </g>
               <g class="relcard dl">
-                <rect x="1050" y="372" width="430" height="94" rx="14"/>
-                <text x="1078" y="412" class="ct">DocLayout-VL</text>
-                <text x="1078" y="440" class="cs">the page as a tree</text>
+                <rect x="1050" y="378" width="430" height="108" rx="14"/>
+                <text x="1074" y="420" class="ct">DocLayout-VL</text>
+                <text x="1074" y="448" class="cs">the page as a tree</text>
+                <text x="1074" y="472" class="vy">ECCV 2026</text>
                 <g class="venue">
-                  <rect class="chip-light" x="1300" y="386" width="156" height="48" rx="8"/>
-                  <image href="static/images/logos/eccv_logo.svg" x="1309" y="392" width="138" height="36" preserveAspectRatio="xMidYMid meet"/>
-                  <text x="1378" y="456" text-anchor="middle" class="vy">ECCV 2026</text>
+                  <rect class="chip-light" x="1268" y="392" width="200" height="80" rx="10"/>
+                  <image href="static/images/logos/eccv_logo.svg" x="1276" y="400" width="184" height="64" preserveAspectRatio="xMidYMid meet"/>
                 </g>
               </g>
             </g>
@@ -1635,7 +1767,7 @@
     document.getElementById("ladderWhat").innerHTML = LADDER_TEXT[Math.min(frag, LADDER_TEXT.length-1)];
   }
 
-  /* ---------- staged pipeline reveal ----------
+  /* ---------- staged framework reveal ----------
      One stage opens at a time; finished stages collapse to a coloured spine so
      there is room for the next one. */
   function renderStages(){
@@ -1658,6 +1790,12 @@
       const c = document.createElement("div");
       c.className = "counter"; c.textContent = cur + " / " + (slides.length-1); s.appendChild(c);
     }
+    // letterbox takes the slide's own colour, so a non-16:9 screen shows no band
+    document.getElementById("deck").classList.toggle("dark",
+      s.classList.contains("section-slide") || s.classList.contains("thanks"));
+    // the live badge only earns its place on slides that really are running code
+    document.getElementById("livebadge").style.display =
+      s.querySelector(".embed") || s.id === "ladderSlide" || s.id === "qualSlide" ? "flex" : "none";
     applyFrags();
     fitEmbeds(s);
     // the sample carousel only runs while its slide is on screen
@@ -1866,6 +2004,17 @@
   // cells the spoken takeaway names — outlined so the claim and the table agree
   const RES_MARKS = { TE:[["Marker",1]], LS:[["rolmOCR",3],["GPT-5",3]],
     PS:[["Qwen3-VL",4],["GPT-5",5]], VF:[["GPT-5",6],["Gemini-2.5-Pro",6]] };
+  // Which columns REPLICA actually leads — computed, not asserted, so the
+  // green never disagrees with the numbers if a score is ever edited.
+  const RES_BEST = (()=>{
+    const rows = RES_GROUPS.flatMap(g=>g.rows), ours = rows.find(r=>r.ours), out = {};
+    if(!ours) return out;
+    for(let ci=1; ci<=7; ci++){
+      const better = (a,b)=> ci===3 ? a<b : a>b;   // NTED is the lower-is-better column
+      out[ci] = rows.every(r => r===ours || better(ours.v[ci-1], r.v[ci-1]) || ours.v[ci-1]===r.v[ci-1]);
+    }
+    return out;
+  })();
 
   (function buildResults(){
     const tb = document.getElementById("resTable"); if(!tb) return;
@@ -1915,7 +2064,7 @@
   function renderResults(){
     const tb = document.getElementById("resTable"); if(!tb) return;
     const n = frag;
-    tb.querySelectorAll("td,th").forEach(c=>c.classList.remove("lit","q","mark","good","g0","g1","g2","g3"));
+    tb.querySelectorAll("td,th").forEach(c=>c.classList.remove("lit","q","mark","good","best","g0","g1","g2","g3"));
     tb.classList.toggle("focus", n > 0);
     const legend = document.getElementById("resLegend");
     if(n <= 0){ tb.classList.remove("graded"); if(legend) legend.classList.remove("on"); return; }
@@ -1927,6 +2076,12 @@
     });
     tb.querySelectorAll("th.gh[data-ax]").forEach(h=>{
       h.classList.add(h.dataset.ax === step.ax || step.ax === "OS" ? "lit" : "q");
+    });
+    // our cells go green in whichever columns this beat is lighting
+    const ourRow = tb.querySelector("tbody tr.ours");
+    if(ourRow) ourRow.querySelectorAll("td[data-c]").forEach(c=>{
+      const ci = +c.dataset.c;
+      if(ci !== 0 && live.has(ci) && RES_BEST[ci]) c.classList.add("best");
     });
     (RES_MARKS[step.ax] || []).forEach(([m,ci])=>{
       resExpandFor(m);
@@ -1954,7 +2109,7 @@
 
   /* ═══════════ ABLATION CHART (paper Table 3) ═══════════
      The table is replaced by the shape it implies: three of the four axes
-     plotted across the pipeline's own stages, so the audience reads *which
+     plotted across the framework's own stages, so the audience reads *which
      stage* bought *which axis* rather than scanning 27 numbers. */
   const ABL = [
     { k:"Flat layout",        st:0, os:0.53, vf:0.74, ps:0.34 },
@@ -1994,7 +2149,7 @@
       lab.textContent = "STAGE " + bd.n + " · " + bd.name.toUpperCase();
     });
 
-    // Stage 3 is in the pipeline but has no ablation row — it is not optional,
+    // Stage 3 is in the framework but has no ablation row — it is not optional,
     // so it gets a marked gap rather than being silently skipped.
     (function assembleMarker(){
       const xm = (x(5)+x(6))/2;
@@ -2192,7 +2347,9 @@
     }
     function restart(){
       clearInterval(timer); timer = null;
-      if(running()) timer = setInterval(()=>step(1), 2600);
+      // ~320ms x 30 pages walks the whole set in about ten seconds, which is
+      // all this slide is meant to cost. Shift-arrows still step it by hand.
+      if(running()) timer = setInterval(()=>step(1), 320);
       paint();
     }
     function step(d){
