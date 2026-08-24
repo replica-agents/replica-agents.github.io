@@ -90,10 +90,19 @@
     </div>
 
     <div class="decomp">
+      <!-- Region rectangles are measured off the page itself, not eyeballed:
+           see poster/tools/measure_regions.py. They are percentages of the
+           IMAGE, so .boxes is sized to the page's own 0.6841 ratio — otherwise
+           the box and the image disagree and every rectangle drifts. -->
       <div class="boxes" aria-label="Cadillac page with detected layout regions">
         <img src="../static/images/qual/00000127.png" alt="">
-        <i class="region title-region"></i><i class="region hero-region"></i>
-        <i class="region copy-region"></i><i class="region caption-region"></i>
+        <i class="region r-title"></i>
+        <i class="region r-deck"></i>
+        <i class="region r-logo"></i>
+        <i class="region r-photo1"></i>
+        <i class="region r-copy"></i>
+        <i class="region r-side"></i>
+        <i class="region r-photo2"></i>
       </div>
       <div class="frag f1">&lt;div class="header"&gt;</div>
       <div class="frag f2">&lt;p class="para"&gt;</div>
@@ -107,8 +116,8 @@
       <img src="assets/figures/qual-magazine-render.png" alt="REPLICA Fid-HTML render of the same Cadillac magazine page">
     </div>
 
-    <div class="seamlabel l"><svg aria-hidden="true"><use href="#ic-pdf"/></svg></div>
-    <div class="seamlabel r"><svg aria-hidden="true"><use href="#ic-html"/></svg></div>
+    <div class="seamlabel l"><svg aria-hidden="true"><use href="#ic-pdf"/></svg><span>source PDF</span></div>
+    <div class="seamlabel r"><svg aria-hidden="true"><use href="#ic-html"/></svg><span>Fid-HTML in a browser</span></div>
   </div>
 
   <div class="stats">
@@ -125,8 +134,8 @@
       <p class="cap">GPS &mdash; global position,<br>LPS 0.73 local</p>
     </div>
     <div class="stat">
-      <p class="num">+39<span class="unit">pts</span></p>
-      <p class="cap">Qwen3-VL-8B + REPLICA: 0.86<br>vs direct Qwen3-VL-30B: 0.47</p>
+      <p class="num">3.75<span class="unit">&#215; smaller</span></p>
+      <p class="cap">8B backbone, <b>0.86</b> overall &mdash;<br>vs 0.47 for Qwen3-VL-30B</p>
     </div>
     <div class="statmore">
       <p class="stat-kicker">WHY FID-HTML?</p>
@@ -233,7 +242,7 @@
     <p class="cap" style="margin-top:2mm">TE = WRR / CRR &middot; PS = LPS / GPS &middot; NTED lower is better</p>
 
     <div class="ablrow">
-      <p class="abl-kicker">ABLATION &mdash; WHERE THE 0.93 COMES FROM</p>
+      <p class="abl-kicker">ABLATION<span>where 0.93<br>comes from</span></p>
       <div class="chain">
         <span class="v0">0.53</span>
         <span class="hop seg"><b>+0.18</b><i>Segment</i></span>
@@ -268,17 +277,13 @@
       <div><b>03 &middot; Data skew</b><span>High-resource scripts dominate</span></div>
       <div><b>04 &middot; Render cost</b><span>Refinement adds latency</span></div>
     </div>
+    <div class="orglogos">
+      <img src="assets/logos/bharatgen.png" alt="BharatGen">
+      <img src="assets/logos/iiith.jpeg" alt="IIIT Hyderabad">
+      <img src="assets/logos/cvit.png" alt="CVIT">
+    </div>
   </div>
 </section>
-
-<!-- ============================ FOOTER =============================== -->
-<footer class="band footer">
-  <span class="logos">
-    <img src="assets/logos/bharatgen.png" alt="BharatGen">
-    <img src="assets/logos/iiith.jpeg" alt="IIIT Hyderabad">
-    <img src="assets/logos/cvit.png" alt="CVIT">
-  </span>
-</footer>
 
 </div>
 </body>

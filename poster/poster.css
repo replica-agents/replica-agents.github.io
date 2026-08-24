@@ -26,7 +26,7 @@
   --dim:  rgba(20, 26, 33, .58);
 
   /* grid */
-  --margin: 28mm;
+  --margin: 22mm;
   --col: 54.42mm;
   --gut: 12mm;
 
@@ -60,12 +60,12 @@ body::before {
   width: 841mm; height: 1189mm;
   padding: var(--margin);
   display: grid;
-  /* 1037 mm of bands + 6 × 16 mm gaps = 1133 mm = the live height exactly.
-     Second pass: Bands C and F were clipping their figures (117 mm and 221 mm
-     of overflow), so height moved out of the hero and the footer into them.
-     A grew for the larger codes; D gave back what the pipeline figure did not
-     need once it was set 22 mm narrower. */
-  grid-template-rows: 136mm 194mm 200mm 180mm 154mm 158mm 15mm;
+  /* Third pass. The footer band is gone — the institution logos now sit under
+     Limitations, which had ~90 mm of dead column — and the page margin came in
+     to 22 mm. Both give their height to the hero, which can finally run the
+     page at 148 mm wide AND show all of it.
+     1065 mm of bands + 5 × 16 mm gaps = 1145 mm = the live height exactly. */
+  grid-template-rows: 135mm 237mm 199mm 187mm 149mm 158mm;
   row-gap: 16mm;
 }
 
@@ -181,18 +181,18 @@ b, strong { font-weight: 600; }
 }
 
 /* ===== BAND B — the seam ================================================== */
-.bandB { display: grid; grid-template-columns: 386mm 1fr; column-gap: 18mm; }
+.bandB { display: grid; grid-template-columns: 446mm 1fr; column-gap: 18mm; }
 .seamwrap { position: relative; height: 100%; }
 /* The two substrates, made visible behind the whole hero: warm paper to the
    left of the seam, cool screen to the right. This is what makes the idea
    readable from ten metres, and it is what teaches the code the rest of the
    poster then relies on. */
 .seamwrap::before {
-  content: ''; position: absolute; left: -6mm; top: -5mm; width: 240mm; bottom: 4mm;
+  content: ''; position: absolute; left: -6mm; top: 20mm; width: 292mm; bottom: 0;
   background: var(--paper); z-index: 0;
 }
 
-.plate { position: absolute; top: 0; height: 169mm; width: 118mm; overflow: hidden; }
+.plate { position: absolute; top: 24mm; height: 213mm; width: 148mm; overflow: hidden; }
 .plate img { width: 100%; display: block; }
 .plate.src   { left: 0;     background: #fff; padding: 4mm; box-sizing: border-box; z-index: 2; }
 .plate.dst   { right: 0;    background: #fff; z-index: 2; }
@@ -202,7 +202,7 @@ b, strong { font-weight: 600; }
 }
 /* minimal browser chrome on the output plate, matching Fig. 1 */
 .chrome {
-  position: absolute; left: 253mm; top: 0; width: 109mm; height: 9mm; z-index: 2;
+  position: absolute; left: 304mm; top: 24mm; width: 140mm; height: 9mm; z-index: 2;
   background: #E5E4DF; border: .5mm solid rgba(20,26,33,.28); border-bottom: 0;
   box-sizing: border-box; display: flex; align-items: center; gap: 2.6mm;
   padding: 0 4mm;
@@ -212,11 +212,11 @@ b, strong { font-weight: 600; }
   flex: 1; height: 5.6mm; border-radius: 1mm; background: #FCFCFA;
   border: .35mm solid rgba(20,26,33,.20);
 }
-.plate.dst { top: 9mm; left: 253mm; right: auto; height: 160mm; width: 109mm;
+.plate.dst { top: 33mm; left: 304mm; right: auto; height: 204mm; width: 140mm;
              border: .5mm solid rgba(20,26,33,.28); box-sizing: border-box; }
 
 /* the seam itself */
-.seam { position: absolute; left: 233mm; top: -5mm; width: 1.4mm; height: 181mm;
+.seam { position: absolute; left: 286mm; top: 20mm; width: 1.4mm; height: 217mm;
         background: var(--mark); z-index: 6; }
 .seam::before, .seam::after {
   content: ''; position: absolute; top: 0; width: 11mm; height: 100%;
@@ -225,21 +225,33 @@ b, strong { font-weight: 600; }
 .seam::after  { left: 1.4mm;  background: linear-gradient(to right, rgba(97,36,188,.30), transparent); }
 
 /* the decomposition, three layers at different offsets */
-.decomp { position: absolute; left: 128mm; top: 2mm; width: 172mm; height: 163mm; z-index: 3; }
+.decomp { position: absolute; left: 160mm; top: 24mm; width: 200mm; height: 213mm; z-index: 3; }
+/* 120 mm / 0.6841 = 175.4 mm — the page's own ratio, so a percentage of the box
+   is a percentage of the page and the rectangles land where they belong */
 .decomp .boxes {
-  position: absolute; left: 0; top: 5mm; width: 96mm; height: 126mm; overflow: hidden;
+  position: absolute; left: 0; top: 19mm; width: 120mm; height: 175.4mm;
   box-shadow: 0 0 0 .5mm rgba(20,26,33,.24);
 }
-.decomp .boxes img { width: 100%; display: block; }
-.region { position: absolute; box-sizing: border-box; border: .7mm solid var(--mark); background: rgba(97,36,188,.12); }
-.title-region { top: 4%; left: 7%; width: 86%; height: 17%; }
-.hero-region { top: 22%; left: 7%; width: 86%; height: 32%; border-color: var(--asm-d); background: rgba(201,168,63,.16); }
-.copy-region { top: 55%; left: 7%; width: 49%; height: 42%; border-color: var(--seg-d); background: rgba(74,107,165,.13); }
-.caption-region { top: 55%; left: 58%; width: 35%; height: 42%; border-color: var(--loc-d); background: rgba(104,149,88,.14); }
+.decomp .boxes img { width: 100%; height: 100%; display: block; }
+.region { position: absolute; box-sizing: border-box; border: .7mm solid var(--mark); background: rgba(97,36,188,.10); }
+/* measured percentages of the page image */
+.r-title  { left: 3.5%; top: 4.5%;  width: 89.5%; height: 9.0%; }
+.r-deck   { left: 4.0%; top: 17.5%; width: 58.0%; height: 8.5%;
+            border-color: var(--loc-d); background: rgba(104,149,88,.13); }
+.r-logo   { left: 71.0%; top: 18.0%; width: 22.0%; height: 6.0%;
+            border-color: var(--ref-d); background: rgba(198,119,54,.14); }
+.r-photo1 { left: 3.0%; top: 28.5%; width: 90.5%; height: 24.0%;
+            border-color: var(--asm-d); background: rgba(201,168,63,.14); }
+.r-copy   { left: 3.0%; top: 54.5%; width: 46.0%; height: 39.5%;
+            border-color: var(--seg-d); background: rgba(74,107,165,.12); }
+.r-side   { left: 50.0%; top: 54.5%; width: 43.5%; height: 8.5%;
+            border-color: var(--loc-d); background: rgba(104,149,88,.13); }
+.r-photo2 { left: 50.0%; top: 65.0%; width: 43.5%; height: 29.0%;
+            border-color: var(--asm-d); background: rgba(201,168,63,.14); }
 /* fragment chips caught mid-flight across the seam: the left half of each is
    drawn warm, the right half cool, so the chip itself shows the crossing */
 .frag {
-  position: absolute; font-family: var(--mono); font-size: 24pt; z-index: 5;
+  position: absolute; font-family: var(--mono); font-size: 18pt; z-index: 5;
   border: .5mm solid rgba(20,26,33,.45); white-space: nowrap; line-height: 1.1;
   padding: 2mm 3.4mm;
   background: linear-gradient(to right,
@@ -247,29 +259,40 @@ b, strong { font-weight: 600; }
 }
 /* each chip must cross the seam (233 mm) and stop short of the render plate
    (253 mm), so it reads as in flight rather than dropped on the output */
-.frag.f1 { left: 12mm;  top: 22mm;  --split: 78%; }
-.frag.f2 { left: 30mm;  top: 80mm;  --split: 62%; }
-.frag.f3 { left: 38mm;  top: 136mm; --split: 55%; }
+/* Each chip has to cross the seam (286 mm), and a chip is always wider than the
+   34 mm corridor around it — so it must overlap something. It overlaps the
+   RENDER's left margin rather than the annotated page, because the region
+   rectangles are the thing worth seeing here.
+   --split is the fraction of the chip left of the seam, so the warm/cool
+   gradient breaks exactly on it. */
+.frag.f1 { left: 108mm; top: 16mm;  --split: 24%; }
+.frag.f2 { left: 102mm; top: 94mm;  --split: 39%; }
+.frag.f3 { left: 112mm; top: 166mm; --split: 28%; }
 
+/* above the plates, not below: the label is read before the artefact, and the
+   strip costs 20 mm that was previously dead space under the hero */
 .seamlabel {
-  position: absolute; top: 172mm; z-index: 5; color: var(--dim);
-  display: flex; align-items: center;
+  position: absolute; top: 0; z-index: 5; height: 20mm;
+  display: flex; align-items: center; gap: 4mm;
 }
-.seamlabel svg { width: 19mm; height: 19mm; display: block; }
+.seamlabel svg { width: 18mm; height: 18mm; display: block; flex: none; }
+.seamlabel span {
+  font-family: var(--mono); font-size: 23pt; font-weight: 600; line-height: 1;
+}
 .seamlabel.l { left: 0; color: var(--ink-p); }
-.seamlabel.r { left: 253mm; color: var(--mark); }
+.seamlabel.r { left: 304mm; color: var(--mark); }
 
 /* stat strip */
 /* Four stats, one size, one grid. The earlier 176 pt hero over three at 72 pt
    read as inconsistent rather than hierarchical. */
-.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm 10mm;
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm 14mm;
          align-content: start; }
 .stats .num {
   font-family: var(--mono); font-variant-numeric: tabular-nums;
   font-size: 92pt; font-weight: 500; line-height: .92; letter-spacing: -.02em;
   margin: 0;
 }
-.stat .unit { font-size: 34%; vertical-align: baseline; }  /* 24.5 pt: the 24 pt floor beats the 30% guideline */
+.stat .unit { font-size: 30%; vertical-align: baseline; letter-spacing: 0; }  /* 24.5 pt: the 24 pt floor beats the 30% guideline */
 .stat .cap { margin-top: 2mm; line-height: 1.18; }
 .statmore {
   grid-column: 1 / -1; background: rgba(97,36,188,.07); border-left: 2mm solid var(--mark);
@@ -284,7 +307,7 @@ b, strong { font-weight: 600; }
 .stat-keys span { font-family: var(--mono); font-size: 19pt; font-weight: 600; color: var(--dim); white-space: nowrap; }
 
 /* ===== BAND C ============================================================= */
-.bandC { display: grid; grid-template-columns: 288mm 485mm; column-gap: var(--gut); }
+.bandC { display: grid; grid-template-columns: 292mm 493mm; column-gap: var(--gut); }
 /* the pages are portrait in landscape slots, so the columns are sized to what
    a whole page needs at this height rather than to equal thirds */
 .strip { display: flex; gap: 12mm; align-items: flex-start; }
@@ -314,7 +337,7 @@ b, strong { font-weight: 600; }
 
 table.t { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
 table.t th, table.t td {
-  font-family: var(--mono); font-size: 25pt; padding: .35mm 1.6mm; text-align: right;
+  font-family: var(--mono); font-size: 25pt; padding: .2mm 1.6mm; text-align: right;
   border-bottom: .35mm solid var(--rule);
 }
 table.t th { font-weight: 600; color: var(--ink-s); font-size: 25pt; line-height: 1.05; }
@@ -349,13 +372,13 @@ table.t tr.ours td:first-child { color: var(--mark); }
 
 /* ===== BAND D — pipeline ================================================== */
 .bandD { display: grid; place-items: center; height: 100%; }
-.original-pipeline { width: 570mm; height: 180mm; margin: 0; position: relative; }
-.original-pipeline img { display: block; width: 570mm; height: 180mm; object-fit: contain; }
+.original-pipeline { width: 592mm; height: 187mm; margin: 0; position: relative; }
+.original-pipeline img { display: block; width: 592mm; height: 187mm; object-fit: contain; }
 .original-pipeline figcaption { position: absolute; right: 0; bottom: 0; margin: 0; padding: 1.2mm 2mm; background: rgba(247,246,242,.88);
   font-family: var(--mono); font-size: 18pt; line-height: 1; color: var(--dim); }
 
 /* ===== BAND E ============================================================= */
-.bandE { display: grid; grid-template-columns: 386.5mm 386.5mm; column-gap: var(--gut); }
+.bandE { display: grid; grid-template-columns: 392.5mm 392.5mm; column-gap: var(--gut); }
 .statchips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2mm 6mm; margin: 0 0 2.5mm; }
 .statchip .n {
   font-family: var(--mono); font-variant-numeric: tabular-nums;
@@ -376,28 +399,39 @@ dl.defs dd { margin: 0; font-size: 26pt; line-height: 1.16; }
 }
 /* the chain reads left to right and the three hops sum to the headline number:
    0.53 + 0.18 + 0.15 + 0.07 = 0.93, which is the whole ablation in one line */
-.ablrow { margin-top: 2mm; border-top: .5mm solid var(--rule); padding-top: 2mm; }
-.abl-kicker {
-  font-family: var(--mono); font-size: 19pt; font-weight: 600; letter-spacing: .07em;
-  color: var(--mark); margin: 0 0 1.5mm;
+.ablrow {
+  margin-top: 3mm; background: rgba(97,36,188,.07);
+  border-left: 2mm solid var(--mark); padding: 2.5mm 5mm;
+  display: flex; align-items: center; gap: 6mm;
 }
-.chain { display: flex; align-items: center; gap: 3mm; }
+.abl-kicker {
+  flex: none; font-family: var(--mono); font-size: 21pt; font-weight: 700;
+  letter-spacing: .06em; color: var(--mark); margin: 0; line-height: 1.05;
+}
+.abl-kicker span {
+  display: block; font-size: 15pt; font-weight: 400; letter-spacing: .02em;
+  color: var(--dim); margin-top: 1mm; text-transform: none;
+}
+.chain { flex: 1; display: flex; align-items: center; gap: 3mm; }
 .chain .v0, .chain .v {
   font-family: var(--mono); font-variant-numeric: tabular-nums;
-  font-size: 27pt; font-weight: 500; line-height: 1; color: var(--dim);
+  font-size: 30pt; font-weight: 600; line-height: 1; color: var(--ink-s);
 }
-.chain .vend { color: var(--mark); font-weight: 600; font-size: 33pt; }
+.chain .vend {
+  color: #fff; background: var(--mark); font-weight: 700; font-size: 29pt;
+  padding: 1.2mm 2.4mm; border-radius: 1.5mm;
+}
 .chain .hop {
   flex: 1; display: flex; flex-direction: column; align-items: center;
-  border-bottom: 1.4mm solid var(--hop); padding-bottom: 1mm;
+  border-bottom: 1.4mm solid var(--hop); padding-bottom: 1.2mm;
 }
 .chain .hop b {
-  font-family: var(--mono); font-size: 23pt; font-weight: 600; color: var(--hop);
-  line-height: 1;
+  font-family: var(--mono); font-size: 22pt; font-weight: 700; color: #fff;
+  background: var(--hop); padding: .8mm 2mm; border-radius: 1.2mm; line-height: 1.1;
 }
 .chain .hop i {
-  font-style: normal; font-size: 16pt; color: var(--dim); line-height: 1; margin-top: .5mm;
-  white-space: nowrap;
+  font-style: normal; font-size: 16pt; color: var(--ink-s); font-weight: 600;
+  line-height: 1; margin-top: 1mm; white-space: nowrap;
 }
 .chain .hop.seg { --hop: var(--seg-d); }
 .chain .hop.loc { --hop: var(--loc-d); }
@@ -436,7 +470,7 @@ dl.defs dd { margin: 0; font-size: 26pt; line-height: 1.16; }
 }
 
 /* ===== BAND F ============================================================= */
-.bandF { display: grid; grid-template-columns: 470mm 303mm; column-gap: var(--gut); }
+.bandF { display: grid; grid-template-columns: 476mm 309mm; column-gap: var(--gut); }
 /* 1.302fr : 2.320fr — the two figures' own aspect ratios, so a single shot
    height fits both whole with no crop and no letterbox gutters */
 .tiles { display: grid; grid-template-columns: 1.302fr 2.320fr; column-gap: 10mm; }
@@ -459,12 +493,11 @@ dl.defs dd { margin: 0; font-size: 26pt; line-height: 1.16; }
 .limit-list b { display: block; font-family: var(--mono); font-size: 26pt; line-height: 1.05; }
 .limit-list span { display: block; font-size: 23pt; color: var(--dim); line-height: 1.1; margin-top: 1mm; }
 
-/* ===== footer ============================================================= */
-.footer {
-  display: flex; align-items: center; justify-content: center; gap: 8mm;
-  border-top: .5mm solid var(--rule); padding-top: .5mm;
-  font-size: 28pt; line-height: 1.05; color: var(--dim);
+/* ===== institution logos, closing the Limitations column =================== */
+.orglogos {
+  display: flex; align-items: center; justify-content: flex-start; gap: 16mm;
+  margin-top: auto; padding-top: 7mm; border-top: .5mm solid var(--rule);
 }
-.footer .logos { display: flex; align-items: center; gap: 16mm; }
-.footer .logos img { height: 12mm; width: auto; display: block; }
-.footer .logos img:last-child { height: 10mm; background: #192E50; padding: 2mm 3mm; }
+.orglogos img { height: 17mm; width: auto; display: block; }
+.orglogos img:last-child { height: 13mm; background: #192E50; padding: 2.5mm 4mm; }
+.limits { display: flex; flex-direction: column; }
