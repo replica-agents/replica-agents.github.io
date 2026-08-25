@@ -86,7 +86,7 @@ body::before {
      to 22 mm. Both give their height to the hero, which can finally run the
      page at 148 mm wide AND show all of it.
      1065 mm of bands + 5 × 16 mm gaps = 1145 mm = the live height exactly. */
-  grid-template-rows: 129mm 234mm 211mm 187mm 149mm 175mm;
+  grid-template-rows: 129mm 234mm 224mm 180mm 143mm 175mm;
   row-gap: 12mm;
 }
 
@@ -110,7 +110,7 @@ body::before {
   background: rgba(97, 36, 188, .11);
   border-left: 3mm solid var(--mark);
   padding: 2.4mm 5mm;
-  margin: 0 0 3.5mm;
+  margin: 0 0 2.5mm;
   font-family: var(--sans);
   font-size: 34pt;
   font-weight: 600;
@@ -267,7 +267,7 @@ strong {
 /* ===== BAND A — title ===================================================== */
 .bandA {
   display: grid;
-  grid-template-columns: 1fr 156mm;
+  grid-template-columns: 1fr 140mm;
   column-gap: 16mm;
   align-items: start;
   padding-top: 5mm;
@@ -287,11 +287,14 @@ strong {
 
 /* the project mark, set to the title's own cap height */
 .title .mark {
-  height: 24mm;
+  height: 42mm;
   width: auto;
-  display: inline-block;
-  vertical-align: -4.4mm;
-  margin-right: 5mm;
+  display: block;
+  vertical-align: baseline;
+  margin-right: 0;
+  position: absolute;
+  left: 0;
+  top: 3mm;
 }
 
 .title {
@@ -332,7 +335,7 @@ strong {
 }
 
 .authors {
-  font-size: 27pt;
+  font-size: 29pt;
   line-height: 1.14;
   letter-spacing: -.028em;
   margin: 2mm 0 0;
@@ -341,11 +344,11 @@ strong {
 
 .authors sup,
 .affils sup {
-  font-size: 24pt;
+  font-size: 25pt;
 }
 
 .affils {
-  font-size: 26pt;
+  font-size: 28pt;
   color: var(--dim);
   margin: 1.5mm 0 0;
 }
@@ -388,7 +391,7 @@ strong {
   justify-content: center;
   gap: 3.5mm;
   font-family: var(--mono);
-  font-size: 26pt;
+  font-size: 24pt;
   font-weight: 600;
   color: var(--mark);
   line-height: 1;
@@ -733,14 +736,14 @@ strong {
 .stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8mm 14mm;
-  align-content: start;
+  gap: 16mm 14mm;
+  align-content: center;
 }
 
 .stats .num {
   font-family: var(--mono);
   font-variant-numeric: tabular-nums;
-  font-size: 92pt;
+  font-size: 112pt;
   font-weight: 500;
   line-height: .92;
   letter-spacing: -.02em;
@@ -755,8 +758,8 @@ strong {
 
 /* 24.5 pt: the 24 pt floor beats the 30% guideline */
 .stat .cap {
-  margin-top: 2mm;
-  line-height: 1.18;
+  margin-top: 3mm;
+  line-height: 1.24;
 }
 
 .statmore {
@@ -799,7 +802,7 @@ strong {
 /* ===== BAND C ============================================================= */
 .bandC {
   display: grid;
-  grid-template-columns: 468mm 317mm;
+  grid-template-columns: 436mm 349mm;
   column-gap: var(--gut);
 }
 
@@ -807,7 +810,7 @@ strong {
    a whole page needs at this height rather than to equal thirds */
 .strip {
   display: flex;
-  gap: 12mm;
+  gap: 10mm;
   align-items: flex-start;
   justify-content: center;
 }
@@ -817,7 +820,7 @@ strong {
 }
 
 .strip .shot {
-  height: 156mm;
+  height: 216mm;
   width: auto;
   display: inline-block;
   background: #fff;
@@ -830,7 +833,7 @@ strong {
 }
 
 .strip .shot img {
-  height: 156mm;
+  height: 216mm;
   width: auto;
   max-width: none;
   display: block;
@@ -1087,16 +1090,16 @@ table.t tr.ours td:first-child {
 }
 
 .original-pipeline {
-  width: 592mm;
-  height: 187mm;
+  width: 570mm;
+  height: 180mm;
   margin: 0;
   position: relative;
 }
 
 .original-pipeline img {
   display: block;
-  width: 592mm;
-  height: 187mm;
+  width: 570mm;
+  height: 180mm;
   object-fit: contain;
 }
 
@@ -1415,7 +1418,8 @@ dl.defs dd {
   margin-top: 2.4mm;
   font-weight: 600;
   white-space: nowrap;
-}
+      text-align: center;
+    }
 
 .limit-list {
   display: grid;
@@ -1461,25 +1465,27 @@ dl.defs dd {
 
 /* ===== institution logos, closing the Limitations column =================== */
 .orglogos {
+  margin-bottom: auto;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 20mm;
+  justify-content: center;
+  gap: 14mm 22mm;
   margin-top: auto;
   padding-top: 0;
   border-top: 0;
+  flex-wrap: wrap;
 }
 
 .orglogos img {
-  height: 24mm;
+  height: 44mm;
   width: auto;
   display: block;
 }
 
 .orglogos img:last-child {
-  height: 19mm;
-  background: #192E50;
-  padding: 2.5mm 4mm;
+  height: 44mm;
+  background: none;
+  padding: 0;
 }
 
 .limits {
@@ -1508,3 +1514,23 @@ dl.defs dd {
 
 /* the two hero pages are one rectangle, stated once */
 .plate.src img, .plate.dst img { width: 138mm; height: 201.7mm; object-fit: fill; }
+
+/* ===== results header: direction and metric, in the header itself ========= */
+/* The legend that used to sit under the table said what each column holds and
+   which way is better; both belong on the column, where they are read. */
+.results-table .axis-head th i {
+  font-style: normal; font-weight: 700; margin-left: .6mm;
+}
+.results-table .axis-head th span {
+  display: block; margin-top: 1mm;
+  font-family: var(--mono); font-size: 19pt; font-weight: 400;
+  letter-spacing: -.01em; opacity: .8;
+}
+
+/* ===== band C right panel, lifted into band B's dead column ============== */
+.bandC > div:nth-child(2) { margin-top: -46mm; }
+
+/* ===== title block: the project mark hangs in its own gutter ============= */
+/* Absolute, so line 2 of the title, the thesis and the author list all start
+   on the same edge as REPLICA rather than under the mark. */
+.bandA > div:first-child { position: relative; padding-left: 48mm; }
