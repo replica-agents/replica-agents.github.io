@@ -11,19 +11,25 @@
    matter; stage colours and the violet sampled off the paper's Fig. 4 and
    Fig. 2. See POSTER_PLAN.md §2.1 for the derivation and contrast ratios. */
 :root {
-  --paper:  #EFE8E4;   /* warm rag — input / source document / the PDF world */
-  --screen: #F7F6F2;   /* low-ink warm neutral — clean on uncoated poster stock */
-  --ink-p:  #1E1815;
-  --ink-s:  #141A21;
+  --paper: #EFE8E4;
+  /* warm rag — input / source document / the PDF world */
+  --screen: #F7F6F2;
+  /* low-ink warm neutral — clean on uncoated poster stock */
+  --ink-p: #1E1815;
+  --ink-s: #141A21;
 
-  --seg: #4A6BA5;  --seg-d: #4A6AA5;
-  --loc: #689558;  --loc-d: #527545;
-  --asm: #C9A83F;  --asm-d: #806B28;
-  --ref: #C67736;  --ref-d: #9C5E2A;
+  --seg: #4A6BA5;
+  --seg-d: #4A6AA5;
+  --loc: #689558;
+  --loc-d: #527545;
+  --asm: #C9A83F;
+  --asm-d: #806B28;
+  --ref: #C67736;
+  --ref-d: #9C5E2A;
 
   --mark: #6124BC;
   --rule: rgba(20, 26, 33, .22);
-  --dim:  rgba(20, 26, 33, .58);
+  --dim: rgba(20, 26, 33, .58);
 
   /* grid */
   --margin: 22mm;
@@ -31,33 +37,48 @@
   --gut: 12mm;
 
   --serif: 'Source Serif 4', Georgia, serif;
-  --sans:  'IBM Plex Sans', Helvetica, Arial, sans-serif;
-  --mono:  'IBM Plex Mono', Menlo, monospace;
+  --sans: 'IBM Plex Sans', Helvetica, Arial, sans-serif;
+  --mono: 'IBM Plex Mono', Menlo, monospace;
 }
 
-@page { size: 841mm 1189mm; margin: 0; }
+@page {
+  size: 841mm 1189mm;
+  margin: 0;
+}
 
-html, body {
-  width: 841mm; height: 1189mm; margin: 0; padding: 0;
-  overflow: hidden;
+html,
+body {
+  width: 841mm;
+  height: 1189mm;
+  margin: 0;
+  padding: 0;
+  /* overflow: hidden; */
+  overflow: auto;
   background: var(--screen);
   color: var(--ink-s);
   font-family: var(--sans);
-  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
   -webkit-font-smoothing: antialiased;
 }
 
 /* faint page-geometry grid: visible up close, gone at reading distance */
 body::before {
-  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
   background-image:
-    repeating-linear-gradient(to bottom, rgba(20,26,33,.018) 0 .2mm, transparent .2mm 8mm);
+    repeating-linear-gradient(to bottom, rgba(20, 26, 33, .018) 0 .2mm, transparent .2mm 8mm);
 }
 
 .poster {
-  position: relative; z-index: 1;
+  position: relative;
+  z-index: 1;
   box-sizing: border-box;
-  width: 841mm; height: 1189mm;
+  width: 841mm;
+  height: 1189mm;
   padding: var(--margin);
   display: grid;
   /* Third pass. The footer band is gone — the institution logos now sit under
@@ -65,13 +86,21 @@ body::before {
      to 22 mm. Both give their height to the hero, which can finally run the
      page at 148 mm wide AND show all of it.
      1065 mm of bands + 5 × 16 mm gaps = 1145 mm = the live height exactly. */
-  grid-template-rows: 135mm 237mm 199mm 187mm 149mm 158mm;
-  row-gap: 16mm;
+  grid-template-rows: 129mm 234mm 211mm 187mm 149mm 175mm;
+  row-gap: 12mm;
 }
 
-.band { position: relative; min-width: 0; min-height: 0; break-inside: avoid; }
+.band {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  break-inside: avoid;
+}
+
 .g12 {
-  display: grid; grid-template-columns: repeat(12, 1fr); column-gap: var(--gut);
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: var(--gut);
   min-width: 0;
 }
 
@@ -80,183 +109,562 @@ body::before {
   display: block;
   background: rgba(97, 36, 188, .11);
   border-left: 3mm solid var(--mark);
-  padding: 2.4mm 5mm; margin: 0 0 3.5mm;
-  font-family: var(--sans); font-size: 34pt; font-weight: 600;
-  letter-spacing: .04em; text-transform: uppercase; color: var(--ink-s);
+  padding: 2.4mm 5mm;
+  margin: 0 0 3.5mm;
+  font-family: var(--sans);
+  font-size: 34pt;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--ink-s);
   line-height: 1.02;
 }
 
 h2.head {
-  font-size: 54pt; font-weight: 600; line-height: 1.02; margin: 0 0 5mm;
+  font-size: 54pt;
+  font-weight: 600;
+  line-height: 1.02;
+  margin: 0 0 5mm;
   letter-spacing: -.012em;
 }
-h3.sub { font-size: 37pt; font-weight: 600; line-height: 1.08; margin: 0 0 3mm; }
-p, li { font-size: 30pt; line-height: 1.40; margin: 0 0 4mm; }
-.cap {
-  font-family: var(--mono); font-size: 25pt; line-height: 1.28;
-  color: var(--dim); margin: 0;
+
+h3.sub {
+  font-size: 37pt;
+  font-weight: 600;
+  line-height: 1.08;
+  margin: 0 0 3mm;
 }
-.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
-b, strong { font-weight: 600; }
+
+p,
+li {
+  font-size: 30pt;
+  line-height: 1.40;
+  margin: 0 0 4mm;
+}
+
+.cap {
+  font-family: var(--mono);
+  font-size: 25pt;
+  line-height: 1.28;
+  color: var(--dim);
+  margin: 0;
+}
+
+.mono {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+b,
+strong {
+  font-weight: 600;
+}
 
 /* SoM badge — filled violet circle, white numeral. Never an ① glyph:
    the circled-numeral codepoints are not in the self-hosted subsets. */
 .som {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 13mm; height: 13mm; border-radius: 50%;
-  background: var(--mark); color: #fff;
-  font-family: var(--sans); font-size: 27pt; font-weight: 600;
-  line-height: 1; flex: none; vertical-align: -2.5mm;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 13mm;
+  height: 13mm;
+  border-radius: 50%;
+  background: var(--mark);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 27pt;
+  font-weight: 600;
+  line-height: 1;
+  flex: none;
+  vertical-align: -2.5mm;
 }
-.som.sm { width: 11mm; height: 11mm; font-size: 24pt; vertical-align: -2mm; }
-.som.seg { background: var(--seg-d); }
-.som.loc { background: var(--loc-d); }
-.som.asm { background: var(--asm-d); }
-.som.ref { background: var(--ref-d); }
+
+.som.sm {
+  width: 11mm;
+  height: 11mm;
+  font-size: 24pt;
+  vertical-align: -2mm;
+}
+
+.som.seg {
+  background: var(--seg-d);
+}
+
+.som.loc {
+  background: var(--loc-d);
+}
+
+.som.asm {
+  background: var(--asm-d);
+}
+
+.som.ref {
+  background: var(--ref-d);
+}
 
 /* corner brackets, never a 4-sided border */
-.brk { position: relative; }
-.brk::before, .brk::after {
-  content: ''; position: absolute; width: 9mm; height: 9mm; pointer-events: none;
+.brk {
+  position: relative;
+}
+
+.brk::before,
+.brk::after {
+  content: '';
+  position: absolute;
+  width: 9mm;
+  height: 9mm;
+  pointer-events: none;
   border: .7mm solid var(--rule);
 }
-.brk::before { top: 0; left: 0; border-right: 0; border-bottom: 0; }
-.brk::after { bottom: 0; right: 0; border-left: 0; border-top: 0; }
-.brk > .brk-tr, .brk > .brk-bl {
-  position: absolute; width: 9mm; height: 9mm; border: .7mm solid var(--rule);
+
+.brk::before {
+  top: 0;
+  left: 0;
+  border-right: 0;
+  border-bottom: 0;
 }
-.brk > .brk-tr { top: 0; right: 0; border-left: 0; border-bottom: 0; }
-.brk > .brk-bl { bottom: 0; left: 0; border-right: 0; border-top: 0; }
+
+.brk::after {
+  bottom: 0;
+  right: 0;
+  border-left: 0;
+  border-top: 0;
+}
+
+.brk>.brk-tr,
+.brk>.brk-bl {
+  position: absolute;
+  width: 9mm;
+  height: 9mm;
+  border: .7mm solid var(--rule);
+}
+
+.brk>.brk-tr {
+  top: 0;
+  right: 0;
+  border-left: 0;
+  border-bottom: 0;
+}
+
+.brk>.brk-bl {
+  bottom: 0;
+  left: 0;
+  border-right: 0;
+  border-top: 0;
+}
 
 /* the two substrates */
-.on-paper  { background: var(--paper);  color: var(--ink-p); }
-.on-screen { background: var(--screen); color: var(--ink-s); }
+.on-paper {
+  background: var(--paper);
+  color: var(--ink-p);
+}
+
+.on-screen {
+  background: var(--screen);
+  color: var(--ink-s);
+}
 
 /* ===== BAND A — title ===================================================== */
-.bandA { display: grid; grid-template-columns: 1fr 156mm; column-gap: 16mm;
-         align-items: start; padding-top: 5mm; }
-.bandA .rail { display: flex; flex-direction: column; gap: 4mm; align-items: center; }
-.bandA .logo img { width: 88mm; display: block; }
+.bandA {
+  display: grid;
+  grid-template-columns: 1fr 156mm;
+  column-gap: 16mm;
+  align-items: start;
+  padding-top: 5mm;
+}
+
+.bandA .rail {
+  display: flex;
+  flex-direction: column;
+  gap: 4mm;
+  align-items: center;
+}
+
+.bandA .logo img {
+  width: 88mm;
+  display: block;
+}
+
 /* the project mark, set to the title's own cap height */
 .title .mark {
-  height: 24mm; width: auto; display: inline-block; vertical-align: -4.4mm;
+  height: 24mm;
+  width: auto;
+  display: inline-block;
+  vertical-align: -4.4mm;
   margin-right: 5mm;
 }
+
 .title {
-  font-family: var(--serif); font-weight: 600; font-size: 72pt;
-  line-height: 1.02; letter-spacing: -.015em; margin: 0;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 72pt;
+  line-height: 1.02;
+  letter-spacing: -.015em;
+  margin: 0;
 }
+
 /* full caps at the SAME size, distinguished by weight -- font-variant-caps:
    all-small-caps rendered REPLICA visibly smaller than the rest of the title */
-.title .sys { font-weight: 700; letter-spacing: .005em; color: #287653; }
-.title .visual { color: #B63831; }
+.title .sys {
+  font-weight: 700;
+  letter-spacing: .005em;
+  color: #287653;
+}
+
+.title .visual {
+  color: #B63831;
+}
+
 .thesis {
-  font-size: 46pt; font-weight: 600; color: var(--mark);
-  margin: 2.5mm 0 0; line-height: 1.05;
+  font-size: 46pt;
+  font-weight: 600;
+  color: var(--mark);
+  margin: 2.5mm 0 0;
+  line-height: 1.05;
 }
-.thesis small { display: block; margin-top: 1mm; font-size: 30pt; font-weight: 400; color: var(--dim); }
-.authors { font-size: 27pt; line-height: 1.14; letter-spacing: -.028em; margin: 2mm 0 0; white-space: nowrap; }
-.authors sup, .affils sup { font-size: 24pt; }
-.affils { font-size: 26pt; color: var(--dim); margin: 1.5mm 0 0; }
-.codes { display: grid; grid-template-columns: 68mm 68mm; gap: 14mm; justify-content: center; align-items: start; }
-.codes figure { margin: 0; text-align: center; }
-.codes svg, .codes img, .codes .qr-slot { display: block; width: 68mm !important; height: 68mm !important; }
+
+.thesis small {
+  display: block;
+  margin-top: 1mm;
+  font-size: 30pt;
+  font-weight: 400;
+  color: var(--dim);
+}
+
+.authors {
+  font-size: 27pt;
+  line-height: 1.14;
+  letter-spacing: -.028em;
+  margin: 2mm 0 0;
+  white-space: nowrap;
+}
+
+.authors sup,
+.affils sup {
+  font-size: 24pt;
+}
+
+.affils {
+  font-size: 26pt;
+  color: var(--dim);
+  margin: 1.5mm 0 0;
+}
+
+.codes {
+  display: grid;
+  grid-template-columns: 62mm 62mm;
+  gap: 14mm;
+  justify-content: center;
+  align-items: start;
+}
+
+.codes figure {
+  margin: 0;
+  text-align: center;
+}
+
+.codes svg,
+.codes img,
+.codes .qr-slot {
+  display: block;
+  width: 62mm !important;
+  height: 62mm !important;
+}
+
 .codes figcaption {
-  font-family: var(--mono); font-size: 24pt; color: var(--dim);
-  margin-top: 2mm; line-height: 1.1; white-space: nowrap;
+  font-family: var(--mono);
+  font-size: 24pt;
+  color: var(--dim);
+  margin-top: 2mm;
+  line-height: 1.1;
+  white-space: nowrap;
 }
+
 /* the URL is the one thing a passer-by copies down, so it is set at reading
    size with a globe in front of it — it no longer needs a footer repeat */
 .project-link {
-  display: flex; align-items: center; justify-content: center; gap: 3.5mm;
-  font-family: var(--mono); font-size: 26pt; font-weight: 600; color: var(--mark);
-  line-height: 1; letter-spacing: -.01em; margin: 0; white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3.5mm;
+  font-family: var(--mono);
+  font-size: 26pt;
+  font-weight: 600;
+  color: var(--mark);
+  line-height: 1;
+  letter-spacing: -.01em;
+  margin: 0;
+  white-space: nowrap;
 }
-.project-link .webicon { width: 9mm; height: 9mm; flex: none; color: var(--mark); }
+
+.project-link .webicon {
+  width: 9mm;
+  height: 9mm;
+  flex: none;
+  color: var(--mark);
+}
+
 .qr-slot {
-  border: .8mm dashed var(--rule); box-sizing: border-box;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--mono); font-size: 24pt; color: var(--dim);
-  text-align: center; padding: 4mm; line-height: 1.15;
+  border: .8mm dashed var(--rule);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 24pt;
+  color: var(--dim);
+  text-align: center;
+  padding: 4mm;
+  line-height: 1.15;
 }
 
 /* ===== BAND B — the seam ================================================== */
-.bandB { display: grid; grid-template-columns: 446mm 1fr; column-gap: 18mm; }
-.seamwrap { position: relative; height: 100%; }
+.bandB {
+  display: grid;
+  grid-template-columns: 446mm 1fr;
+  column-gap: 18mm;
+}
+
+.seamwrap {
+  position: relative;
+  height: 100%;
+}
+
 /* The two substrates, made visible behind the whole hero: warm paper to the
    left of the seam, cool screen to the right. This is what makes the idea
    readable from ten metres, and it is what teaches the code the rest of the
    poster then relies on. */
 .seamwrap::before {
-  content: ''; position: absolute; left: -6mm; top: 20mm; width: 292mm; bottom: 0;
-  background: var(--paper); z-index: 0;
+  content: '';
+  position: absolute;
+  left: -6mm;
+  top: 20mm;
+  width: 292mm;
+  bottom: 0;
+  background: var(--paper);
+  z-index: 0;
 }
 
-.plate { position: absolute; top: 24mm; height: 213mm; width: 148mm; overflow: hidden; }
-.plate img { width: 100%; display: block; }
-.plate.src   { left: 0;     background: #fff; padding: 4mm; box-sizing: border-box; z-index: 2; }
-.plate.dst   { right: 0;    background: #fff; z-index: 2; }
-.plate.src::after {
-  content: ''; position: absolute; inset: 0; pointer-events: none;
-  box-shadow: inset 0 0 0 .5mm rgba(30,24,21,.30);
+.plate {
+  position: absolute;
+  top: 24mm;
+  height: 209.7mm;
+  width: 146mm;
+  overflow: hidden;
 }
+
+.plate img {
+  width: 100%;
+  display: block;
+}
+
+.plate.src {
+  left: 0;
+  background: #fff;
+  padding: 4mm;
+  box-sizing: border-box;
+  z-index: 2;
+}
+
+.plate.dst {
+  right: 0;
+  background: #fff;
+  z-index: 2;
+}
+
+.plate.src::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 .5mm rgba(30, 24, 21, .30);
+}
+
 /* minimal browser chrome on the output plate, matching Fig. 1 */
 .chrome {
-  position: absolute; left: 304mm; top: 24mm; width: 140mm; height: 9mm; z-index: 2;
-  background: #E5E4DF; border: .5mm solid rgba(20,26,33,.28); border-bottom: 0;
-  box-sizing: border-box; display: flex; align-items: center; gap: 2.6mm;
+  position: absolute;
+  left: 304mm;
+  top: 18.5mm;
+  width: 139mm;
+  height: 9mm;
+  z-index: 2;
+  background: #E5E4DF;
+  border: .5mm solid rgba(20, 26, 33, .28);
+  border-bottom: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 2.6mm;
   padding: 0 4mm;
 }
-.chrome i { width: 3.2mm; height: 3.2mm; border-radius: 50%; background: #A9B6C4; }
-.chrome .addr {
-  flex: 1; height: 5.6mm; border-radius: 1mm; background: #FCFCFA;
-  border: .35mm solid rgba(20,26,33,.20);
+
+.chrome i {
+  width: 3.2mm;
+  height: 3.2mm;
+  border-radius: 50%;
+  background: #A9B6C4;
 }
-.plate.dst { top: 33mm; left: 304mm; right: auto; height: 204mm; width: 140mm;
-             border: .5mm solid rgba(20,26,33,.28); box-sizing: border-box; }
+
+.chrome .addr {
+  flex: 1;
+  height: 5.6mm;
+  border-radius: 1mm;
+  background: #FCFCFA;
+  border: .35mm solid rgba(20, 26, 33, .20);
+}
+
+.plate.dst {
+  top: 28mm;
+  left: 304mm;
+  right: auto;
+  height: 201.7mm;
+  width: 138mm;
+  border: 0;
+  box-sizing: border-box;
+  box-shadow: 0 0 0 .5mm rgba(20,26,33,.28);
+}
 
 /* the seam itself */
-.seam { position: absolute; left: 286mm; top: 20mm; width: 1.4mm; height: 217mm;
-        background: var(--mark); z-index: 6; }
-.seam::before, .seam::after {
-  content: ''; position: absolute; top: 0; width: 11mm; height: 100%;
+.seam {
+  position: absolute;
+  left: 286mm;
+  top: 20mm;
+  width: 1.4mm;
+  height: 214mm;
+  background: var(--mark);
+  z-index: 6;
 }
-.seam::before { right: 1.4mm; background: linear-gradient(to left,  rgba(97,36,188,.30), transparent); }
-.seam::after  { left: 1.4mm;  background: linear-gradient(to right, rgba(97,36,188,.30), transparent); }
+
+.seam::before,
+.seam::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 11mm;
+  height: 100%;
+}
+
+.seam::before {
+  right: 1.4mm;
+  background: linear-gradient(to left, rgba(97, 36, 188, .30), transparent);
+}
+
+.seam::after {
+  left: 1.4mm;
+  background: linear-gradient(to right, rgba(97, 36, 188, .30), transparent);
+}
 
 /* the decomposition, three layers at different offsets */
-.decomp { position: absolute; left: 160mm; top: 24mm; width: 200mm; height: 213mm; z-index: 3; }
+.decomp {
+  position: absolute;
+  left: 160mm;
+  top: 24mm;
+  width: 200mm;
+  height: 210mm;
+  z-index: 3;
+}
+
 /* 120 mm / 0.6841 = 175.4 mm — the page's own ratio, so a percentage of the box
    is a percentage of the page and the rectangles land where they belong */
 .decomp .boxes {
-  position: absolute; left: 0; top: 19mm; width: 120mm; height: 175.4mm;
-  box-shadow: 0 0 0 .5mm rgba(20,26,33,.24);
+  position: absolute;
+  left: 0;
+  top: 17mm;
+  width: 120mm;
+  height: 175.4mm;
+  box-shadow: 0 0 0 .5mm rgba(20, 26, 33, .24);
 }
-.decomp .boxes img { width: 100%; height: 100%; display: block; }
-.region { position: absolute; box-sizing: border-box; border: .7mm solid var(--mark); background: rgba(97,36,188,.10); }
+
+.decomp .boxes img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.region {
+  position: absolute;
+  box-sizing: border-box;
+  border: .7mm solid var(--mark);
+  background: rgba(97, 36, 188, .10);
+}
+
 /* measured percentages of the page image */
-.r-title  { left: 3.5%; top: 4.5%;  width: 89.5%; height: 9.0%; }
-.r-deck   { left: 4.0%; top: 17.5%; width: 58.0%; height: 8.5%;
-            border-color: var(--loc-d); background: rgba(104,149,88,.13); }
-.r-logo   { left: 71.0%; top: 18.0%; width: 22.0%; height: 6.0%;
-            border-color: var(--ref-d); background: rgba(198,119,54,.14); }
-.r-photo1 { left: 3.0%; top: 28.5%; width: 90.5%; height: 24.0%;
-            border-color: var(--asm-d); background: rgba(201,168,63,.14); }
-.r-copy   { left: 3.0%; top: 54.5%; width: 46.0%; height: 39.5%;
-            border-color: var(--seg-d); background: rgba(74,107,165,.12); }
-.r-side   { left: 50.0%; top: 54.5%; width: 43.5%; height: 8.5%;
-            border-color: var(--loc-d); background: rgba(104,149,88,.13); }
-.r-photo2 { left: 50.0%; top: 65.0%; width: 43.5%; height: 29.0%;
-            border-color: var(--asm-d); background: rgba(201,168,63,.14); }
+.r-title {
+  left: 3.5%;
+  top: 5.5%;
+  width: 89.5%;
+  height: 10.0%;
+}
+
+.r-deck {
+  left: 4.0%;
+  top: 18.0%;
+  width: 60.0%;
+  height: 7.5%;
+  border-color: var(--loc-d);
+  background: rgba(104, 149, 88, .13);
+}
+
+.r-logo {
+  left: 71.5%;
+  top: 19.0%;
+  width: 21.5%;
+  height: 5.5%;
+  border-color: var(--ref-d);
+  background: rgba(198, 119, 54, .14);
+}
+
+.r-photo1 {
+  left: 3.5%;
+  top: 28.5%;
+  width: 90.5%;
+  height: 24.0%;
+  border-color: var(--asm-d);
+  background: rgba(201, 168, 63, .14);
+}
+
+.r-copy {
+  left: 3.5%;
+  top: 54.5%;
+  width: 44.5%;
+  height: 39.5%;
+  border-color: var(--seg-d);
+  background: rgba(74, 107, 165, .12);
+}
+
+.r-side {
+  left: 49.5%;
+  top: 54.5%;
+  width: 44.5%;
+  height: 8.5%;
+  border-color: var(--loc-d);
+  background: rgba(104, 149, 88, .13);
+}
+
+.r-photo2 {
+  left: 49.5%;
+  top: 64.5%;
+  width: 44.5%;
+  height: 29.5%;
+  border-color: var(--asm-d);
+  background: rgba(201, 168, 63, .14);
+}
+
 /* fragment chips caught mid-flight across the seam: the left half of each is
    drawn warm, the right half cool, so the chip itself shows the crossing */
 .frag {
-  position: absolute; font-family: var(--mono); font-size: 18pt; z-index: 5;
-  border: .5mm solid rgba(20,26,33,.45); white-space: nowrap; line-height: 1.1;
+  position: absolute;
+  font-family: var(--mono);
+  font-size: 18pt;
+  z-index: 5;
+  border: .5mm solid rgba(20, 26, 33, .45);
+  white-space: nowrap;
+  line-height: 1.1;
   padding: 2mm 3.4mm;
   background: linear-gradient(to right,
-     var(--paper) 0 var(--split), #FFFFFF var(--split) 100%);
+      var(--paper) 0 var(--split), #FFFFFF var(--split) 100%);
 }
+
 /* each chip must cross the seam (233 mm) and stop short of the render plate
    (253 mm), so it reads as in flight rather than dropped on the output */
 /* Each chip has to cross the seam (286 mm), and a chip is always wider than the
@@ -265,239 +673,838 @@ b, strong { font-weight: 600; }
    rectangles are the thing worth seeing here.
    --split is the fraction of the chip left of the seam, so the warm/cool
    gradient breaks exactly on it. */
-.frag.f1 { left: 108mm; top: 16mm;  --split: 24%; }
-.frag.f2 { left: 102mm; top: 94mm;  --split: 39%; }
-.frag.f3 { left: 112mm; top: 166mm; --split: 28%; }
+.frag.f1 {
+  left: 108mm;
+  top: 14mm;
+  --split: 24%;
+}
+
+.frag.f2 {
+  left: 102mm;
+  top: 90mm;
+  --split: 39%;
+}
+
+.frag.f3 {
+  left: 112mm;
+  top: 162mm;
+  --split: 28%;
+}
 
 /* above the plates, not below: the label is read before the artefact, and the
    strip costs 20 mm that was previously dead space under the hero */
 .seamlabel {
-  position: absolute; top: 0; z-index: 5; height: 20mm;
-  display: flex; align-items: center; gap: 4mm;
+  position: absolute;
+  top: 0;
+  z-index: 5;
+  height: 16mm;
+  display: flex;
+  align-items: center;
+  gap: 4mm;
 }
-.seamlabel svg { width: 18mm; height: 18mm; display: block; flex: none; }
+
+.seamlabel svg {
+  width: 16mm;
+  height: 16mm;
+  display: block;
+  flex: none;
+}
+
 .seamlabel span {
-  font-family: var(--mono); font-size: 23pt; font-weight: 600; line-height: 1;
+  font-family: var(--mono);
+  font-size: 23pt;
+  font-weight: 600;
+  line-height: 1;
 }
-.seamlabel.l { left: 0; color: var(--ink-p); }
-.seamlabel.r { left: 304mm; color: var(--mark); }
+
+.seamlabel.l {
+  left: 0;
+  color: var(--ink-p);
+}
+
+.seamlabel.r {
+  left: 304mm;
+  color: var(--mark);
+}
 
 /* stat strip */
 /* Four stats, one size, one grid. The earlier 176 pt hero over three at 72 pt
    read as inconsistent rather than hierarchical. */
-.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm 14mm;
-         align-content: start; }
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8mm 14mm;
+  align-content: start;
+}
+
 .stats .num {
-  font-family: var(--mono); font-variant-numeric: tabular-nums;
-  font-size: 92pt; font-weight: 500; line-height: .92; letter-spacing: -.02em;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 92pt;
+  font-weight: 500;
+  line-height: .92;
+  letter-spacing: -.02em;
   margin: 0;
 }
-.stat .unit { font-size: 30%; vertical-align: baseline; letter-spacing: 0; }  /* 24.5 pt: the 24 pt floor beats the 30% guideline */
-.stat .cap { margin-top: 2mm; line-height: 1.18; }
+
+.stat .unit {
+  font-size: 30%;
+  vertical-align: baseline;
+  letter-spacing: 0;
+}
+
+/* 24.5 pt: the 24 pt floor beats the 30% guideline */
+.stat .cap {
+  margin-top: 2mm;
+  line-height: 1.18;
+}
+
 .statmore {
-  grid-column: 1 / -1; background: rgba(97,36,188,.07); border-left: 2mm solid var(--mark);
-  padding: 3.5mm 5mm 3mm; margin-top: -2mm;
+  grid-column: 1 / -1;
+  background: rgba(97, 36, 188, .07);
+  border-left: 2mm solid var(--mark);
+  padding: 3.5mm 5mm 3mm;
+  margin-top: -2mm;
 }
-.statmore p { font-size: 27pt; line-height: 1.12; margin: 0; }
+
+.statmore p {
+  font-size: 27pt;
+  line-height: 1.12;
+  margin: 0;
+}
+
 .statmore .stat-kicker {
-  font-family: var(--mono); font-size: 21pt; font-weight: 600; letter-spacing: .08em;
-  color: var(--mark); margin: 0 0 1.4mm;
+  font-family: var(--mono);
+  font-size: 21pt;
+  font-weight: 600;
+  letter-spacing: .08em;
+  color: var(--mark);
+  margin: 0 0 1.4mm;
 }
-.stat-keys { display: flex; gap: 4mm; margin-top: 2.5mm; }
-.stat-keys span { font-family: var(--mono); font-size: 19pt; font-weight: 600; color: var(--dim); white-space: nowrap; }
+
+.stat-keys {
+  display: flex;
+  gap: 4mm;
+  margin-top: 2.5mm;
+}
+
+.stat-keys span {
+  font-family: var(--mono);
+  font-size: 19pt;
+  font-weight: 600;
+  color: var(--dim);
+  white-space: nowrap;
+}
 
 /* ===== BAND C ============================================================= */
-.bandC { display: grid; grid-template-columns: 292mm 493mm; column-gap: var(--gut); }
+.bandC {
+  display: grid;
+  grid-template-columns: 468mm 317mm;
+  column-gap: var(--gut);
+}
+
 /* the pages are portrait in landscape slots, so the columns are sized to what
    a whole page needs at this height rather than to equal thirds */
-.strip { display: flex; gap: 12mm; align-items: flex-start; }
-.strip figure { margin: 0; }
-.strip .shot {
-  height: 144mm; width: auto; display: inline-block;
-  background: #fff; border: .5mm solid rgba(20,26,33,.26); box-sizing: content-box;
+.strip {
+  display: flex;
+  gap: 12mm;
+  align-items: flex-start;
+  justify-content: center;
 }
-.strip .shot.paper { background: var(--paper); }
-.strip .shot img { height: 144mm; width: auto; max-width: none; display: block; }
-.strip figcaption { margin-top: 3mm; line-height: 1.06; }
-.strip figcaption { white-space: nowrap; max-width: none; }
-.strip figcaption b { display: inline; font-size: 26pt; }
-.strip figcaption span { display: inline; margin: 0; font-size: 22pt; line-height: 1.06; color: var(--dim); }
-.strip .ours { color: var(--mark); }
 
-.axes { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm 5mm; margin: 0 0 5mm; }
-.axis { border-left: 2mm solid var(--axis); padding: 3mm 4mm; background: color-mix(in srgb, var(--axis) 10%, transparent); }
-.axis b { display: block; font-size: 29pt; line-height: 1.02; white-space: nowrap; }
-.axis b span { color: var(--axis); font-family: var(--mono); margin-right: 1.8mm; }
-.axis em { display: block; font-family: var(--serif); font-size: 27pt; line-height: 1.05; margin-top: 1.2mm; }
-.axis p { font-size: 24pt; line-height: 1.05; color: var(--dim); margin: 1.2mm 0 0; }
-.axis.te { --axis: var(--seg-d); }
-.axis.ls { --axis: var(--loc-d); }
-.axis.ps { --axis: var(--asm-d); }
-.axis.vf { --axis: var(--ref-d); }
+.strip figure {
+  margin: 0;
+}
 
-table.t { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
-table.t th, table.t td {
-  font-family: var(--mono); font-size: 25pt; padding: .2mm 1.6mm; text-align: right;
+.strip .shot {
+  height: 156mm;
+  width: auto;
+  display: inline-block;
+  background: #fff;
+  border: .5mm solid rgba(20, 26, 33, .26);
+  box-sizing: content-box;
+}
+
+.strip .shot.paper {
+  background: var(--paper);
+}
+
+.strip .shot img {
+  height: 156mm;
+  width: auto;
+  max-width: none;
+  display: block;
+}
+
+.strip figcaption {
+  margin-top: 3mm;
+  line-height: 1.06;
+}
+
+.strip figcaption {
+  white-space: nowrap;
+  max-width: none;
+}
+
+.strip figcaption b {
+  display: inline;
+  font-size: 26pt;
+}
+
+.strip figcaption span {
+  display: inline;
+  margin: 0;
+  font-size: 22pt;
+  line-height: 1.06;
+  color: var(--dim);
+}
+
+.strip .ours {
+  color: var(--mark);
+}
+
+.axes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3mm 5mm;
+  margin: 0 0 5mm;
+}
+
+.axis {
+  border-left: 2mm solid var(--axis);
+  padding: 3mm 4mm;
+  background: color-mix(in srgb, var(--axis) 10%, transparent);
+}
+
+.axis b {
+  display: block;
+  font-size: 29pt;
+  line-height: 1.02;
+  white-space: nowrap;
+}
+
+.axis b span {
+  color: var(--axis);
+  font-family: var(--mono);
+  margin-right: 1.8mm;
+}
+
+.axis em {
+  display: block;
+  font-family: var(--serif);
+  font-size: 27pt;
+  line-height: 1.05;
+  margin-top: 1.2mm;
+}
+
+.axis p {
+  font-size: 24pt;
+  line-height: 1.05;
+  color: var(--dim);
+  margin: 1.2mm 0 0;
+}
+
+.axis.te {
+  --axis: var(--seg-d);
+}
+
+.axis.ls {
+  --axis: var(--loc-d);
+}
+
+.axis.ps {
+  --axis: var(--asm-d);
+}
+
+.axis.vf {
+  --axis: var(--ref-d);
+}
+
+table.t {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+table.t th,
+table.t td {
+  font-family: var(--mono);
+  font-size: 25pt;
+  padding: .2mm 1.6mm;
+  text-align: right;
   border-bottom: .35mm solid var(--rule);
 }
-table.t th { font-weight: 600; color: var(--ink-s); font-size: 25pt; line-height: 1.05; }
-table.t td:first-child, table.t th:first-child { text-align: left; font-family: var(--sans); }
-table.t tr.ours td { background: rgba(97,36,188,.10); font-weight: 600; }
-table.t tr.ours td:first-child { color: var(--mark); }
-.format-table th, .format-table td { font-size: 26pt; padding: 1mm 1.2mm; }
-.format-table .format-groups th { font-size: 24pt; text-align: center; padding: 1.4mm .8mm; }
-.format-table .format-groups th:first-child { text-align: left; }
-.format-table .format-labels th { font-size: 22pt; text-align: center; padding: 1mm .6mm; }
-.format-table .format-groups th:nth-child(2), .format-table .format-labels th:nth-child(-n+2) { background: rgba(74,107,165,.14); color: #355783; }
-.format-table .format-groups th:nth-child(3), .format-table .format-labels th:nth-child(n+3):nth-child(-n+5) { background: rgba(104,149,88,.16); color: #496C3D; }
-.format-table .format-groups th:nth-child(4), .format-table .format-labels th:nth-child(6) { background: rgba(201,168,63,.20); color: #725F20; }
-.format-table .format-groups th:nth-child(5), .format-table .format-labels th:nth-child(7) { background: rgba(198,119,54,.16); color: #8A4D21; }
-.format-table td:nth-child(2) { border-left: .8mm solid var(--seg-d); }
-.format-table td:nth-child(4) { border-left: .8mm solid var(--loc-d); }
-.format-table td:nth-child(7) { border-left: .8mm solid var(--asm-d); }
-.format-table td:nth-child(8) { border-left: .8mm solid var(--ref-d); }
-.results-table .axis-head th { font-family: var(--sans); font-size: 27pt; text-align: center; padding: 2mm 1mm; }
-.results-table .axis-head th:first-child { text-align: left; }
-.results-table .axis-head th:nth-child(2) { background: rgba(74,107,165,.14); color: #355783; }
-.results-table .axis-head th:nth-child(3) { background: rgba(104,149,88,.16); color: #496C3D; }
-.results-table .axis-head th:nth-child(4) { background: rgba(201,168,63,.20); color: #725F20; }
-.results-table .axis-head th:nth-child(5) { background: rgba(198,119,54,.16); color: #8A4D21; }
-.results-table .axis-head th:nth-child(6) { background: rgba(97,36,188,.10); color: var(--mark); }
-.results-table td:nth-child(n+2) { text-align: center; }
-.results-table td:nth-child(2) { border-left: 1mm solid var(--seg-d); }
-.results-table td:nth-child(3) { border-left: 1mm solid var(--loc-d); }
-.results-table td:nth-child(4) { border-left: 1mm solid var(--asm-d); }
-.results-table td:nth-child(5) { border-left: 1mm solid var(--ref-d); }
-.results-table td:nth-child(6) { border-left: 1mm solid var(--mark); }
+
+table.t th {
+  font-weight: 600;
+  color: var(--ink-s);
+  font-size: 25pt;
+  line-height: 1.05;
+}
+
+table.t td:first-child,
+table.t th:first-child {
+  text-align: left;
+  font-family: var(--sans);
+}
+
+table.t tr.ours td {
+  background: rgba(97, 36, 188, .10);
+  font-weight: 600;
+}
+
+table.t tr.ours td:first-child {
+  color: var(--mark);
+}
+
+.format-table th,
+.format-table td {
+  font-size: 26pt;
+  padding: 1mm 1.2mm;
+}
+
+.format-table .format-groups th {
+  font-size: 24pt;
+  text-align: center;
+  padding: 1.4mm .8mm;
+}
+
+.format-table .format-groups th:first-child {
+  text-align: left;
+}
+
+.format-table .format-labels th {
+  font-size: 22pt;
+  text-align: center;
+  padding: 1mm .6mm;
+}
+
+.format-table .format-groups th:nth-child(2),
+.format-table .format-labels th:nth-child(-n+2) {
+  background: rgba(74, 107, 165, .14);
+  color: #355783;
+}
+
+.format-table .format-groups th:nth-child(3),
+.format-table .format-labels th:nth-child(n+3):nth-child(-n+5) {
+  background: rgba(104, 149, 88, .16);
+  color: #496C3D;
+}
+
+.format-table .format-groups th:nth-child(4),
+.format-table .format-labels th:nth-child(6) {
+  background: rgba(201, 168, 63, .20);
+  color: #725F20;
+}
+
+.format-table .format-groups th:nth-child(5),
+.format-table .format-labels th:nth-child(7) {
+  background: rgba(198, 119, 54, .16);
+  color: #8A4D21;
+}
+
+.format-table td:nth-child(2) {
+  border-left: .8mm solid var(--seg-d);
+}
+
+.format-table td:nth-child(4) {
+  border-left: .8mm solid var(--loc-d);
+}
+
+.format-table td:nth-child(7) {
+  border-left: .8mm solid var(--asm-d);
+}
+
+.format-table td:nth-child(8) {
+  border-left: .8mm solid var(--ref-d);
+}
+
+.results-table .axis-head th {
+  font-family: var(--sans);
+  font-size: 27pt;
+  text-align: center;
+  padding: 2mm 1mm;
+}
+
+.results-table .axis-head th:first-child {
+  text-align: left;
+}
+
+.results-table .axis-head th:nth-child(2) {
+  background: rgba(74, 107, 165, .14);
+  color: #355783;
+}
+
+.results-table .axis-head th:nth-child(3) {
+  background: rgba(104, 149, 88, .16);
+  color: #496C3D;
+}
+
+.results-table .axis-head th:nth-child(4) {
+  background: rgba(201, 168, 63, .20);
+  color: #725F20;
+}
+
+.results-table .axis-head th:nth-child(5) {
+  background: rgba(198, 119, 54, .16);
+  color: #8A4D21;
+}
+
+.results-table .axis-head th:nth-child(6) {
+  background: rgba(97, 36, 188, .10);
+  color: var(--mark);
+}
+
+.results-table td:nth-child(n+2) {
+  text-align: center;
+}
+
+.results-table td:nth-child(2) {
+  border-left: 1mm solid var(--seg-d);
+}
+
+.results-table td:nth-child(3) {
+  border-left: 1mm solid var(--loc-d);
+}
+
+.results-table td:nth-child(4) {
+  border-left: 1mm solid var(--asm-d);
+}
+
+.results-table td:nth-child(5) {
+  border-left: 1mm solid var(--ref-d);
+}
+
+.results-table td:nth-child(6) {
+  border-left: 1mm solid var(--mark);
+}
 
 /* ===== BAND D — pipeline ================================================== */
-.bandD { display: grid; place-items: center; height: 100%; }
-.original-pipeline { width: 592mm; height: 187mm; margin: 0; position: relative; }
-.original-pipeline img { display: block; width: 592mm; height: 187mm; object-fit: contain; }
-.original-pipeline figcaption { position: absolute; right: 0; bottom: 0; margin: 0; padding: 1.2mm 2mm; background: rgba(247,246,242,.88);
-  font-family: var(--mono); font-size: 18pt; line-height: 1; color: var(--dim); }
+.bandD {
+  display: grid;
+  place-items: center;
+  height: 100%;
+}
+
+.original-pipeline {
+  width: 592mm;
+  height: 187mm;
+  margin: 0;
+  position: relative;
+}
+
+.original-pipeline img {
+  display: block;
+  width: 592mm;
+  height: 187mm;
+  object-fit: contain;
+}
+
+.original-pipeline figcaption {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 1.2mm 2mm;
+  background: rgba(247, 246, 242, .88);
+  font-family: var(--mono);
+  font-size: 18pt;
+  line-height: 1;
+  color: var(--dim);
+}
 
 /* ===== BAND E ============================================================= */
-.bandE { display: grid; grid-template-columns: 392.5mm 392.5mm; column-gap: var(--gut); }
-.statchips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2mm 6mm; margin: 0 0 2.5mm; }
+.bandE {
+  display: grid;
+  grid-template-columns: 392.5mm 392.5mm;
+  column-gap: var(--gut);
+}
+
+.statchips {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2mm 6mm;
+  margin: 0 0 2.5mm;
+}
+
 .statchip .n {
-  font-family: var(--mono); font-variant-numeric: tabular-nums;
-  font-size: 42pt; font-weight: 500; line-height: 1; margin: 0;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 42pt;
+  font-weight: 500;
+  line-height: 1;
+  margin: 0;
 }
-.statchip .t { font-size: 25pt; color: var(--dim); margin: .8mm 0 0; line-height: 1.05; }
-dl.defs { margin: 0 0 2mm; }
-dl.defs div { display: flex; gap: 3mm; margin-bottom: .6mm; }
+
+.statchip .t {
+  font-size: 25pt;
+  color: var(--dim);
+  margin: .8mm 0 0;
+  line-height: 1.05;
+}
+
+dl.defs {
+  margin: 0 0 2mm;
+}
+
+dl.defs div {
+  display: flex;
+  gap: 3mm;
+  margin-bottom: .6mm;
+}
+
 dl.defs dt {
-  font-family: var(--mono); font-weight: 600; font-size: 28pt; width: 17mm; flex: none;
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 28pt;
+  width: 17mm;
+  flex: none;
 }
-dl.defs dd { margin: 0; font-size: 26pt; line-height: 1.16; }
-.newmetric { color: var(--mark); font-weight: 600; }
+
+dl.defs dd {
+  margin: 0;
+  font-size: 26pt;
+  line-height: 1.16;
+}
+
+.newmetric {
+  color: var(--mark);
+  font-weight: 600;
+}
+
 .formula {
-  font-family: var(--mono); font-size: 26pt; padding: 1mm 0;
-  border-top: .35mm solid var(--rule); border-bottom: .35mm solid var(--rule);
+  font-family: var(--mono);
+  font-size: 26pt;
+  padding: 1mm 0;
+  border-top: .35mm solid var(--rule);
+  border-bottom: .35mm solid var(--rule);
   margin: 0 0 3mm;
 }
+
 /* the chain reads left to right and the three hops sum to the headline number:
    0.53 + 0.18 + 0.15 + 0.07 = 0.93, which is the whole ablation in one line */
 .ablrow {
-  margin-top: 3mm; background: rgba(97,36,188,.07);
-  border-left: 2mm solid var(--mark); padding: 2.5mm 5mm;
-  display: flex; align-items: center; gap: 6mm;
+  margin-top: 3mm;
+  background: rgba(97, 36, 188, .07);
+  border-left: 2mm solid var(--mark);
+  padding: 2.5mm 5mm;
+  display: flex;
+  align-items: center;
+  gap: 6mm;
 }
-.abl-kicker {
-  flex: none; font-family: var(--mono); font-size: 21pt; font-weight: 700;
-  letter-spacing: .06em; color: var(--mark); margin: 0; line-height: 1.05;
-}
-.abl-kicker span {
-  display: block; font-size: 15pt; font-weight: 400; letter-spacing: .02em;
-  color: var(--dim); margin-top: 1mm; text-transform: none;
-}
-.chain { flex: 1; display: flex; align-items: center; gap: 3mm; }
-.chain .v0, .chain .v {
-  font-family: var(--mono); font-variant-numeric: tabular-nums;
-  font-size: 30pt; font-weight: 600; line-height: 1; color: var(--ink-s);
-}
-.chain .vend {
-  color: #fff; background: var(--mark); font-weight: 700; font-size: 29pt;
-  padding: 1.2mm 2.4mm; border-radius: 1.5mm;
-}
-.chain .hop {
-  flex: 1; display: flex; flex-direction: column; align-items: center;
-  border-bottom: 1.4mm solid var(--hop); padding-bottom: 1.2mm;
-}
-.chain .hop b {
-  font-family: var(--mono); font-size: 22pt; font-weight: 700; color: #fff;
-  background: var(--hop); padding: .8mm 2mm; border-radius: 1.2mm; line-height: 1.1;
-}
-.chain .hop i {
-  font-style: normal; font-size: 16pt; color: var(--ink-s); font-weight: 600;
-  line-height: 1; margin-top: 1mm; white-space: nowrap;
-}
-.chain .hop.seg { --hop: var(--seg-d); }
-.chain .hop.loc { --hop: var(--loc-d); }
-.chain .hop.ref { --hop: var(--ref-d); }
 
-.bar { position: relative; }
-.bar::before {
-  content: ''; position: absolute; left: 0; top: .8mm; bottom: .8mm;
-  width: calc(var(--w) * 1%); background: rgba(97,36,188,.14);
+.abl-kicker {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 21pt;
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: var(--mark);
+  margin: 0;
+  line-height: 1.05;
 }
-.bar span { position: relative; }
+
+.abl-kicker span {
+  display: block;
+  font-size: 15pt;
+  font-weight: 400;
+  letter-spacing: .02em;
+  color: var(--dim);
+  margin-top: 1mm;
+  text-transform: none;
+}
+
+.chain {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 3mm;
+}
+
+.chain .v0,
+.chain .v {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 30pt;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--ink-s);
+}
+
+.chain .vend {
+  color: #fff;
+  background: var(--mark);
+  font-weight: 700;
+  font-size: 29pt;
+  padding: 1.2mm 2.4mm;
+  border-radius: 1.5mm;
+}
+
+.chain .hop {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-bottom: 1.4mm solid var(--hop);
+  padding-bottom: 1.2mm;
+}
+
+.chain .hop b {
+  font-family: var(--mono);
+  font-size: 22pt;
+  font-weight: 700;
+  color: #fff;
+  background: var(--hop);
+  padding: .8mm 2mm;
+  border-radius: 1.2mm;
+  line-height: 1.1;
+}
+
+.chain .hop i {
+  font-style: normal;
+  font-size: 16pt;
+  color: var(--ink-s);
+  font-weight: 600;
+  line-height: 1;
+  margin-top: 1mm;
+  white-space: nowrap;
+}
+
+.chain .hop.seg {
+  --hop: var(--seg-d);
+}
+
+.chain .hop.loc {
+  --hop: var(--loc-d);
+}
+
+.chain .hop.ref {
+  --hop: var(--ref-d);
+}
+
+.bar {
+  position: relative;
+}
+
+.bar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: .8mm;
+  bottom: .8mm;
+  width: calc(var(--w) * 1%);
+  background: rgba(97, 36, 188, .14);
+}
+
+.bar span {
+  position: relative;
+}
 
 /* ablation staircase */
-.stair { display: flex; flex-direction: column; gap: 1.8mm; }
-.step { display: grid; grid-template-columns: 1fr 22mm; align-items: center; gap: 3mm; }
-.stair { gap: 1mm; }
-.step .track { height: 7.6mm; background: rgba(20,26,33,.07); position: relative; }
-.step .fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--asm); }
-.step.final .fill { background: var(--mark); }
+.stair {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8mm;
+}
+
+.step {
+  display: grid;
+  grid-template-columns: 1fr 22mm;
+  align-items: center;
+  gap: 3mm;
+}
+
+.stair {
+  gap: 1mm;
+}
+
+.step .track {
+  height: 7.6mm;
+  background: rgba(20, 26, 33, .07);
+  position: relative;
+}
+
+.step .fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--asm);
+}
+
+.step.final .fill {
+  background: var(--mark);
+}
+
 .step .lab {
-  position: absolute; left: 2.5mm; top: 50%; transform: translateY(-50%);
-  font-size: 24pt; white-space: nowrap; line-height: 1;
+  position: absolute;
+  left: 2.5mm;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24pt;
+  white-space: nowrap;
+  line-height: 1;
 }
+
 .step .v {
-  font-family: var(--mono); font-variant-numeric: tabular-nums;
-  font-size: 24pt; text-align: right;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 24pt;
+  text-align: right;
 }
-.step.final .v { font-weight: 600; color: var(--mark); }
+
+.step.final .v {
+  font-weight: 600;
+  color: var(--mark);
+}
+
 .jump {
-  font-family: var(--mono); font-size: 24pt; color: var(--mark);
+  font-family: var(--mono);
+  font-size: 24pt;
+  color: var(--mark);
   margin: .6mm 0 .6mm 3mm;
 }
+
 .strip-rel {
-  font-family: var(--mono); font-size: 24pt; line-height: 1.16; color: var(--dim);
-  margin-top: 2.5mm; padding-top: 2mm; border-top: .35mm solid var(--rule);
+  font-family: var(--mono);
+  font-size: 24pt;
+  line-height: 1.16;
+  color: var(--dim);
+  margin-top: 2.5mm;
+  padding-top: 2mm;
+  border-top: .35mm solid var(--rule);
 }
 
 /* ===== BAND F ============================================================= */
-.bandF { display: grid; grid-template-columns: 476mm 309mm; column-gap: var(--gut); }
+.bandF {
+  display: grid;
+  grid-template-columns: 528mm 257mm;
+  column-gap: var(--gut);
+}
+
 /* 1.302fr : 2.320fr — the two figures' own aspect ratios, so a single shot
    height fits both whole with no crop and no letterbox gutters */
-.tiles { display: grid; grid-template-columns: 1.302fr 2.320fr; column-gap: 10mm; }
-.tiles figure { margin: 0; }
+.tiles {
+  display: grid;
+  grid-template-columns: 1.302fr 2.320fr;
+  column-gap: 10mm;
+}
+
+.tiles figure {
+  margin: 0;
+}
+
 .tiles .shot {
-  height: 125mm; background: #fff; box-sizing: border-box;
-  border: .4mm solid rgba(20,26,33,.22);
+  height: 142mm;
+  background: #fff;
+  box-sizing: border-box;
+  border: .4mm solid rgba(20, 26, 33, .22);
 }
+
 .tiles .shot img {
-  width: 100%; height: 100%; display: block;
-  object-fit: contain; object-position: center;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  object-position: center;
 }
-.tiles figcaption { font-size: 25pt; line-height: 1.06; margin-top: 2.4mm; font-weight: 600; white-space: nowrap; }
-.limit-list { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm 6mm; }
-.limit-list div { border-left: 1.5mm solid var(--rule); padding: 1.4mm 0 1.4mm 4mm; }
-.limit-list div:nth-child(1) { border-color: var(--seg-d); }
-.limit-list div:nth-child(2) { border-color: var(--loc-d); }
-.limit-list div:nth-child(3) { border-color: var(--asm-d); }
-.limit-list div:nth-child(4) { border-color: var(--ref-d); }
-.limit-list b { display: block; font-family: var(--mono); font-size: 26pt; line-height: 1.05; }
-.limit-list span { display: block; font-size: 23pt; color: var(--dim); line-height: 1.1; margin-top: 1mm; }
+
+.tiles figcaption {
+  font-size: 25pt;
+  line-height: 1.06;
+  margin-top: 2.4mm;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.limit-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3mm 6mm;
+}
+
+.limit-list div {
+  border-left: 1.5mm solid var(--rule);
+  padding: 1.4mm 0 1.4mm 4mm;
+}
+
+.limit-list div:nth-child(1) {
+  border-color: var(--seg-d);
+}
+
+.limit-list div:nth-child(2) {
+  border-color: var(--loc-d);
+}
+
+.limit-list div:nth-child(3) {
+  border-color: var(--asm-d);
+}
+
+.limit-list div:nth-child(4) {
+  border-color: var(--ref-d);
+}
+
+.limit-list b {
+  display: block;
+  font-family: var(--mono);
+  font-size: 26pt;
+  line-height: 1.05;
+}
+
+.limit-list span {
+  display: block;
+  font-size: 23pt;
+  color: var(--dim);
+  line-height: 1.1;
+  margin-top: 1mm;
+}
 
 /* ===== institution logos, closing the Limitations column =================== */
 .orglogos {
-  display: flex; align-items: center; justify-content: flex-start; gap: 16mm;
-  margin-top: auto; padding-top: 7mm; border-top: .5mm solid var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20mm;
+  margin-top: auto;
+  padding-top: 0;
+  border-top: 0;
 }
-.orglogos img { height: 17mm; width: auto; display: block; }
-.orglogos img:last-child { height: 13mm; background: #192E50; padding: 2.5mm 4mm; }
-.limits { display: flex; flex-direction: column; }
+
+.orglogos img {
+  height: 24mm;
+  width: auto;
+  display: block;
+}
+
+.orglogos img:last-child {
+  height: 19mm;
+  background: #192E50;
+  padding: 2.5mm 4mm;
+}
+
+.limits {
+  display: flex;
+  flex-direction: column;
+}
+/* ===== band D side heading =============================================== */
+/* The pipeline figure is 592 mm inside a 797 mm band, so ~100 mm of margin sat
+   empty on each side. The left one now carries the section title. */
+.bandD { position: relative; }
+.side-head {
+  position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+  width: 96mm; margin: 0; text-align: left;
+  font-family: var(--serif); font-size: 54pt; font-weight: 600;
+  line-height: .96; letter-spacing: -.015em; color: var(--ink-s);
+}
+.side-head .k {
+  display: block; font-family: var(--sans); font-size: 22pt; font-weight: 600;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--mark);
+  margin-bottom: 3mm;
+}
+.side-head .s {
+  display: block; font-family: var(--sans); font-size: 25pt; font-weight: 400;
+  letter-spacing: 0; color: var(--dim); margin-top: 2.5mm; line-height: 1.1;
+}
+
+/* the two hero pages are one rectangle, stated once */
+.plate.src img, .plate.dst img { width: 138mm; height: 201.7mm; object-fit: fill; }
