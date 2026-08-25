@@ -141,6 +141,12 @@
     body.embed-mode section.embed-target > .section-head,
     body.embed-mode section.embed-target .section-head { display: none !important; }
     body.embed-mode .pdemo-wrap { margin: 0 !important; }
+    /* On a slide the presenter narrates each beat, so the on-screen caption and
+       the story ribbon are redundant — and they cost the canvas ~120px of the
+       height the diagrams need. They stay on the project page, where there is
+       no presenter to read them aloud. */
+    body.embed-mode .pdemo-story,
+    body.embed-mode .pdemo-caption { display: none !important; }
     body.embed-mode .reveal { opacity: 1 !important; transform: none !important; }
     /* the long prose paragraph above the Fid-HTML figure is redundant on a slide */
     body.embed-mode section#fidhtml .abstract-body { display: none !important; }
@@ -148,6 +154,33 @@
        controls the measure, and tables need every pixel to stay legible */
     body.embed-mode .container { max-width: none !important; padding: 0 16px !important; }
     body.embed-mode .table-scroll { box-shadow: none !important; }
+
+    /* ---- embedded teaser: one fixed page height, never a scrollbar ----
+       On a slide the presenter has only left/right keys, so nothing may sit
+       below the fold. The four reconstructions have very different aspect
+       ratios (Qwen is 0.57, Marker 0.78), so letting each image set its own
+       height made the page taller than the slide for some methods and shorter
+       for others — scrolling on one click, reflowing on the next.
+       Both panes now share one fixed image box and the image is contained
+       inside it, so the layout is identical whichever method is selected. */
+    body.embed-mode .teaser-compare { align-items: stretch; }
+    body.embed-mode .teaser-compare .teaser-panel { display: flex; flex-direction: column; min-width: 0; }
+    body.embed-mode .teaser-compare .frame,
+    body.embed-mode .teaser-compare .teaser-output {
+      flex: 1 1 auto; display: flex; align-items: center; justify-content: center;
+      min-height: 0; background: var(--bg-elev);
+    }
+    body.embed-mode .teaser-compare .teaser-output { border: 0; box-shadow: none; padding: 0; }
+    /* 100vh here is the iframe height, which the slide sets to its own box —
+       so the pages grow to fill whatever the slide can give them, and the
+       reserved 150px is the pills row, the two panel labels, the padding, and
+       enough slack that a different font metric can never push it into scroll. */
+    body.embed-mode .teaser-compare .frame { height: calc(100vh - 150px); min-height: 240px; }
+    body.embed-mode .teaser-compare .frame img {
+      width: auto; height: auto; max-width: 100%; max-height: 100%;
+      object-fit: contain; display: block;
+    }
+    body.embed-mode .teaser-output .frame { min-height: 0; }
 
     /* ---- presentation styling for the embedded results table ----
        Readable at projector distance: heavier category bands, colour-graded
@@ -1848,19 +1881,24 @@
   //   correct[] semantically correct reading order (the RIGHT stream)
   //   ar        fallback height/width ratio (auto-corrected once img loads)
   const RO_RC = { hdr:"#64748b", a:"#35688f", b:"#b4690e", c:"#7c6f9c", tbl:"#4f8a73", ftr:"#8a8d93" };
+  // Region rectangles are FRACTIONS of each S3_reading.png. They were measured
+  // off a 1%-grid render of every page (poster/tools-style calibration), not
+  // eyeballed — the previous values were estimates and every box sat off its
+  // content. `ar` is height/width of the image, used only for the first paint;
+  // buildROFigure re-reads the true ratio once the image loads.
   const RO_DATA = {
     magazine: {
-      id:"magazine", img:"S3_reading", ar:1.30,
+      id:"magazine", img:"S3_reading", ar:1.390,
       blocks:[
-        { id:"title", c:"hdr", tag:"TITLE",  text:"返老还童 (Benjamin Button)",              x:.28, y:.05, w:.44, h:.05 },
-        { id:"byl",   c:"hdr", tag:"BYLINE",  text:"F.S. 菲茨杰拉德 · 陈欣 译",                x:.24, y:.11, w:.48, h:.03 },
-        { id:"L1",    c:"a",   tag:"COL 1",   text:"早在 1860 年，在家生孩子还是件合情合理的事…",  x:.06, y:.16, w:.26, h:.35 },
-        { id:"L2",    c:"a",   tag:"COL 1",   text:"在这家专为名媛绅士服务的私人医院的 2 楼大厅里…", x:.06, y:.53, w:.26, h:.34 },
-        { id:"M1",    c:"b",   tag:"COL 2",   text:"房间——时兴的叫法是“啼哭室”。他们走了进去…",      x:.37, y:.15, w:.26, h:.36 },
-        { id:"M2",    c:"b",   tag:"COL 2",   text:"巴顿先生的额头上冒着冷汗。他闭上双眼，又睁开…",  x:.37, y:.53, w:.26, h:.34 },
-        { id:"R1",    c:"c",   tag:"COL 3",   text:"巴顿先生一屁股跌坐在儿子近旁的椅子上…",        x:.68, y:.15, w:.26, h:.34 },
-        { id:"R2",    c:"c",   tag:"COL 3",   text:"但巴顿先生还是坚持认为，本杰明既是个婴儿…",      x:.68, y:.51, w:.26, h:.34 },
-        { id:"pg",    c:"ftr", tag:"FOLIO",   text:"4 · 读者 2018·1",                         x:.05, y:.93, w:.16, h:.04 },
+        { id:"title", c:"hdr", tag:"TITLE",  text:"返老还童 (Benjamin Button)",              x:.388, y:.099, w:.228, h:.055 },
+        { id:"byl",   c:"hdr", tag:"BYLINE",  text:"F.S. 菲茨杰拉德 · 陈欣 译",                x:.300, y:.152, w:.400, h:.034 },
+        { id:"L1",    c:"a",   tag:"COL 1",   text:"早在 1860 年，在家生孩子还是件合情合理的事…",  x:.120, y:.195, w:.245, h:.360 },
+        { id:"L2",    c:"a",   tag:"COL 1",   text:"在这家专为名媛绅士服务的私人医院的 2 楼大厅里…", x:.120, y:.560, w:.245, h:.395 },
+        { id:"M1",    c:"b",   tag:"COL 2",   text:"房间——时兴的叫法是“啼哭室”。他们走了进去…",      x:.385, y:.185, w:.245, h:.335 },
+        { id:"M2",    c:"b",   tag:"COL 2",   text:"巴顿先生的额头上冒着冷汗。他闭上双眼，又睁开…",  x:.385, y:.525, w:.245, h:.430 },
+        { id:"R1",    c:"c",   tag:"COL 3",   text:"巴顿先生一屁股跌坐在儿子近旁的椅子上…",        x:.645, y:.185, w:.245, h:.380 },
+        { id:"R2",    c:"c",   tag:"COL 3",   text:"但巴顿先生还是坚持认为，本杰明既是个婴儿…",      x:.645, y:.570, w:.245, h:.385 },
+        { id:"pg",    c:"ftr", tag:"FOLIO",   text:"4 · 读者 2018·1",                         x:.050, y:.944, w:.150, h:.046 },
       ],
       naive:  ["title","byl","L1","M1","R1","L2","M2","R2","pg"],
       correct:["title","byl","L1","L2","M1","M2","R1","R2","pg"],
@@ -1871,21 +1909,22 @@
       },
     },
     newspaper: {
-      id:"newspaper", img:"S3_reading", ar:1.64,
+      id:"newspaper", img:"S3_reading", ar:1.646,
       blocks:[
-        { id:"mast", c:"hdr", tag:"MASTHEAD", text:"మన తెలంగాణ · హైదరాబాద్ · పేజీ 12",                  x:.02, y:.02, w:.96, h:.035 },
-        { id:"ban",  c:"hdr", tag:"HEADLINE", text:"మీ ఆడబిడ్డగా ఆశీర్వదించండి",                        x:.22, y:.06, w:.56, h:.045 },
-        { id:"L1",   c:"a",   tag:"COL 1",    text:"పోస్టల్ బ్యాలెట్ ద్వారా ఓటు హక్కు వినియోగించుకోవాలి",  x:.03, y:.14, w:.16, h:.18 },
-        { id:"L2",   c:"a",   tag:"COL 1",    text:"సైబర్ నేరాలపట్ల జాగ్రత్తగా ఉండాలి",                   x:.03, y:.34, w:.16, h:.30 },
-        { id:"C1",   c:"b",   tag:"COL 2",    text:"మెడక్ ఎమ్మెల్యే అభ్యర్థి పద్మా దేవేందర్‌రెడ్డి…",       x:.21, y:.12, w:.36, h:.20 },
-        { id:"C2",   c:"b",   tag:"COL 2",    text:"మంత్రి హరీశ్‌రావుకే మా మద్దతు",                       x:.21, y:.34, w:.36, h:.24 },
-        { id:"C3",   c:"b",   tag:"COL 2",    text:"వంద శాతం ఓటింగే లక్ష్యం",                            x:.21, y:.60, w:.36, h:.30 },
-        { id:"R1",   c:"c",   tag:"COL 3",    text:"నేడు బీఆర్ఎస్ ఎమ్మెల్యే అభ్యర్థి భూపాల్‌రెడ్డి నామినేషన్", x:.60, y:.12, w:.37, h:.22 },
-        { id:"R2",   c:"c",   tag:"COL 3",    text:"ఖేడ్ ఆర్‌వో కార్యాలయాన్ని సందర్శించిన ఎన్నికల అధికారి",  x:.60, y:.36, w:.37, h:.22 },
-        { id:"R3",   c:"c",   tag:"COL 3",    text:"నేడు రెండు నామినేషన్లు దాఖలు",                       x:.60, y:.60, w:.37, h:.30 },
+        { id:"mast", c:"hdr", tag:"MASTHEAD", text:"మన తెలంగాణ · పేజీ 12 · www.manatelangana.news",        x:.020, y:.028, w:.960, h:.052 },
+        { id:"ban",  c:"hdr", tag:"HEADLINE", text:"మీ ఆడబిడ్డగా ఆశీర్వదించండి",                            x:.265, y:.082, w:.655, h:.048 },
+        { id:"L1",   c:"a",   tag:"COL 1",    text:"పోస్టల్ బ్యాలెట్ ద్వారా ఓటు హక్కు వినియోగించుకోవాలి",      x:.028, y:.137, w:.167, h:.085 },
+        { id:"L2",   c:"a",   tag:"COL 1",    text:"సైబర్ నేరాలపట్ల జాగ్రత్తగా ఉండాలి",                       x:.028, y:.228, w:.167, h:.132 },
+        { id:"L3",   c:"a",   tag:"COL 1",    text:"పారిశ్రామిక రంగంలో విప్లవాత్మక మార్పులు వచ్చాయి",         x:.028, y:.365, w:.167, h:.598 },
+        { id:"C1",   c:"b",   tag:"COL 2",    text:"సీఎం కేసీఆర్ అమ్మలంటే మరదలా బంగా…",                     x:.205, y:.137, w:.520, h:.155 },
+        { id:"C2",   c:"b",   tag:"COL 2",    text:"మంత్రి హరీశ్‌రావుకే మా మద్దతు",                           x:.205, y:.298, w:.520, h:.212 },
+        { id:"C3",   c:"b",   tag:"COL 2",    text:"వంద శాతం ఓటింగే లక్ష్యం",                                x:.205, y:.516, w:.520, h:.447 },
+        { id:"R1",   c:"c",   tag:"COL 3",    text:"నేడు బీఆర్ఎస్ ఎమ్మెల్యే అభ్యర్థి భూపాల్‌రెడ్డి నామినేషన్",   x:.735, y:.137, w:.235, h:.175 },
+        { id:"R2",   c:"c",   tag:"COL 3",    text:"అభివృద్ధి చూసి ఓటేయ్యాండి",                              x:.735, y:.318, w:.235, h:.300 },
+        { id:"R3",   c:"c",   tag:"COL 3",    text:"నేడు రెండు నామినేషన్ల దాఖలు",                            x:.735, y:.624, w:.235, h:.339 },
       ],
-      naive:  ["mast","ban","L1","C1","R1","L2","C2","R2","C3","R3"],
-      correct:["mast","ban","L1","L2","C1","C2","C3","R1","R2","R3"],
+      naive:  ["mast","ban","L1","C1","R1","L2","C2","R2","L3","C3","R3"],
+      correct:["mast","ban","L1","L2","L3","C1","C2","C3","R1","R2","R3"],
       cap:{
         naive:"A dense multi-column page read in <b>raster order</b> ping-pongs across every column — headlines, bodies and unrelated stories collide. <b>Worst-case for naive order.</b>",
         think:"The <b>Reading-Order Agent</b> tests band-scan vs. column-major routes, scoring each on coherence between adjacent regions…",
@@ -1893,19 +1932,19 @@
       },
     },
     gov: {
-      id:"gov", img:"S3_reading", ar:1.34,
+      id:"gov", img:"S3_reading", ar:1.337,
       blocks:[
-        { id:"logo", c:"hdr", tag:"EMBLEM",  text:"CSIR–IMMT emblem",                                              x:.03, y:.03, w:.12, h:.08 },
-        { id:"ttl",  c:"hdr", tag:"HEADER",  text:"CSIR – Institute of Minerals & Materials Technology, Bhubaneswar", x:.17, y:.03, w:.80, h:.08 },
-        { id:"meta", c:"hdr", tag:"META",    text:"Advt. PME/P65/2023 · Post 6502 · Interview 04.08.2023 · 08 applied, 05 interviewed", x:.04, y:.14, w:.92, h:.14 },
-        { id:"in1",  c:"b",   tag:"INTRO",   text:"The following candidate(s) are found suitable for engagement in order of merit.", x:.04, y:.30, w:.92, h:.05 },
-        { id:"hs",   c:"tbl", tag:"HEADING", text:"Select List",                                                    x:.42, y:.37, w:.16, h:.03 },
-        { id:"ts",   c:"tbl", tag:"TABLE",   text:"1 · Bibhu Bhusan Sha · Gen · Project Associate-II · 28000/- · 09.05.2025", x:.04, y:.41, w:.92, h:.08 },
-        { id:"in2",  c:"b",   tag:"INTRO",   text:"The following candidate(s) are found suitable as Wait Listed (WL) in order of merit.", x:.04, y:.51, w:.92, h:.05 },
-        { id:"hw",   c:"tbl", tag:"HEADING", text:"Waiting List",                                                   x:.42, y:.57, w:.16, h:.03 },
-        { id:"tw",   c:"tbl", tag:"TABLE",   text:"1 · Birupakshya Mishra · Gen  ·  2 · Shantanu Kumar Maity · OBC",  x:.04, y:.61, w:.92, h:.10 },
-        { id:"nb",   c:"ftr", tag:"NOTES",   text:"N.B. — selection provisional; published on website; offer subject to funds; WL preferred if selectee declines.", x:.04, y:.73, w:.92, h:.16 },
-        { id:"sig",  c:"ftr", tag:"SIGN",    text:"Sd/- Director",                                                  x:.80, y:.92, w:.17, h:.05 },
+        { id:"logo", c:"hdr", tag:"EMBLEM",  text:"CSIR–IMMT emblem",                                              x:.040, y:.034, w:.130, h:.086 },
+        { id:"ttl",  c:"hdr", tag:"HEADER",  text:"CSIR – Institute of Minerals & Materials Technology, Bhubaneswar", x:.180, y:.034, w:.750, h:.086 },
+        { id:"meta", c:"hdr", tag:"META",    text:"Advt. PME/P65/2023 · Post 6502 · Interview 04.08.2023 · 08 applied, 05 interviewed", x:.030, y:.140, w:.720, h:.135 },
+        { id:"in1",  c:"b",   tag:"INTRO",   text:"The following candidate(s) are found suitable for engagement in order of merit.", x:.030, y:.282, w:.900, h:.052 },
+        { id:"hs",   c:"tbl", tag:"HEADING", text:"Select List",                                                    x:.440, y:.343, w:.120, h:.032 },
+        { id:"ts",   c:"tbl", tag:"TABLE",   text:"1 · Bibhu Bhusan Sha · Gen · Project Associate-II · 28000/- · 09.05.2025", x:.040, y:.375, w:.920, h:.110 },
+        { id:"in2",  c:"b",   tag:"INTRO",   text:"The following candidate(s) are found suitable as Wait Listed (WL) in order of merit.", x:.030, y:.497, w:.900, h:.045 },
+        { id:"hw",   c:"tbl", tag:"HEADING", text:"Waiting List",                                                   x:.430, y:.542, w:.140, h:.033 },
+        { id:"tw",   c:"tbl", tag:"TABLE",   text:"1 · Birupakshya Mishra · Gen  ·  2 · Shantanu Kumar Maity · OBC",  x:.040, y:.577, w:.920, h:.135 },
+        { id:"nb",   c:"ftr", tag:"NOTES",   text:"N.B. — selection provisional; published on website; offer subject to funds; WL preferred if selectee declines.", x:.060, y:.725, w:.870, h:.190 },
+        { id:"sig",  c:"ftr", tag:"SIGN",    text:"Sd/- Director",                                                  x:.820, y:.932, w:.110, h:.050 },
       ],
       naive:  ["meta","logo","ts","ttl","hs","tw","in1","hw","in2","nb","sig"],
       correct:["logo","ttl","meta","in1","hs","ts","in2","hw","tw","nb","sig"],
@@ -1916,19 +1955,19 @@
       },
     },
     financial: {
-      id:"financial", img:"S3_reading", ar:2.90,
+      id:"financial", img:"S3_reading", ar:3.114,
       blocks:[
-        { id:"biz",  c:"hdr", tag:"MERCHANT", text:"VIVOPAC MARKETING SDN BHD · Taman Segar, 56100 KL · Tel 03-91334364", x:.06, y:.03, w:.88, h:.09 },
-        { id:"inv",  c:"hdr", tag:"DOC TYPE", text:"TAX INVOICE",                                x:.06, y:.13, w:.50, h:.03 },
-        { id:"meta", c:"hdr", tag:"META",     text:"Doc CS21532619 · 17/01/2017 · Terminal T02 · Cashier AI", x:.06, y:.20, w:.88, h:.07 },
-        { id:"d1",   c:"a",   tag:"ITEM",     text:"PP-14x20 0.04mm · 1.00 PKT × 14.60",         x:.06, y:.30, w:.52, h:.05 },
-        { id:"a1",   c:"tbl", tag:"AMOUNT",   text:"14.60 SR",                                   x:.62, y:.30, w:.32, h:.05 },
-        { id:"d2",   c:"a",   tag:"ITEM",     text:"PP-16x26 0.04mm · 1.00 PKT × 14.60",         x:.06, y:.36, w:.52, h:.05 },
-        { id:"a2",   c:"tbl", tag:"AMOUNT",   text:"14.60 SR",                                   x:.62, y:.36, w:.32, h:.05 },
-        { id:"d3",   c:"a",   tag:"ITEM",     text:"24x28 (75HT) Red · 1.00 PKT × 6.00",         x:.06, y:.42, w:.52, h:.05 },
-        { id:"a3",   c:"tbl", tag:"AMOUNT",   text:"6.00 SR",                                    x:.62, y:.42, w:.32, h:.05 },
-        { id:"tot",  c:"b",   tag:"TOTALS",   text:"Sub-total 44.00 · GST 6% 2.64 · Rounded Total RM 46.65", x:.06, y:.62, w:.88, h:.12 },
-        { id:"ft",   c:"ftr", tag:"TERMS",    text:"Terms: goods not refundable; exchange within 7 days with receipt.", x:.06, y:.80, w:.88, h:.14 },
+        { id:"biz",  c:"hdr", tag:"MERCHANT", text:"VIVOPAC MARKETING SDN BHD · Taman Segar, 56100 KL · Tel 03-91334364", x:.028, y:.035, w:.880, h:.110 },
+        { id:"inv",  c:"hdr", tag:"DOC TYPE", text:"TAX INVOICE",                                x:.028, y:.155, w:.290, h:.030 },
+        { id:"meta", c:"hdr", tag:"META",     text:"Doc CS21532619 · 17/01/2017 · Terminal T02 · Cashier AI", x:.032, y:.293, w:.700, h:.078 },
+        { id:"d1",   c:"a",   tag:"ITEM",     text:"PP-14x20 0.04mm · 1.00 PKT × 14.6000",       x:.034, y:.432, w:.480, h:.038 },
+        { id:"a1",   c:"tbl", tag:"AMOUNT",   text:"14.60 SR",                                   x:.650, y:.452, w:.270, h:.024 },
+        { id:"d2",   c:"a",   tag:"ITEM",     text:"PP-16x26 0.04mm · 1.00 PKT × 14.6000",       x:.034, y:.472, w:.480, h:.038 },
+        { id:"a2",   c:"tbl", tag:"AMOUNT",   text:"14.60 SR",                                   x:.650, y:.492, w:.270, h:.024 },
+        { id:"d3",   c:"a",   tag:"ITEM",     text:"24x28 (75HT) Red · 1.00 PKT × 6.0000",       x:.034, y:.512, w:.480, h:.038 },
+        { id:"a3",   c:"tbl", tag:"AMOUNT",   text:"6.00 SR",                                    x:.650, y:.532, w:.270, h:.024 },
+        { id:"tot",  c:"b",   tag:"TOTALS",   text:"Sub-total 44.00 · GST 6% 2.64 · Rounded Total RM 46.65", x:.034, y:.703, w:.880, h:.093 },
+        { id:"ft",   c:"ftr", tag:"TERMS",    text:"Terms: goods not refundable; exchange within 7 days with receipt.", x:.034, y:.901, w:.900, h:.088 },
       ],
       naive:  ["biz","inv","meta","d1","d2","d3","a1","a2","a3","tot","ft"],
       correct:["biz","inv","meta","d1","a1","d2","a2","d3","a3","tot","ft"],

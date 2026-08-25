@@ -1312,21 +1312,6 @@
       margin: 0 0 11px;
     }
 
-    .lv-what {
-      margin-top: 14px;
-      background: var(--gold-soft);
-      border-left: 4px solid var(--gold);
-      padding: 12px 18px;
-      border-radius: 0 8px 8px 0;
-      font-size: 18.5px;
-      color: #5f4a12;
-      line-height: 1.4;
-      min-height: 78px;
-    }
-
-    .lv-what b {
-      color: var(--navy);
-    }
 
     /* ---------- agents vs tools ---------- */
     .at-grid {
@@ -2165,7 +2150,7 @@
     /* ═══════════ METRIC RADAR ═══════════ */
     .radarwrap {
       display: grid;
-      grid-template-columns: 1.15fr .85fr;
+      grid-template-columns: 1.28fr .72fr;
       gap: 36px;
       align-items: center;
       flex: 1;
@@ -2175,7 +2160,7 @@
     .mradar {
       width: 100%;
       height: 100%;
-      max-height: 660px;
+      max-height: 760px;
     }
 
     .mradar .rgrid circle {
@@ -2266,7 +2251,7 @@
     .radarside {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 22px;
     }
 
     .rs-card {
@@ -2274,7 +2259,7 @@
       border: 1px solid var(--line);
       border-left: 5px solid var(--navy-soft);
       border-radius: 10px;
-      padding: 17px 21px;
+      padding: 22px 26px;
     }
 
     .rs-card.gold {
@@ -2283,17 +2268,17 @@
     }
 
     .rs-card h4 {
-      margin: 0 0 7px;
+      margin: 0 0 10px;
       font-family: var(--serif);
-      font-size: 23px;
+      font-size: 27px;
       color: var(--navy);
       font-weight: 700;
     }
 
     .rs-card p {
-      margin: 0 0 7px;
-      font-size: 18px;
-      line-height: 1.5;
+      margin: 0 0 8px;
+      font-size: 21px;
+      line-height: 1.55;
       color: var(--ink-2);
     }
 
@@ -3570,9 +3555,6 @@
               <div class="cap"><b>Reconstruction</b> — rebuilt live, layer by layer</div>
             </div>
           </div>
-          <!-- outside .ladder-wrap on purpose: the note runs the full slide width,
-             which is what balances the centred pair of pages above it -->
-          <div class="lv-what" id="ladderWhat"></div>
         </div>
       </section>
 
@@ -3590,28 +3572,24 @@
                 <h3>Text</h3>
                 <p class="q"><i>Are the words right?</i></p>
                 <p>Characters and words, at block and page level.</p>
-                <div class="metric">WRR · CRR</div>
               </div>
               <div class="card">
                 <span class="tag">L.S. &nbsp;·&nbsp; Logical Structure</span>
                 <h3>Hierarchy</h3>
                 <p class="q"><i>Is the structure right?</i></p>
                 <p>Reading order, nesting, tables, lists, formulas.</p>
-                <div class="metric">NTED · TEDS · CDM</div>
               </div>
               <div class="card" style="border-color:var(--gold);">
                 <span class="tag">P.S. &nbsp;·&nbsp; Physical Structure</span>
                 <h3>Geometry</h3>
                 <p class="q"><i>Is the position right?</i></p>
                 <p>Absolute placement of blocks and lines on the page.</p>
-                <div class="metric gold">GPS · LPS &nbsp;<b>(new)</b></div>
               </div>
               <div class="card" style="border-color:var(--gold);">
                 <span class="tag">V.F. &nbsp;·&nbsp; Visual Fidelity</span>
                 <h3>Visual components</h3>
                 <p class="q"><i>Does it look right?</i></p>
                 <p>Typography, colour, weight, spacing, backgrounds.</p>
-                <div class="metric gold">VFS &nbsp;<b>(new)</b></div>
               </div>
             </div>
           </div>
@@ -3634,8 +3612,6 @@
                 </svg>
                 <div>
                   <h3>Web-native</h3>
-                  <p>Opens in <b>any browser</b> — no bespoke viewer, and search, selection and accessibility come for
-                    free.</p>
                 </div>
               </div>
               <div class="card wide">
@@ -3657,8 +3633,6 @@
                 </svg>
                 <div>
                   <h3>Machine-readable</h3>
-                  <p>Structure <i>and</i> geometry are <b>explicit in the markup</b> — a model reads the tree, not the
-                    pixels.</p>
                 </div>
               </div>
             </div>
@@ -3671,8 +3645,6 @@
         data-frags="2"
         data-notes="So how does the field do against that checklist? This is Figure 1A from the paper, running live. On the left the input page; on the right one system at a time. Marker, a strong pipeline tool, linearises three columns into one — the words survive, the page does not. [CLICK] GPT-5 gets the text largely right, then drifts on placement, font attributes and column count. [CLICK] Qwen3-VL-30B, same story. Every one of them ticks text and roughly ticks structure — and every one of them fails geometry and appearance. Notice I am not showing you our system yet. I want the failure to be the thing you remember, because the failure is the same in every case, and it is not a failure of the model.">
         <div class="kicker">Against the checklist</div>
-        <h2>Everyone recovers the words. <em>Nobody recovers the page.</em> <span class="srcnote">— paper Fig. 1A</span>
-        </h2>
         <div class="slide-body">
           <div class="embed"><iframe src="index.html?embed=teaser&part=compare&only=marker,gpt5,qwen"
               title="Baseline comparison (paper Fig. 1A)"></iframe></div>
@@ -3690,7 +3662,7 @@
       <!-- Deliberately a diagram and not a table: the full format comparison is
          paper Table 1, three slides later. This slide only has to land one
          causal claim, in about fifteen seconds. -->
-      <section class="slide vcenter" data-eyebrow="02 · Where the field stands" data-frags="3"
+      <section class="slide vcenter" data-eyebrow="02 · Where the field stands" data-frags="2"
         data-notes="So why did all three lose the same two things? It is not the model. It is what we asked the model to write. [CLICK] The page carries four axes. They all have to pass through one narrow place — the output format. Marker writes Markdown. The OCR VLMs write a flat text stream. GPT-5 and Qwen write generic HTML. [CLICK] And that is where two of them die. Markdown and plain text have no syntax for an x-y coordinate or a font colour — you literally cannot write it down. HTML does have the syntax, and this is the subtle case: the syntax exists, but a div with no style attribute is perfectly valid HTML — so it is optional, and what is optional gets left out. Either way there is no place to put position and style, and the information never reaches the page. [CLICK] So the sentence I want you to keep: what a format does not require, a system does not produce. The bottleneck is not the model. It is the target. Widen the target, and everything downstream changes — so that is what we did.">
         <div class="kicker">Not a model failure — a format failure</div>
         <h2>Four axes go in. <em>The output format only has room for two.</em></h2>
@@ -3792,10 +3764,6 @@
               <text x="1266" y="490" class="axd dead">never written down</text>
             </g>
           </svg>
-          <div class="takeaway frag" data-frag="3">
-            What a format does not <b>require</b>, a system does not <b>produce</b>. The bottleneck is not the model —
-            it is the <b>target</b>. So we changed the target.
-          </div>
         </div>
       </section>
 
@@ -3811,7 +3779,6 @@
       <section class="slide demo bleed" data-eyebrow="03 · FID-HTML" data-embed="teaser" data-frags="1"
         data-notes="So we changed the target. Same input page you just watched three systems fail on — this is what comes out when the format is required to carry position and style. Text, hierarchy, geometry, appearance: all four boxes. I have not told you how yet, and deliberately so — for the next two slides all that matters is that this output is a single HTML file that your browser renders, and that everything you can see about the original is still in it. We call it Fid-HTML.">
         <div class="kicker">The same page, rebuilt</div>
-        <h2>Change the target, and <em>all four boxes tick</em></h2>
         <div class="slide-body">
           <div class="embed"><iframe src="index.html?embed=teaser&part=compare&only=replica"
               title="REPLICA reconstruction"></iframe></div>
@@ -3829,8 +3796,7 @@
       <section class="slide demo bleed" data-eyebrow="03 · FID-HTML" data-embed="fidfig" data-nav="1" data-frags="6"
         data-notes="Concretely, this is what Fid-HTML encodes — and the code on the right is the real source of the page on the left, not a mock-up. Six dimensions. One, textual content at word and block level. Two, hierarchical structure through nested divs. Three, semantic tags — li, table, tr, td — with meaningful class names. Four, positional information: global placement by absolute positioning, local alignment by relative containers and p wrappers. Five, styling metadata: font size, colour, bold, italic, underline, strikethrough, as inline CSS. Six, figures and backgrounds layered into the DOM with VLM-generated alt-text — which is also what makes the output screen-reader accessible. Click any dimension and it highlights exactly where it lives in the code; flip to Rendered and your browser draws that exact markup.">
         <div class="kicker">What made that possible</div>
-        <h2>Six dimensions — <em>click one</em> to see where it lives in the source <span class="srcnote">— paper Fig.
-            3</span></h2>
+        <h2>Six dimensions — <em>click one</em> to see where it lives in the source <span class="srcnote"></span></h2>
         <div class="slide-body">
           <div class="embed"><iframe src="index.html?embed=fidhtml&part=figure"
               title="FID-HTML anatomy (paper Fig. 3)"></iframe></div>
@@ -3841,7 +3807,7 @@
       <section class="slide demo bleed" data-eyebrow="03 · FID-HTML" data-embed="fmt"
         data-notes="We saw three formats hit that wall. This is the full ledger — every representation the field uses, scored on the same four axes. Read down the last two column groups. Markdown has no slot for position or style at all. LaTeX is expressive but partial on hierarchy and not web-native. DocTags and hOCR carry boxes but are partial on styling. And plain HTML — this is the important row — plain HTML CAN express fidelity but never REQUIRES it: two valid HTML documents with the same text can render completely differently. That is the gap. Fid-HTML is the only row full across every column, because position and style are mandatory, inline, per element. Fidelity becomes a property of the format rather than a hope.">
         <div class="kicker">The same wall, for every format</div>
-        <h2>Comparison with <em>existing representations</em> <span class="srcnote">— paper Table 1</span></h2>
+        <h2>Comparison with <em>existing representations</em> <span class="srcnote"></span></h2>
         <div class="slide-body">
           <div class="embed">
             <iframe src="index.html?embed=fidhtml&part=table" title="Format comparison (paper Table 1)"></iframe>
@@ -4101,7 +4067,7 @@
       <section class="slide demo bleed" data-eyebrow="04 · Approach · Demo" data-embed="pipeline" data-frags="0"
         data-notes="Rather than describe it further — here is the whole framework running on a real page with every intermediate output. Step through with the clicker, or hit Play for the full walkthrough. Each beat spotlights the corresponding part of Figure 4 on the left.">
         <div class="kicker">Interactive walkthrough</div>
-        <h2>The framework, running on a real page <span class="srcnote">— plays automatically at 1.5×</span></h2>
+        <h2>The framework, running on a real page <span class="srcnote"></span></h2>
         <div class="slide-body">
           <div class="embed"><iframe src="index.html?embed=demo&doc=magazine&autoplay=1&rate=1.5"
               title="REPLICA framework demo"></iframe></div>
@@ -4112,8 +4078,8 @@
       <section class="slide section-slide" data-eyebrow="05 · Evaluation"
         data-notes="Section four. How we measure it, and what we find.">
         <h1>Evaluation</h1>
-        <div class="q">We have a representation and a system. But no existing benchmark scores physical structure or
-          rendered appearance — so we built one.</div>
+        <div class="q"><b>FID-HTML</b> — the representation. <b>REPLICA</b> — the system.<br>
+          Nothing existed that could <b>score</b> either one.</div>
       </section>
 
       <!-- ═══════════ VFDR-BENCH SAMPLE CAROUSEL ═══════════ -->
@@ -4156,7 +4122,7 @@
       <!-- ═══════════ 20 · WHICH METRIC MEASURES WHAT ═══════════ -->
       <section class="slide vcenter" data-eyebrow="05 · Evaluation" data-frags="3"
         data-notes="Same four axes, one metric family each — and this shape is the one to keep in your head, because every result from here on is read on it. [CLICK] The two established axes. Text extraction: character and word recognition rate. Logical structure: normalised tree edit distance, with TEDS for tables and CDM for formulas. Both standard, both already in the literature. [CLICK] The two we introduce. Physical structure: Global and Local Position Score — one-to-one matching by maximum IoU, then area-normalised precision and recall, so it penalises both missed elements and hallucinated boxes. Visual fidelity: the Visual Fidelity Score, a VLM judging the rendered page against human-annotated ground truth. Neither axis had any metric at all before this work. [CLICK] Overall is the mean of the four, so nothing can buy a good score by winning one axis. And on trust: Pearson correlation with seven expert annotators is above 0.8 across a hundred documents.">
-        <div class="kicker">Reading the scoreboard</div>
+        <!-- <div class="kicker">Reading the scoreboard</div> -->
         <h2>Which metric measures <em>what</em></h2>
         <div class="slide-body">
           <div class="radarwrap">
@@ -4206,26 +4172,24 @@
               </g>
             </svg>
             <div class="radarside">
+              <!-- The radar already names every metric and its direction, so the
+                   cards only have to say what each family looks at. -->
               <div class="rs-card frag" data-frag="1">
                 <h4>Two axes already had metrics</h4>
-                <p><b>WRR / CRR</b> &#8593; — how many words and characters came back correct.<br>
-                  <b>NTED</b> &#8595; — how far the produced DOM is from the reference tree.
+                <p><b>WRR / CRR</b> — words and characters recovered<br>
+                  <b>NTED</b> — DOM against the reference tree
                 </p>
-                <p class="rs-tiny">&#8593; higher is better &nbsp;·&nbsp; &#8595; lower is better</p>
               </div>
               <div class="rs-card gold frag" data-frag="2">
-                <h4>Two had none — so we built them</h4>
-                <p><b>GPS / LPS</b> &#8593; — overlap between where an element sits in the source and where it lands in
-                  the render. Blocks for GPS, text lines for LPS.</p>
-                <p><b>VFS</b> &#8593; — a VLM compares the two rendered pages and scores typography, colour and spacing.
+                <h4>Two had none. We built them.</h4>
+                <p><b>GPS / LPS</b> — where every block and line lands<br>
+                  <b>VFS</b> — typography, colour and spacing, judged by a VLM
                 </p>
-                <p class="rs-tiny">Both read the <b>render</b>, never the markup — which is precisely how earlier
-                  benchmarks missed them.</p>
+                <p class="rs-tiny">Both read the <b>render</b>, not the markup.</p>
               </div>
               <div class="rs-card frag" data-frag="3">
                 <h4>Overall = the mean of the four</h4>
-                <p>No system can buy a good score by winning one axis. Agreement with seven expert annotators over 100
-                  documents: Pearson <b>&gt; 0.8</b>.</p>
+                <p>No axis can be bought.<br>Pearson <b>&gt; 0.8</b> against seven expert annotators.</p>
               </div>
             </div>
           </div>
@@ -4238,7 +4202,7 @@
         <div class="kicker">Measured on VFDR-Bench — all 16 methods &nbsp;·&nbsp;
           <span class="chint">click a category to expand it</span>
         </div>
-        <h2>Quantitative results <span class="srcnote">— paper Table 2</span></h2>
+        <h2>Quantitative results <span class="srcnote"></span></h2>
         <div class="slide-body">
           <div class="rwrap">
             <table class="rtab" id="resTable"></table>
@@ -4268,9 +4232,8 @@
       <!-- ═══════════ 22 · ABLATION (paper Table 3, as a chart) ═══════════ -->
       <section class="slide vcenter" data-eyebrow="05 · Evaluation" data-frags="3" id="ablSlide"
         data-notes="The ablation, built up cumulatively, and read on the same four axes as everything else — the navy line is Overall, gold is the visual-fidelity axis, violet is the physical-structure axis. The bands are our own four stages. Three stages, three numbers, and they add up: 0.53 at the start, 0.93 at the end. [CLICK] Stage one, Segment: hierarchical layout, Hi-SAM and Set-of-Mark take us from 0.53 to 0.71 — plus eighteen. Notice it is the physical-structure line that climbs, 0.34 to 0.69: better segmentation buys geometry. [CLICK] Stage two, Localize: 0.71 to 0.86, plus fifteen. And here is the part that matters — a single monolithic generator only reaches 0.76. The remaining ten points come from routing to six specialists, at the same model size. That is the agentic decomposition paying for itself. [CLICK] Stage four, Refine: 0.86 to 0.93, plus seven, with visual fidelity reaching 0.97. Eighteen, fifteen, seven — forty points in total, and the two biggest are decomposition and looking at the render. Assemble has no row of its own here: it is not optional, so there is nothing to ablate.">
-        <div class="kicker">Every component earns its place &nbsp;·&nbsp; <span class="chint">two jumps carry the
-            design</span></div>
-        <h2>Ablation studies <span class="srcnote">— paper Table 3</span></h2>
+        <div class="kicker"> &nbsp;·&nbsp; <span class="chint"></span></div>
+        <h2>Ablation studies <span class="srcnote"></span></h2>
         <div class="slide-body">
           <div class="ablwrap"><svg id="ablChart" viewBox="0 0 1700 706"
               aria-label="Cumulative ablation: overall score, visual fidelity and global position across the four stages"></svg>
@@ -4303,8 +4266,8 @@
       <!-- ═══════════ 26 · LIMITATIONS ═══════════ -->
       <section class="slide vcenter" data-eyebrow="06 · Limitations"
         data-notes="Being honest about the edges. First: single-page only — multi-page structures such as a table spanning a page break can fragment. Second: font identification. Bold, italic, underline and colour are recovered reliably, but exact font families are not; existing work covers mostly English and Chinese, and large-scale multilingual font recognition remains an open problem. Third: the refine loop's repeated browser rendering costs real latency against a single forward pass. Those are the three we state in the paper.">
-        <div class="kicker">Being honest about the edges</div>
-        <h2>Where REPLICA still falls short</h2>
+        <!-- <div class="kicker">Being honest about the edges</div> -->
+        <h2>Limitations</h2>
         <div class="slide-body">
           <div class="grid3 limgrid" style="flex:0 0 auto;">
 
@@ -4406,7 +4369,7 @@
       <section class="slide demo bleed" data-eyebrow="07 · Applications" data-embed="down" data-nav="1" data-frags="6"
         data-notes="Because Fid-HTML is web-native and carries both semantics and geometry, it is reusable well beyond reconstruction — this is Figure 2 from the paper, live; hover any application to zoom into it. Layout-preserving document translation: translate a form and it still looks like that form. Document preservation and archiving. Indexing and searchability. Grounded document intelligence — the nested DOM maps directly onto phrase inside line inside block containment, so you get pixel-level grounding for free. Semantic chunking for RAG, where chunks follow logical structure rather than character counts. And position-aware retrieval — query by where something sits on the page.">
         <div class="kicker">Beyond reconstruction</div>
-        <h2>What FID-HTML <em>unlocks</em> <span class="srcnote">— paper Fig. 2 · hover to zoom</span></h2>
+        <h2>What FID-HTML <em>unlocks</em> <span class="srcnote"></span></h2>
         <div class="slide-body">
           <div class="embed"><iframe src="index.html?embed=downstream"
               title="Downstream applications (paper Fig. 2)"></iframe></div>
@@ -4758,12 +4721,6 @@
       }
 
       /* ---------- the live fidelity ladder ---------- */
-      const LADDER_TEXT = [
-        '<b>Level 0 · text only.</b> Every word is present and in order — but heading, table and total are indistinguishable, and the output has <i>no page</i>: its shape does not match the original at all.',
-        '<b>Level 1 · + logical structure.</b> Headings, table rows and columns are marked up. Machine-readable — but still no geometry, so the page shape still does not match.',
-        '<b>Level 2 · + physical position.</b> The page now has the <b>same dimensions as the source</b>, the two-column body is back and numbers align under their headers. You can finally tell which number belongs to which item.',
-        '<b>Level 3 · + visual fidelity.</b> Typography, weight, colour — and the strikethrough and OVERDUE stamp. The reconstruction is now <b>identical to the original</b>: only here does the cancelled line read as cancelled.'
-      ];
       // The reconstruction is a clone of the source element, so "matching at
       // level 3" is structural rather than something we have to keep in sync.
       (function buildLadder() {
@@ -4784,7 +4741,6 @@
           s.classList.toggle("on", i === Math.min(frag, 3));
           s.classList.toggle("done", i < Math.min(frag, 3));
         });
-        document.getElementById("ladderWhat").innerHTML = LADDER_TEXT[Math.min(frag, LADDER_TEXT.length - 1)];
       }
 
       /* ---------- staged framework reveal ----------
@@ -4813,9 +4769,11 @@
         // letterbox takes the slide's own colour, so a non-16:9 screen shows no band
         document.getElementById("deck").classList.toggle("dark",
           s.classList.contains("section-slide") || s.classList.contains("thanks"));
-        // the live badge only earns its place on slides that really are running code
+        // The badge exists to tell the audience the page is real and that V shows
+        // its source. That only matters on the two slides where the HTML itself is
+        // the subject; everywhere else it is chrome.
         document.getElementById("livebadge").style.display =
-          s.querySelector(".embed") || s.id === "ladderSlide" || s.id === "qualSlide" ? "flex" : "none";
+          (s.dataset.embed === "fidfig" || s.id === "qualSlide") ? "flex" : "none";
         applyFrags();
         fitEmbeds(s);
         // the sample carousel only runs while its slide is on screen
@@ -5261,7 +5219,8 @@
             add(lg, "text", { x: px + 44, y: 646, class: "lgd" }, label);
           });
         add(lg, "text", { x: R + 70, y: 692, "text-anchor": "end", class: "note" },
-          "0.53 \u2192 0.93 overall  =  +0.18 + 0.15 + 0.07.    Assemble is not optional, so there is nothing to ablate.");
+          // "0.53 \u2192 0.93 overall  =  +0.18 + 0.15 + 0.07.    Assemble is not optional, so there is nothing to ablate.");
+          "");
       })();
       function renderAblation() {
         const svg = document.getElementById("ablChart"); if (!svg) return;
