@@ -424,7 +424,7 @@ strong {
 /* ===== BAND B — the seam ================================================== */
 .bandB {
   display: grid;
-  grid-template-columns: 446mm 1fr;
+  grid-template-columns: 434mm 1fr;
   column-gap: 18mm;
 }
 
@@ -486,7 +486,7 @@ strong {
 /* minimal browser chrome on the output plate, matching Fig. 1 */
 .chrome {
   position: absolute;
-  left: 304mm;
+  left: 292mm;
   top: 18.5mm;
   width: 139mm;
   height: 9mm;
@@ -518,7 +518,7 @@ strong {
 
 .plate.dst {
   top: 28mm;
-  left: 304mm;
+  left: 292mm;
   right: auto;
   height: 201.7mm;
   width: 138mm;
@@ -530,7 +530,7 @@ strong {
 /* the seam itself */
 .seam {
   position: absolute;
-  left: 286mm;
+  left: 278mm;
   top: 20mm;
   width: 1.4mm;
   height: 214mm;
@@ -560,7 +560,7 @@ strong {
 /* the decomposition, three layers at different offsets */
 .decomp {
   position: absolute;
-  left: 160mm;
+  left: 152mm;
   top: 24mm;
   width: 200mm;
   height: 210mm;
@@ -726,7 +726,7 @@ strong {
 }
 
 .seamlabel.r {
-  left: 304mm;
+  left: 292mm;
   color: var(--mark);
 }
 
@@ -736,8 +736,8 @@ strong {
 .stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16mm 14mm;
-  align-content: center;
+  gap: 14mm 14mm;
+  align-content: start;
 }
 
 .stats .num {
@@ -802,7 +802,7 @@ strong {
 /* ===== BAND C ============================================================= */
 .bandC {
   display: grid;
-  grid-template-columns: 436mm 349mm;
+  grid-template-columns: 424mm 361mm;
   column-gap: var(--gut);
 }
 
@@ -820,7 +820,7 @@ strong {
 }
 
 .strip .shot {
-  height: 216mm;
+  height: 224mm;
   width: auto;
   display: inline-block;
   background: #fff;
@@ -833,7 +833,7 @@ strong {
 }
 
 .strip .shot img {
-  height: 216mm;
+  height: 224mm;
   width: auto;
   max-width: none;
   display: block;
@@ -1397,11 +1397,24 @@ dl.defs dd {
   margin: 0;
 }
 
+.tiles figure:first-child {
+  position: relative;
+}
+
+.tiles figure:first-child::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -5mm;
+  width: .4mm;
+  background: rgba(20, 26, 33, .22);
+}
+
 .tiles .shot {
-  height: 142mm;
-  background: #fff;
+  height: 180mm;
+  background: transparent;
   box-sizing: border-box;
-  border: .4mm solid rgba(20, 26, 33, .22);
 }
 
 .tiles .shot img {
@@ -1528,9 +1541,25 @@ dl.defs dd {
 }
 
 /* ===== band C right panel, lifted into band B's dead column ============== */
-.bandC > div:nth-child(2) { margin-top: -46mm; }
+.bandC > div:nth-child(2) { margin-top: -66mm; }
 
 /* ===== title block: the project mark hangs in its own gutter ============= */
 /* Absolute, so line 2 of the title, the thesis and the author list all start
    on the same edge as REPLICA rather than under the mark. */
 .bandA > div:first-child { position: relative; padding-left: 48mm; }
+
+/* ===== format table: cells centre under their own header ================= */
+/* table.t sets text-align:right for numeric columns; the marks in this table
+   are glyphs, not numbers, so they were sitting off to the right of a centred
+   header. */
+.format-table td:not(:first-child) { text-align: center; }
+
+/* ===== the four axes carry their colour everywhere they appear =========== */
+dl.defs div:nth-child(1) dt { color: #355783; }
+dl.defs div:nth-child(2) dt { color: #496C3D; }
+dl.defs div:nth-child(3) dt { color: #725F20; }
+dl.defs div:nth-child(4) dt { color: #8A4D21; }
+.formula .te { color: #355783; font-weight: 600; }
+.formula .ls { color: #496C3D; font-weight: 600; }
+.formula .ps { color: #725F20; font-weight: 600; }
+.formula .vf { color: #8A4D21; font-weight: 600; }
