@@ -1378,20 +1378,20 @@
     }
     .atfig .cl { stroke: #cfd6de; stroke-width: 7; stroke-linecap: round; }
     .atfig .ob { fill: #dfe5ec; }
-    .atfig .ob.g { fill: var(--gold-soft); stroke: var(--gold-line); stroke-width: 1.5; }
+    .atfig .ob.g { fill: #f1eefc; stroke: #ddd6f6; stroke-width: 1.5; }
     .atfig .ar { fill: none; stroke: var(--navy-soft); stroke-width: 5; stroke-linecap: round; }
-    .atfig .ar.g { stroke: var(--gold); }
-    .atfig .ar.dash, .atfig .ar.loop { stroke: var(--gold); stroke-dasharray: 9 7; stroke-width: 4; }
+    .atfig .ar.g { stroke: var(--violet); }
+    .atfig .ar.dash, .atfig .ar.loop { stroke: var(--violet); stroke-dasharray: 9 7; stroke-width: 4; }
     .atfig .gbody { fill: #e7ecf3; stroke: var(--navy-soft); stroke-width: 3; }
     .atfig .teeth rect { fill: var(--navy-soft); }
     .atfig .ghole { fill: var(--bg); stroke: var(--navy-soft); stroke-width: 3; }
-    .atfig .brain { fill: var(--gold-soft); stroke: var(--gold); stroke-width: 3.5; }
-    .atfig .qm { font-family: var(--serif); font-size: 54px; font-weight: 700; fill: #8a6510; }
+    .atfig .brain { fill: #f1eefc; stroke: var(--violet); stroke-width: 3.5; }
+    .atfig .qm { font-family: var(--serif); font-size: 54px; font-weight: 700; fill: var(--violet); }
     .atfig .atc {
       font-family: var(--sans); font-size: 25px; font-weight: 600; fill: var(--ink-2);
     }
     .atfig .atn { font-family: var(--sans); font-size: 21px; fill: var(--ink-3); font-style: italic; }
-    .atfig .atn.gold { fill: #8a6510; font-style: normal; font-weight: 600; }
+    .atfig .atn.gold { fill: var(--violet); font-style: normal; font-weight: 600; }
 
     /* ---- closing slide: three cards and one number, so both grow to fill ---- */
     .slide[data-eyebrow="09 · Conclusion"] .grid3 { gap: 28px; }
@@ -4009,7 +4009,7 @@
                   <path d="M0 0 L10 5 L0 10 z" fill="var(--navy-soft)"/>
                 </marker>
                 <marker id="atB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-                  <path d="M0 0 L10 5 L0 10 z" fill="var(--gold)"/>
+                  <path d="M0 0 L10 5 L0 10 z" fill="var(--violet)"/>
                 </marker>
               </defs>
 
@@ -4034,7 +4034,7 @@
                 <rect class="out" x="466" y="74" width="96" height="120" rx="8"/>
                 <rect class="ob" x="482" y="92"  width="64" height="34" rx="4"/>
                 <rect class="ob" x="482" y="134" width="64" height="42" rx="4"/>
-                <text x="300" y="230" text-anchor="middle" class="atc">one pass &#183; the same answer every time</text>
+                <text x="300" y="245" text-anchor="middle" class="atc">one pass &#183; the same answer every time</text>
               </g>
 
               <!-- ── an agent: chooses, checks, and goes again ── -->
@@ -4049,8 +4049,8 @@
                   <text y="14" text-anchor="middle" class="qm">?</text>
                 </g>
                 <!-- it reaches for whichever tool the case needs -->
-                <path class="ar dash" d="M1160 190 V 226 H 1050"/>
-                <text x="1044" y="231" text-anchor="end" class="atn">picks a tool</text>
+                <path class="ar dash" d="M1160 190 V 210 H 1050"/>
+                <text x="1044" y="214" text-anchor="end" class="atn">picks a tool</text>
                 <path class="ar g" d="M1228 134 H 1310" marker-end="url(#atB)"/>
                 <rect class="out" x="1326" y="74" width="96" height="120" rx="8"/>
                 <rect class="ob g" x="1342" y="92"  width="64" height="34" rx="4"/>
@@ -4058,7 +4058,7 @@
                 <!-- and looks at what came out -->
                 <path class="ar loop" d="M1374 62 C 1374 34, 1160 34, 1160 76" marker-end="url(#atB)"/>
                 <text x="1267" y="20" text-anchor="middle" class="atn gold">not good enough &#8594; again</text>
-                <text x="1160" y="230" text-anchor="middle" class="atc">decides &#183; checks &#183; retries</text>
+                <text x="1160" y="245" text-anchor="middle" class="atc">decides &#183; checks &#183; retries</text>
               </g>
             </svg>
           </div>
