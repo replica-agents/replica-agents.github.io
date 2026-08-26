@@ -2400,12 +2400,13 @@
 
     /* ═══════════ MAIN RESULTS TABLE ═══════════ */
     .rwrap {
-      flex: 1 1 auto;
+      flex: 0 1 auto;
       min-height: 0;
       overflow: auto;
       border: 1px solid var(--line);
       border-radius: 12px;
       background: var(--paper);
+      max-height: 100%;
     }
 
     .rtab {
@@ -2416,8 +2417,8 @@
 
     .rtab th,
     .rtab td {
-      padding: 9px 12px;
-      font-size: 23px;
+      padding: 4px 12px;
+      font-size: 21px;
       text-align: center;
       border-bottom: 1px solid #eceade;
       transition: background .3s, opacity .3s, color .3s;
@@ -2507,8 +2508,8 @@
       font-weight: 800;
       color: #8a6510;
       border-bottom: none;
-      font-size: 27px;
-      padding: 15px 12px;
+      font-size: 25px;
+      padding: 11px 12px;
       border-top: 2.5px solid var(--gold);
       /* the table scrolls once a category is expanded, and our row lives at the
        bottom of it — pinned, so expanding a category can never push it off */
@@ -3562,11 +3563,11 @@
         <h1>REPLICA</h1>
         <div class="subtitle">An Agentic Framework for<br>Visually Faithful Document Reconstruction</div>
         <div class="roadmap">
-          <span class="rm"><b>Represent</b>FID-HTML</span>
+          <span class="rm"><b>Representation Format</b>FID-HTML</span>
           <span class="rmar">&rarr;</span>
-          <span class="rm"><b>Measure</b>VFDR-Bench</span>
+          <span class="rm"><b>Method</b>REPLICA</span>
           <span class="rmar">&rarr;</span>
-          <span class="rm"><b>Generate</b>REPLICA</span>
+          <span class="rm"><b>Benchmark & Metrics</b>VFDR-Bench</span>
         </div>
         <div class="authors">
           Raghuveer R<sup>1*</sup>, Anirudh Srinivasan<sup>1*</sup>, Venkata Kesav Venna<sup>1*</sup>,
@@ -4431,7 +4432,7 @@
       <!-- ═══════════ 22 · ABLATION (paper Table 3, as a chart) ═══════════ -->
       <section class="slide vcenter" data-eyebrow="05 · Evaluation" data-frags="3" id="ablSlide"
         data-notes="The ablation, built up cumulatively, and read on the same four axes as everything else — the navy line is Overall, gold is the visual-fidelity axis, violet is the physical-structure axis. The bands are our own four stages. Three stages, three numbers, and they add up: 0.53 at the start, 0.93 at the end. [CLICK] Stage one, Segment: hierarchical layout, Hi-SAM and Set-of-Mark take us from 0.53 to 0.71 — plus eighteen. Notice it is the physical-structure line that climbs, 0.34 to 0.69: better segmentation buys geometry. [CLICK] Stage two, Localize: 0.71 to 0.86, plus fifteen. And here is the part that matters — a single monolithic generator only reaches 0.76. The remaining ten points come from routing to six specialists, at the same model size. That is the agentic decomposition paying for itself. [CLICK] Stage four, Refine: 0.86 to 0.93, plus seven, with visual fidelity reaching 0.97. Eighteen, fifteen, seven — forty points in total, and the two biggest are decomposition and looking at the render. Assemble has no row of its own here: it is not optional, so there is nothing to ablate.">
-        <div class="kicker"> &nbsp;·&nbsp; <span class="chint"></span></div>
+        <div class="kicker"> &nbsp;&nbsp; <span class="chint"></span></div>
         <h2>Ablation studies <span class="srcnote"></span></h2>
         <div class="slide-body">
           <div class="ablwrap"><svg id="ablChart" viewBox="0 0 1700 706"
@@ -4664,10 +4665,10 @@
       <section class="slide vcenter" data-eyebrow="09 · Conclusion"
         data-notes="To summarise. Fid-HTML: a web-native representation where position and style are required rather than optional, so fidelity is a property of the format. VFDR-Bench with GPS, LPS and VFS: the first benchmark to score physical structure and rendered appearance. And REPLICA: Segment, Localize, Assemble, Refine — agents where judgment is needed, tools where determinism is needed — reaching 93% visual fidelity and 0.86 overall, ahead of GPT-5 and Gemini. And the headline for the agentic argument: REPLICA with an 8-billion-parameter backbone beats Qwen3-VL-30B by 39% overall, at 3.75 times smaller and comparable inference time. Structured decomposition beats brute-force scale.">
         <div class="kicker">One paradigm, three contributions</div>
-        <h2>Represent → Measure → Generate</h2>
+        <h2>Representation Format → Method → Benchmark & Metrics</h2>
         <div class="slide-body">
           <div class="grid3" style="flex:0 0 auto;">
-            <div class="card"><span class="tag">Represention Format</span>
+            <div class="card"><span class="tag">Representation Format</span>
               <h3>FID-HTML</h3>
               <!-- <p>A web-native format where position and style are <b>required</b>, inline, per element — fidelity by construction.</p> -->
                <p>A web-native format for <b>Visually Faithful Document Reconstruction</b></p>
@@ -4678,7 +4679,7 @@
                 <!-- <b>Agents where judgment is needed, tools where determinism is.</b> -->
               </p>
             </div>
-            <div class="card"><span class="tag">Metrics</span>
+            <div class="card"><span class="tag">Benchmark & Metrics</span>
               <h3>VFDR-Bench + GPS · LPS · VFS</h3>
               <p><b>5,000</b> expert-annotated documents, <b>15+</b> languages, <b>3</b> new metrics.
                 </p>
@@ -5224,11 +5225,13 @@
           // rank within the category so the collapsed view shows its best system
           const best = [...g.rows].sort((a, b) => b.v[6] - a.v[6])[0];
           if (!g.ours) {
-            body += '<tr class="cat" data-g="' + gi + '"><td colspan="8"><span class="car">\u25b8</span>' + g.name +
-              '<span class="cn">' + g.rows.length + ' systems — showing best</span></td></tr>';
+            // open from the start: the slide says "all 16 methods", so it shows
+            // all 16 instead of four collapsed groups sitting above a band of white
+            body += '<tr class="cat open" data-g="' + gi + '"><td colspan="8"><span class="car">\u25be</span>' + g.name +
+              '<span class="cn">' + g.rows.length + ' systems</span></td></tr>';
           }
           g.rows.forEach(r => {
-            const extra = (!g.ours && r !== best) ? " xtra" : "";
+            const extra = (!g.ours && r !== best) ? " xtra open" : "";
             body += '<tr class="row' + extra + (r.ours ? " ours" : "") + '" data-g="' + gi + '" data-m="' + r.m + '">' +
               '<td class="m" data-c="0">' + r.m + (r.ours ? " <b>(ours)</b>" : "") + '</td>' +
               r.v.map((x, i) => '<td data-c="' + (i + 1) + '">' + x.toFixed(2) + '</td>').join("") + '</tr>';
