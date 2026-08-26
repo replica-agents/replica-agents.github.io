@@ -422,7 +422,7 @@
     .grid2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 24px;
+      gap: 28px;
     }
 
     .grid3 {
@@ -434,20 +434,20 @@
     .grid4 {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 18px;
+      gap: 22px;
     }
 
     .card {
       background: var(--paper);
       border: 1px solid var(--line);
       border-radius: 12px;
-      padding: 22px 24px;
+      padding: 30px 30px;
       box-shadow: 0 3px 14px rgba(30, 58, 95, .07);
     }
 
     .card h3 {
-      margin: 0 0 9px;
-      font-size: 24px;
+      margin: 0 0 12px;
+      font-size: 34px;
       color: var(--navy);
       font-family: var(--serif);
       font-weight: 700;
@@ -455,20 +455,20 @@
 
     .card p {
       margin: 0;
-      font-size: 19px;
-      line-height: 1.5;
+      font-size: 23px;
+      line-height: 1.45;
       color: var(--ink-2);
     }
 
     .card .tag {
       display: inline-block;
       font-family: var(--mono);
-      font-size: 12.5px;
+      font-size: 15px;
       letter-spacing: .12em;
       text-transform: uppercase;
       color: var(--gold);
       font-weight: 700;
-      margin-bottom: 7px;
+      margin-bottom: 10px;
     }
 
     .card.accent {
@@ -1007,7 +1007,7 @@
      note spans both columns underneath, which is also what fills that width. */
     .ladder-wrap {
       display: grid;
-      grid-template-columns: 462px 556px;
+      grid-template-columns: 462px 700px;
       grid-template-rows: auto auto;
       column-gap: 96px;
       row-gap: 6px;
@@ -1112,14 +1112,71 @@
      reconstruction needs explicit dimensions — deliberately NOT the source's,
      because "a text stream has no page" is the point of those two levels. */
     .ladder-out .pagebox {
-      width: 556px;
-      height: 664px;
+      width: 700px;
+      height: 700px;
+    }
+
+    /* level 1 has structure but still no geometry, so it is narrower than the
+       raw stream and still nothing like the page */
+    .ladder-out .pagebox[data-lv="1"] {
+      width: 600px;
+      height: 672px;
     }
 
     .ladder-out .pagebox.sized {
       width: 462px;
       height: 625px;
     }
+
+    /* ---- invoice detail: a real letterhead, meta grid and totals block.
+       Everything below degrades through the same L1/L2/L3 gates as before, so
+       level 0 is still a flat stream and level 3 is still the source. ---- */
+    .d-head { display: block; }
+    .doc.L2 .d-head, .doc.L3 .d-head {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 18px; margin-bottom: 12px;
+    }
+    .d-addr, .d-billto, .d-from, .d-meta { transition: all .45s; }
+    .doc:not(.L3) .d-addr { font-size: 13.5px; color: #222; }
+    .doc.L3 .d-addr { font-size: 9.5px; line-height: 1.5; color: #6b6b6b; }
+    .doc:not(.L2):not(.L3) .d-mtab,
+    .doc:not(.L2):not(.L3) .d-mtab tbody,
+    .doc:not(.L2):not(.L3) .d-mtab tr,
+    .doc:not(.L2):not(.L3) .d-mtab td { display: inline; font-size: 13.5px; padding: 0; }
+    .doc:not(.L2):not(.L3) .d-mtab td::after { content: ' '; }
+    .d-mtab { border-collapse: collapse; font-size: 10px; }
+    .doc.L3 .d-mtab td { padding: 1px 0 1px 12px; color: #444; }
+    .doc.L3 .d-mtab td.num { font-variant-numeric: tabular-nums; text-align: right; font-weight: 700; color: #222; }
+    .d-lbl { display: inline; }
+    .doc.L3 .d-lbl {
+      display: block; font-family: var(--mono); font-size: 8px; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 2px; font-weight: 700;
+    }
+    .doc.L3 .d-billto { font-size: 10.5px; line-height: 1.45; margin-bottom: 10px; }
+    /* the totals block only becomes a right-aligned column once geometry exists */
+    .d-tot { border-collapse: collapse; }
+    .doc:not(.L2):not(.L3) .d-tot,
+    .doc:not(.L2):not(.L3) .d-tot tbody,
+    .doc:not(.L2):not(.L3) .d-tot tr,
+    .doc:not(.L2):not(.L3) .d-tot td { display: inline; font-size: 13.5px; padding: 0; }
+    .doc:not(.L2):not(.L3) .d-tot td::after { content: ' '; }
+    .doc.L2 .d-tot, .doc.L3 .d-tot {
+      column-span: all; width: 54%; margin: 8px 0 8px auto; font-size: 10.5px;
+    }
+    .doc.L3 .d-tot td { padding: 2px 0; border-bottom: 1px solid #eee; }
+    .doc.L3 .d-tot td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .doc.L3 .d-tot .d-due td {
+      border-top: 2px solid var(--navy); border-bottom: 0; font-weight: 700;
+      color: var(--navy); font-size: 12px; padding-top: 4px;
+    }
+
+    /* the richer invoice needs a little less leading once it is inside the
+       real page box, or the last paragraph clips at levels 2 and 3 */
+    .doc.L2 .d-body, .doc.L3 .d-body { font-size: 11.5px; line-height: 1.42; }
+    .doc.L2 .d-body p, .doc.L3 .d-body p { margin: 0 0 6px; }
+    .doc.L3 .d-tab td, .doc.L3 .d-tab th { padding: 2px 4px; }
+    .doc.L3 .d-tot td { padding: 1.5px 0; }
+    .doc.L3 .d-foot { font-size: 8px; line-height: 1.35; margin-top: 6px; }
 
     .doc {
       font-family: Georgia, serif;
@@ -1132,9 +1189,9 @@
 
     .doc .d-stamp {
       position: absolute;
-      right: 8px;
-      top: 34px;
-      transform: rotate(-9deg);
+      right: 108px;
+      top: 176px;
+      transform: rotate(-11deg);
       border: 3px solid var(--red);
       color: var(--red);
       font-family: var(--mono);
@@ -1314,6 +1371,41 @@
 
 
     /* ---------- agents vs tools ---------- */
+    /* ---- agents vs tools, drawn ---- */
+    .atfig { width: 100%; height: auto; max-height: 380px; display: block; margin-top: 8px; }
+    .atfig .crop, .atfig .out {
+      fill: var(--paper); stroke: var(--line); stroke-width: 2;
+    }
+    .atfig .cl { stroke: #cfd6de; stroke-width: 7; stroke-linecap: round; }
+    .atfig .ob { fill: #dfe5ec; }
+    .atfig .ob.g { fill: var(--gold-soft); stroke: var(--gold-line); stroke-width: 1.5; }
+    .atfig .ar { fill: none; stroke: var(--navy-soft); stroke-width: 5; stroke-linecap: round; }
+    .atfig .ar.g { stroke: var(--gold); }
+    .atfig .ar.dash, .atfig .ar.loop { stroke: var(--gold); stroke-dasharray: 9 7; stroke-width: 4; }
+    .atfig .gbody { fill: #e7ecf3; stroke: var(--navy-soft); stroke-width: 3; }
+    .atfig .teeth rect { fill: var(--navy-soft); }
+    .atfig .ghole { fill: var(--bg); stroke: var(--navy-soft); stroke-width: 3; }
+    .atfig .brain { fill: var(--gold-soft); stroke: var(--gold); stroke-width: 3.5; }
+    .atfig .qm { font-family: var(--serif); font-size: 54px; font-weight: 700; fill: #8a6510; }
+    .atfig .atc {
+      font-family: var(--sans); font-size: 25px; font-weight: 600; fill: var(--ink-2);
+    }
+    .atfig .atn { font-family: var(--sans); font-size: 21px; fill: var(--ink-3); font-style: italic; }
+    .atfig .atn.gold { fill: #8a6510; font-style: normal; font-weight: 600; }
+
+    /* ---- closing slide: three cards and one number, so both grow to fill ---- */
+    .slide[data-eyebrow="09 · Conclusion"] .grid3 { gap: 28px; }
+    .slide[data-eyebrow="09 · Conclusion"] .grid3 .card {
+      min-height: 290px; display: flex; flex-direction: column; justify-content: center;
+      padding: 36px 34px;
+    }
+    .slide[data-eyebrow="09 · Conclusion"] .grid3 .card h3 { font-size: 42px; margin-bottom: 16px; }
+    .slide[data-eyebrow="09 · Conclusion"] .grid3 .card p { font-size: 25px; line-height: 1.5; }
+    .slide[data-eyebrow="09 · Conclusion"] .grid3 .card .tag { font-size: 16px; margin-bottom: 12px; }
+    .slide[data-eyebrow="09 · Conclusion"] .stats { margin-top: 46px !important; }
+    .slide[data-eyebrow="09 · Conclusion"] .stats .v { font-size: 140px; line-height: 1; }
+    .slide[data-eyebrow="09 · Conclusion"] .stats .k { font-size: 24px; margin-top: 10px; }
+
     .at-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1544,6 +1636,12 @@
       height: 70px;
     }
 
+    .thanks-logos .iiith-logo {
+      height: 90px;
+      width: auto;
+      object-fit: contain;
+    }
+
     /* ---------- source viewer: the deck showing its own markup ---------- */
     #srcview {
       position: fixed;
@@ -1768,7 +1866,7 @@
     .reqgroup {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 18px;
     }
 
     .reqgroup+.reqgroup {
@@ -1776,7 +1874,7 @@
     }
 
     .reqlabel {
-      font-size: 19px;
+      font-size: 23px;
       color: var(--ink-3);
       display: flex;
       align-items: center;
@@ -1817,14 +1915,17 @@
     }
 
     .reqrow2 {
-      gap: 20px;
+      gap: 26px;
     }
+
+    .card.wide .ricon { width: 108px; height: 76px; flex: none; }
+    .card.wide h3 { margin: 0; font-size: 36px; }
 
     .card.wide {
       display: flex;
       align-items: center;
-      gap: 20px;
-      padding: 18px 24px;
+      gap: 26px;
+      padding: 26px 30px;
     }
 
     .card.wide .ricon {
@@ -2299,7 +2400,7 @@
 
     /* ═══════════ MAIN RESULTS TABLE ═══════════ */
     .rwrap {
-      flex: 0 1 auto;
+      flex: 1 1 auto;
       min-height: 0;
       overflow: auto;
       border: 1px solid var(--line);
@@ -2315,8 +2416,8 @@
 
     .rtab th,
     .rtab td {
-      padding: 6px 10px;
-      font-size: 18px;
+      padding: 9px 12px;
+      font-size: 23px;
       text-align: center;
       border-bottom: 1px solid #eceade;
       transition: background .3s, opacity .3s, color .3s;
@@ -2406,8 +2507,8 @@
       font-weight: 800;
       color: #8a6510;
       border-bottom: none;
-      font-size: 23px;
-      padding: 13px 10px;
+      font-size: 27px;
+      padding: 15px 12px;
       border-top: 2.5px solid var(--gold);
       /* the table scrolls once a category is expanded, and our row lives at the
        bottom of it — pinned, so expanding a category can never push it off */
@@ -2495,7 +2596,7 @@
 
     .rnote {
       flex: 0 0 auto;
-      margin-top: 12px;
+      margin-top: 8px;
       display: flex;
       flex-direction: column;
       gap: 7px;
@@ -2569,6 +2670,8 @@
     }
 
     /* ═══════════ ABLATION CHART ═══════════ */
+    #ablClip rect { transition: width .5s cubic-bezier(.3,.7,.3,1); }
+
     .ablwrap {
       flex: 1;
       min-height: 0;
@@ -3480,17 +3583,18 @@
       </section>
 
       <!-- ═══════════ 2 · SECTION 01 ═══════════ -->
-      <section class="slide section-slide" data-eyebrow="01 · Motivation"
+      <!-- <section class="slide section-slide" data-eyebrow="01 · Motivation"
         data-notes="Section one. The problem, and why the way a document looks is part of what it means.">
         <h1>The problem</h1>
         <div class="q">A document is not just its words. So what exactly is a document made of — and which parts do we
           lose when we convert one?</div>
-      </section>
+      </section> -->
 
       <!-- ═══════════ LIVE FIDELITY LADDER ═══════════ -->
       <section class="slide" data-eyebrow="01 · Motivation" data-frags="3" id="ladderSlide"
         data-notes="So what did we actually lose? Same document, twice. On the left the original page. On the right I rebuild it one layer at a time — this is running live, and at the end the two are literally the same markup. [CLICK] Level zero, text only: every word is present and in order, but it is a wall of prose. You cannot tell the heading from the body, the table has become a run of numbers, the total is indistinguishable from the fine print. Note the shape does not even match — a text stream has no page. This is what OCR and most parsers give you. [CLICK] Level one, add logical structure: now we know this is a heading, this is a table with rows and columns. Markdown-class output. A big win for machines — but still no page geometry, so the shape still does not match. [CLICK] Level two, add physical position: now the page has the same dimensions as the original, the two-column body is back, and the numbers align under their headers. Now you can tell which number belongs to which item. [CLICK] Level three, add visual fidelity: typography, weight, colour, the brand bar — and critically the strikethrough and the OVERDUE stamp. Now the right side is pixel-for-pixel the left side. Only the cancelled line reads as cancelled, and only now does the overdue notice exist at all.">
-        <h2>Rebuilding a document, <em>one layer at a time</em></h2>
+        <!-- <h2>Rebuilding a document, <em>one layer at a time</em></h2> -->
+         <h2>What is <em>V</em>isually <em>F</em>aithful <em>D</em>ocument <em>R</em>econstruction ? </h2>
         <div class="slide-body">
           <div class="lv-steps">
             <div class="lv-step" data-lv="0">0 · Text only</div>
@@ -3506,46 +3610,78 @@
                 <div class="doc L1 L2 L3" id="ladderSrc">
                   <div class="d-bar"></div>
                   <div class="d-stamp">OVERDUE</div>
-                  <div class="d-sub">Invoice · #INV-2024-0847</div>
-                  <div class="d-title">MERIDIAN &amp; CO.</div>
+                  <div class="d-head">
+                    <div class="d-from">
+                      <div class="d-title">Meridian &amp; Co.</div>
+                      <div class="d-addr">114 Beacon Street, Suite 400<br>Boston, MA 02116<br>accounts@meridian.co
+                        &nbsp;·&nbsp; +1 617 555 0142</div>
+                    </div>
+                    <div class="d-meta">
+                      <div class="d-sub">Invoice</div>
+                      <table class="d-mtab">
+                        <tr><td>Number</td><td class="num">INV-2024-0847</td></tr>
+                        <tr><td>Issued</td><td class="num">12 May 2024</td></tr>
+                        <tr><td>Terms</td><td class="num">Net 15</td></tr>
+                        <tr><td>Due</td><td class="num">27 May 2024</td></tr>
+                      </table>
+                    </div>
+                  </div>
                   <div class="d-body">
-                    <p>Bill to: Northwind Traders, Attn: A. Vance, 88 Kingsway, Chicago, IL. Invoice date May 12, 2024.
-                      Terms Net 15. Status Overdue.</p>
+                    <div class="d-billto"><span class="d-lbl">Bill to</span>Northwind Traders &nbsp;·&nbsp; Attn:
+                      A. Vance<br>88 Kingsway, Chicago, IL 60604</div>
                     <table class="d-tab">
                       <tr>
-                        <th>Item</th>
+                        <th>Description</th>
                         <th class="num">Qty</th>
-                        <th class="num">Unit</th>
-                        <th class="num">Total</th>
+                        <th class="num">Rate</th>
+                        <th class="num">Amount</th>
                       </tr>
                       <tr>
-                        <td>Consulting Services</td>
+                        <td>Consulting services — Q2 retainer</td>
                         <td class="num">10</td>
-                        <td class="num">$150.00</td>
-                        <td class="num">$1,500.00</td>
+                        <td class="num">150.00</td>
+                        <td class="num">1,500.00</td>
                       </tr>
                       <tr class="d-void">
-                        <td>Software License (Annual)</td>
+                        <td>Software licence, annual</td>
                         <td class="num">1</td>
-                        <td class="num">$2,400.00</td>
-                        <td class="num">$2,400.00</td>
+                        <td class="num">2,400.00</td>
+                        <td class="num">2,400.00</td>
                       </tr>
                       <tr>
-                        <td>Support Retainer</td>
+                        <td>Support retainer — Apr, May, Jun</td>
                         <td class="num">3</td>
-                        <td class="num">$800.00</td>
-                        <td class="num">$2,400.00</td>
+                        <td class="num">800.00</td>
+                        <td class="num">2,400.00</td>
+                      </tr>
+                      <tr>
+                        <td>On-site integration, 12 May</td>
+                        <td class="num">1</td>
+                        <td class="num">960.00</td>
+                        <td class="num">960.00</td>
+                      </tr>
+                      <tr>
+                        <td>Data migration, per record</td>
+                        <td class="num">480</td>
+                        <td class="num">0.25</td>
+                        <td class="num">120.00</td>
                       </tr>
                     </table>
-                    <p>Subtotal $3,900.00. Tax (8%) $312.00. <b>TOTAL DUE $4,212.00</b></p>
-                    <p>Remittance. Payment may be made by bank transfer to the account on file, quoting the invoice
-                      number above as the reference. Cheques should be made payable to Meridian &amp; Co. and posted to
-                      the Boston address.</p>
-                    <p>Queries. Any discrepancy must be raised in writing within seven days of receipt. Credited or
-                      cancelled line items remain on the statement for audit purposes and are struck through rather than
-                      removed.</p>
+                    <table class="d-tot">
+                      <tr><td>Subtotal</td><td class="num">4,980.00</td></tr>
+                      <tr><td>Credit — cancelled licence</td><td class="num">&minus;2,400.00</td></tr>
+                      <tr><td>Sales tax (8%)</td><td class="num">206.40</td></tr>
+                      <tr class="d-due"><td>Total due (USD)</td><td class="num">2,786.40</td></tr>
+                    </table>
+                    <p><span class="d-lbl">Remittance</span>Payment by bank transfer to Eastbrook Trust, account
+                      0042-88190, routing 011000138, quoting the invoice number as the reference. Cheques payable to
+                      Meridian &amp; Co. and posted to the Boston address above.</p>
+                    <p><span class="d-lbl">Queries</span>Any discrepancy must be raised in writing within seven days
+                      of receipt. Credited or cancelled line items remain on the statement for audit purposes and are
+                      struck through rather than removed.</p>
                   </div>
-                  <div class="d-foot">Payment due within 15 days of overdue notice.</div>
+                  <div class="d-foot">Meridian &amp; Co. is registered in Massachusetts, no. 04-3729915. &nbsp;·&nbsp;
+                    Payment due within 15 days of this overdue notice.</div>
                 </div>
               </div>
               <div class="cap"><b>Original</b> — the source page</div>
@@ -3562,7 +3698,8 @@
       <section class="slide vcenter" data-eyebrow="01 · Motivation" data-frags="2"
         data-notes="Those four layers are exactly what a faithful reconstruction has to preserve, and they are the spine of the paper. Text — are the words right. Hierarchy — is the structure right: reading order, nesting, tables, lists. Geometry — is the position right: where does each block actually sit. And visual components — does it look right: typography, colour, weight, backgrounds. Prior work optimises the first two and lets the rest go, and the reason is simple: no prior benchmark measured the last two, so no prior system optimised them. [CLICK] And two requirements on the format itself: whatever we output has to be web-native, so it opens anywhere without a bespoke viewer, and machine-readable, so downstream models can consume the structure directly. Those six boxes are the specification for everything that follows.">
         <div class="kicker">The axes of document reconstruction</div>
-        <h2>Requirements for <em>visually faithful</em> reconstruction</h2>
+        <!-- <h2>Requirements for <em>visually faithful</em> reconstruction</h2> -->
+         <h2>Requirements for <em>V</em>isually <em>F</em>aithful <em>D</em>ocument <em>R</em>econstruction</h2>
         <div class="slide-body">
           <div class="reqgroup frag" data-frag="1">
             <div class="reqlabel"><span class="rq">Must preserve</span> the four axes of the document</div>
@@ -3664,8 +3801,9 @@
          causal claim, in about fifteen seconds. -->
       <section class="slide vcenter" data-eyebrow="02 · Where the field stands" data-frags="2"
         data-notes="So why did all three lose the same two things? It is not the model. It is what we asked the model to write. [CLICK] The page carries four axes. They all have to pass through one narrow place — the output format. Marker writes Markdown. The OCR VLMs write a flat text stream. GPT-5 and Qwen write generic HTML. [CLICK] And that is where two of them die. Markdown and plain text have no syntax for an x-y coordinate or a font colour — you literally cannot write it down. HTML does have the syntax, and this is the subtle case: the syntax exists, but a div with no style attribute is perfectly valid HTML — so it is optional, and what is optional gets left out. Either way there is no place to put position and style, and the information never reaches the page. [CLICK] So the sentence I want you to keep: what a format does not require, a system does not produce. The bottleneck is not the model. It is the target. Widen the target, and everything downstream changes — so that is what we did.">
-        <div class="kicker">Not a model failure — a format failure</div>
-        <h2>Four axes go in. <em>The output format only has room for two.</em></h2>
+        <!-- <div class="kicker">Not a model failure — a format failure</div> -->
+        <!-- <h2>Four axes go in. <em>The output format only has room for two.</em></h2> -->
+         <h2>Limitations of Existing Document Representations</h2>
         <div class="slide-body">
           <svg class="btl" viewBox="0 0 1620 560" aria-label="The output format is the bottleneck">
             <defs>
@@ -3768,12 +3906,12 @@
       </section>
 
       <!-- ═══════════ 7 · SECTION 03 ═══════════ -->
-      <section class="slide section-slide" data-eyebrow="03 · FID-HTML"
+      <!-- <section class="slide section-slide" data-eyebrow="03 · FID-HTML"
         data-notes="Section two. We just argued the format is the ceiling — so this is the format. Everything the four axes ask for, carried in one file that a browser renders and a model can read.">
         <h1>FID-HTML</h1>
         <div class="q">One format that carries <b>all four axes at once</b> — text, hierarchy, geometry and style — and
           stays web-native and machine-readable.</div>
-      </section>
+      </section> -->
 
       <!-- ═══════════ 7b · THE REVEAL — same page, rebuilt ═══════════ -->
       <section class="slide demo bleed" data-eyebrow="03 · FID-HTML" data-embed="teaser" data-frags="1"
@@ -3795,8 +3933,9 @@
       <!-- ═══════════ 9 · FID-HTML ANATOMY (paper Fig. 3) ═══════════ -->
       <section class="slide demo bleed" data-eyebrow="03 · FID-HTML" data-embed="fidfig" data-nav="1" data-frags="6"
         data-notes="Concretely, this is what Fid-HTML encodes — and the code on the right is the real source of the page on the left, not a mock-up. Six dimensions. One, textual content at word and block level. Two, hierarchical structure through nested divs. Three, semantic tags — li, table, tr, td — with meaningful class names. Four, positional information: global placement by absolute positioning, local alignment by relative containers and p wrappers. Five, styling metadata: font size, colour, bold, italic, underline, strikethrough, as inline CSS. Six, figures and backgrounds layered into the DOM with VLM-generated alt-text — which is also what makes the output screen-reader accessible. Click any dimension and it highlights exactly where it lives in the code; flip to Rendered and your browser draws that exact markup.">
-        <div class="kicker">What made that possible</div>
-        <h2>Six dimensions — <em>click one</em> to see where it lives in the source <span class="srcnote"></span></h2>
+        <!-- <div class="kicker">What made that possible</div> -->
+        <!-- <h2>Six dimensions — <em>click one</em> to see where it lives in the source <span class="srcnote"></span></h2> -->
+         <h2>Six Aspects of FID-HTML</h2>
         <div class="slide-body">
           <div class="embed"><iframe src="index.html?embed=fidhtml&part=figure"
               title="FID-HTML anatomy (paper Fig. 3)"></iframe></div>
@@ -3816,18 +3955,19 @@
       </section>
 
       <!-- ═══════════ 10 · SECTION 04 ═══════════ -->
-      <section class="slide section-slide" data-eyebrow="04 · The agentic"
+      <!-- <section class="slide section-slide" data-eyebrow="04 · The agentic"
         data-notes="Section three, and this is the part I most want to land: why this system is agentic, and what that actually means.">
         <h1>The agentic framework</h1>
         <div class="q">A single model must jointly solve detection, recognition, ordering and styling — with no
           geometric grounding and no way to check its own render. What if we decomposed instead?</div>
-      </section>
+      </section> -->
 
       <!-- ═══════════ 11 · AGENTS VS TOOLS ═══════════ -->
       <section class="slide vcenter" data-eyebrow="04 · The agentic" data-frags="1"
         data-notes="First the vocabulary, because agentic is an overloaded word. We formalise the system as a coordination between two things. A TOOL is a fixed function: same input, same output, no judgment. A layout detector always returns boxes the same way; reading-order computation, font fitting, background extraction — deterministic, reproducible, cheap. An AGENT reasons: it decides which tool to call, when, and whether the result is good enough — then retries, overrides, reroutes or escalates. In the paper we write script-A for the set of agents and script-T for the set of tools; agents perform semantic reasoning, routing, grouping and generation, while tools execute structured reproducible operations. And the objective is precisely this: given a page image I, produce HTML H such that the RENDER of H aligns with I across all four axes. Note it is R of H — the rendering — not H itself. That single choice is what forces a refine stage to exist at all.">
-        <div class="kicker">The vocabulary, precisely</div>
-        <h2>Agents <em>reason</em>. Tools <em>execute</em>.</h2>
+        <!-- <div class="kicker">The vocabulary, precisely</div> -->
+        <!-- <h2>Agents <em>reason</em>. Tools <em>execute</em>.</h2> -->
+         <h2>Defining Agents and Tools</h2>
         <div class="slide-body">
           <div class="at-grid" style="flex:0 0 auto;margin-bottom:26px;">
             <div class="at-col">
@@ -3859,13 +3999,68 @@
               </div>
             </div>
           </div>
+          <!-- The objective used to be stated here as a formula. It is the same
+               claim as the loop below, and the loop is the part an audience can
+               read from the back of the room. -->
           <div class="frag" data-frag="1">
-            <div class="math big">
-              <span class="op">given</span> I &nbsp;<span class="op">produce</span>&nbsp; H &nbsp;<span class="op">such
-                that</span>&nbsp;
-              <span style="color:var(--gold);font-weight:700;font-style:normal;">R(H) ≈ I</span>
-              &nbsp;<span class="op">across</span>&nbsp; TE, LS, PS, VF
-            </div>
+            <svg class="atfig" viewBox="0 0 1700 250" aria-label="A tool runs once; an agent checks its own result and goes again">
+              <defs>
+                <marker id="atA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                  <path d="M0 0 L10 5 L0 10 z" fill="var(--navy-soft)"/>
+                </marker>
+                <marker id="atB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                  <path d="M0 0 L10 5 L0 10 z" fill="var(--gold)"/>
+                </marker>
+              </defs>
+
+              <!-- ── a tool: one pass, no opinion ── -->
+              <g class="tl">
+                <rect class="crop" x="40" y="74" width="96" height="120" rx="8"/>
+                <line class="cl" x1="58" y1="102" x2="118" y2="102"/>
+                <line class="cl" x1="58" y1="122" x2="118" y2="122"/>
+                <line class="cl" x1="58" y1="142" x2="100" y2="142"/>
+                <path class="ar" d="M150 134 H 232" marker-end="url(#atA)"/>
+                <g class="gear" transform="translate(300,134)">
+                  <circle r="42" class="gbody"/>
+                  <g class="teeth">
+                    <rect x="-7" y="-56" width="14" height="16" rx="3"/>
+                    <rect x="-7" y="40"  width="14" height="16" rx="3"/>
+                    <rect x="-56" y="-7" width="16" height="14" rx="3"/>
+                    <rect x="40" y="-7"  width="16" height="14" rx="3"/>
+                  </g>
+                  <circle r="15" class="ghole"/>
+                </g>
+                <path class="ar" d="M368 134 H 450" marker-end="url(#atA)"/>
+                <rect class="out" x="466" y="74" width="96" height="120" rx="8"/>
+                <rect class="ob" x="482" y="92"  width="64" height="34" rx="4"/>
+                <rect class="ob" x="482" y="134" width="64" height="42" rx="4"/>
+                <text x="300" y="230" text-anchor="middle" class="atc">one pass &#183; the same answer every time</text>
+              </g>
+
+              <!-- ── an agent: chooses, checks, and goes again ── -->
+              <g class="ag">
+                <rect class="crop" x="900" y="74" width="96" height="120" rx="8"/>
+                <line class="cl" x1="918" y1="102" x2="978" y2="102"/>
+                <line class="cl" x1="918" y1="122" x2="978" y2="122"/>
+                <line class="cl" x1="918" y1="142" x2="960" y2="142"/>
+                <path class="ar g" d="M1010 134 H 1092" marker-end="url(#atB)"/>
+                <g transform="translate(1160,134)">
+                  <rect class="brain" x="-46" y="-46" width="92" height="92" rx="20"/>
+                  <text y="14" text-anchor="middle" class="qm">?</text>
+                </g>
+                <!-- it reaches for whichever tool the case needs -->
+                <path class="ar dash" d="M1160 190 V 226 H 1050"/>
+                <text x="1044" y="231" text-anchor="end" class="atn">picks a tool</text>
+                <path class="ar g" d="M1228 134 H 1310" marker-end="url(#atB)"/>
+                <rect class="out" x="1326" y="74" width="96" height="120" rx="8"/>
+                <rect class="ob g" x="1342" y="92"  width="64" height="34" rx="4"/>
+                <rect class="ob g" x="1342" y="134" width="64" height="42" rx="4"/>
+                <!-- and looks at what came out -->
+                <path class="ar loop" d="M1374 62 C 1374 34, 1160 34, 1160 76" marker-end="url(#atB)"/>
+                <text x="1267" y="20" text-anchor="middle" class="atn gold">not good enough &#8594; again</text>
+                <text x="1160" y="230" text-anchor="middle" class="atc">decides &#183; checks &#183; retries</text>
+              </g>
+            </svg>
           </div>
         </div>
       </section>
@@ -4066,8 +4261,9 @@
       <!-- ═══════════ 18 · LIVE FRAMEWORK DEMO ═══════════ -->
       <section class="slide demo bleed" data-eyebrow="04 · Approach · Demo" data-embed="pipeline" data-frags="0"
         data-notes="Rather than describe it further — here is the whole framework running on a real page with every intermediate output. Step through with the clicker, or hit Play for the full walkthrough. Each beat spotlights the corresponding part of Figure 4 on the left.">
-        <div class="kicker">Interactive walkthrough</div>
-        <h2>The framework, running on a real page <span class="srcnote"></span></h2>
+        <!-- <div class="kicker">Interactive walkthrough</div> -->
+        <!-- <h2>The framework, running on a real page <span class="srcnote"></span></h2> -->
+         <h2>Walkthrough of the <em>REPLICA</em> Agentic Framework</h2>
         <div class="slide-body">
           <div class="embed"><iframe src="index.html?embed=demo&doc=magazine&autoplay=1&rate=1.5"
               title="REPLICA framework demo"></iframe></div>
@@ -4075,12 +4271,12 @@
       </section>
 
       <!-- ═══════════ 19 · SECTION 05 ═══════════ -->
-      <section class="slide section-slide" data-eyebrow="05 · Evaluation"
+      <!-- <section class="slide section-slide" data-eyebrow="05 · Evaluation"
         data-notes="Section four. How we measure it, and what we find.">
         <h1>Evaluation</h1>
         <div class="q"><b>FID-HTML</b> — the representation. <b>REPLICA</b> — the system.<br>
           Nothing existed that could <b>score</b> either one.</div>
-      </section>
+      </section> -->
 
       <!-- ═══════════ VFDR-BENCH SAMPLE CAROUSEL ═══════════ -->
       <section class="slide" data-eyebrow="05 · Evaluation" id="vfdrSlide"
@@ -4181,7 +4377,8 @@
                 </p>
               </div>
               <div class="rs-card gold frag" data-frag="2">
-                <h4>Two had none. We built them.</h4>
+                <!-- <h4>Two had none. We built them.</h4> -->
+                 <h4>We introduce</h4>
                 <p><b>GPS / LPS</b> — where every block and line lands<br>
                   <b>VFS</b> — typography, colour and spacing, judged by a VLM
                 </p>
@@ -4189,7 +4386,7 @@
               </div>
               <div class="rs-card frag" data-frag="3">
                 <h4>Overall = the mean of the four</h4>
-                <p>No axis can be bought.<br>Pearson <b>&gt; 0.8</b> against seven expert annotators.</p>
+                <!-- <p>No axis can be bought.<br>Pearson <b>&gt; 0.8</b> against seven expert annotators.</p> -->
               </div>
             </div>
           </div>
@@ -4200,7 +4397,7 @@
       <section class="slide" data-eyebrow="05 · Evaluation" data-frags="5" id="resSlide"
         data-notes="This is Table 2 in full — all sixteen methods. Each category is collapsed to its best system; click any category to expand it. I will walk it one axis at a time. [CLICK] Text extraction: almost everyone is passable — Marker 0.68, Qwen 0.66, GPT-5 0.65. Largely solved, which is why the field feels finished. [CLICK] Logical structure: tree edit distance is passable for the better systems — but nothing about it says WHERE anything is. [CLICK] Now physical structure, and the entire field collapses. Best baseline LPS 0.22, best GPS 0.43, most under 0.30. Nothing lands where it belongs. [CLICK] Visual fidelity: GPT-5 reaches 0.86 and Gemini 0.82 — genuinely good-looking pages — but with GPS of 0.43 and 0.31, those pages are not the source page. [CLICK] And the whole board, graded. REPLICA: 0.73 and 0.86 on position, 0.93 visual fidelity, 0.86 overall. The claim is not that we win a column — it is that there is no weak column.">
         <div class="kicker">Measured on VFDR-Bench — all 16 methods &nbsp;·&nbsp;
-          <span class="chint">click a category to expand it</span>
+          <!-- <span class="chint">click a category to expand it</span> -->
         </div>
         <h2>Quantitative results <span class="srcnote"></span></h2>
         <div class="slide-body">
@@ -4211,6 +4408,7 @@
             <div class="rlegend" id="resLegend"><span>weakest</span><i style="background:#fdeceb"></i><i
                 style="background:#fdf1dd"></i><i style="background:#eef5ef"></i><i
                 style="background:#dcefe1"></i><span>strongest</span></div>
+            <!-- takeaways spoken, not shown; the table now owns the slide.
             <div class="rline frag" data-frag="1"><span class="t">Text extraction</span><span class="d">Strong baselines
                 sit at <b>0.65–0.68</b> WRR. Largely solved — which is why the field feels finished.</span></div>
             <div class="rline bad frag" data-frag="2"><span class="t">Logical structure</span><span class="d">Tree-edit
@@ -4225,6 +4423,7 @@
             <div class="rline win frag" data-frag="5"><span class="t">REPLICA</span><span class="d">Position <b>0.73 /
                   0.86</b> and visual fidelity <b>0.93</b>, for <b>0.86</b> overall. The claim is not that we win a
                 column — it is that there is <b>no weak column</b>.</span></div>
+            -->
           </div>
         </div>
       </section>
@@ -4295,9 +4494,9 @@
                 <path class="brk" d="M160 8 V 150" />
                 <text x="160" y="158" class="brkt" text-anchor="middle">break</text>
               </svg>
-              <p>No multi-page consistency yet — structures spanning a page break (continued tables, figures) can
+              <!-- <p>No multi-page consistency yet — structures spanning a page break (continued tables, figures) can
                 <b>fragment</b>.
-              </p>
+              </p> -->
             </div>
 
             <div class="card lim">
@@ -4325,8 +4524,8 @@
                 </g>
                 <text x="160" y="144" class="lcap" text-anchor="middle">attributes recovered · family not</text>
               </svg>
-              <p>Bold, italic, underline and colour are recovered reliably; <b>exact font families are not</b>. Existing
-                methods cover mostly English/Chinese.</p>
+              <!-- <p>Bold, italic, underline and colour are recovered reliably; <b>exact font families are not</b>. Existing
+                methods cover mostly English/Chinese.</p> -->
             </div>
 
             <div class="card lim">
@@ -4358,7 +4557,7 @@
                   </marker>
                 </defs>
               </svg>
-              <p>The refine loop renders in a browser repeatedly — <b>real latency</b> versus a single forward pass.</p>
+              <!-- <p>The refine loop renders in a browser repeatedly — <b>real latency</b> versus a single forward pass.</p> -->
             </div>
 
           </div>
@@ -4468,20 +4667,21 @@
         <h2>Represent → Measure → Generate</h2>
         <div class="slide-body">
           <div class="grid3" style="flex:0 0 auto;">
-            <div class="card"><span class="tag">Represent</span>
+            <div class="card"><span class="tag">Represention Format</span>
               <h3>FID-HTML</h3>
-              <p>A web-native format where position and style are <b>required</b>, inline, per element — fidelity by
-                construction.</p>
+              <!-- <p>A web-native format where position and style are <b>required</b>, inline, per element — fidelity by construction.</p> -->
+               <p>A web-native format for <b>Visually Faithful Document Reconstruction</b></p>
             </div>
-            <div class="card"><span class="tag">Measure</span>
-              <h3>VFDR-Bench + GPS · LPS · VFS</h3>
-              <p>5,000 expert-annotated documents, 15+ languages — the first benchmark to score <b>layout and rendered
-                  appearance</b>.</p>
-            </div>
-            <div class="card accent"><span class="tag">Generate</span>
+            <div class="card accent"><span class="tag">Method</span>
               <h3>REPLICA</h3>
-              <p>Segment → Localize → Assemble → Refine. <b>Agents where judgment is needed, tools where determinism
-                  is.</b></p>
+              <p>Agentic Framework with <b>Segment → Localize → Assemble → Refine.</b> 
+                <!-- <b>Agents where judgment is needed, tools where determinism is.</b> -->
+              </p>
+            </div>
+            <div class="card"><span class="tag">Metrics</span>
+              <h3>VFDR-Bench + GPS · LPS · VFS</h3>
+              <p><b>5,000</b> expert-annotated documents, <b>15+</b> languages, <b>3</b> new metrics.
+                </p>
             </div>
           </div>
           <div class="stats" style="margin-top:34px;">
@@ -4489,7 +4689,7 @@
               <div class="v gold">0.93</div>
               <div class="k">Visual fidelity (VFS)</div>
             </div>
-            <div class="stat">
+            <!-- <div class="stat">
               <div class="v">0.86</div>
               <div class="k">Overall score</div>
             </div>
@@ -4500,7 +4700,7 @@
             <div class="stat">
               <div class="v">39%</div>
               <div class="k">gain over Qwen3-VL-30B<br>at 3.75× smaller</div>
-            </div>
+            </div> -->
           </div>
         </div>
       </section>
@@ -4540,9 +4740,9 @@
           </div>
         </div>
         <div class="thanks-logos">
-          <img class="sq" src="static/images/logos/cvit_logo_trim.png" alt="CVIT"
+          <img class="sq" src="static/images/logos/cvit.png" alt="CVIT"
             onerror="this.style.display=&quot;none&quot;">
-          <img src="static/images/logos/iiith_logo.jpeg" alt="IIIT Hyderabad">
+          <img class="iiith-logo" src="static/images/logos/iiith_logo.jpeg" alt="IIIT Hyderabad">
           <img src="static/images/logos/bgen_logo.png" alt="BharatGen">
         </div>
       </section>
@@ -4733,7 +4933,9 @@
       function renderLadder() {
         const doc = document.getElementById("ladderDoc"); if (!doc) return;
         // geometry only exists from level 2 — that is the whole point of the level
-        document.getElementById("ladderBox").classList.toggle("sized", frag >= 2);
+        const box = document.getElementById("ladderBox");
+        box.classList.toggle("sized", frag >= 2);
+        box.dataset.lv = Math.min(frag, 3);
         doc.classList.toggle("L1", frag >= 1);   // cumulative: L3 keeps L1 and L2
         doc.classList.toggle("L2", frag >= 2);
         doc.classList.toggle("L3", frag >= 3);
@@ -5159,12 +5361,17 @@
           add(svg, "text", { x: L - 84, y: y(v) + 6, "text-anchor": "end", class: "yl" }, v.toFixed(1));
         });
 
-        // three series — each one is one of the four axes of reconstruction
+        // The curve is revealed with the stages: a clip rect sweeps left to right
+        // so stage 2 is not already on screen while stage 1 is being explained.
+        const cp = add(svg, "clipPath", { id: "ablClip" });
+        const clipRect = add(cp, "rect", { x: 0, y: 0, width: 1700, height: 706 });
+        const series = add(svg, "g", { class: "ablseries", "clip-path": "url(#ablClip)" });
+
         [["ps", "ps", "Physical structure (GPS)"], ["vf", "vf", "Visual fidelity (VFS)"], ["os", "os", "Overall (OS)"]]
           .forEach(([key, cls]) => {
             const d = ABL.map((r, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(r[key]).toFixed(1)).join(" ");
-            add(svg, "path", { d: d, class: "ln " + cls });
-            ABL.forEach((r, i) => add(svg, "circle", {
+            add(series, "path", { d: d, class: "ln " + cls });
+            ABL.forEach((r, i) => add(series, "circle", {
               cx: x(i), cy: y(r[key]), r: 6, class: "pt " + cls,
               fill: cls === "os" ? "#1e3a5f" : cls === "vf" ? "#d4a437" : "#6b5bd2"
             }));
@@ -5181,7 +5388,7 @@
         // dy is chosen per point: above where the VFS line is far, below where it
         // runs close — and every label carries a paper-coloured halo as insurance
         [[0, "0.53", -20], [3, "0.71", -20], [4, "0.76", -20], [5, "0.86", 30], [8, "0.93", 30]].forEach(([i, v, dy]) => {
-          add(svg, "text", {
+          add(series, "text", {
             x: x(i), y: y(ABL[i].os) + dy, "text-anchor": "middle",
             class: "osval", fill: "#1e3a5f", "font-weight": "700", "font-size": "20",
             stroke: "#f5f3ee", "stroke-width": "5", "paint-order": "stroke"
@@ -5231,6 +5438,14 @@
           const i = +x.dataset.i;
           x.classList.toggle("hot", frag > 0 && ABL[i].st === frag - 1);
         });
+        // sweep the clip to the last point of the stage being shown
+        const LAST = { 0: 0, 1: 3, 2: 5, 3: 8 };
+        const clip = svg.querySelector("#ablClip rect");
+        if (clip) {
+          const L = 210, R = 1560, n = ABL.length - 1;
+          const xi = L + (LAST[Math.min(frag, 3)]) * (R - L) / n;
+          clip.setAttribute("width", (xi + 34).toFixed(1));
+        }
       }
 
       /* ═══════════ VFDR-BENCH SAMPLE CAROUSEL ═══════════
