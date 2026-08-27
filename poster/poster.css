@@ -86,7 +86,7 @@ body::before {
      to 22 mm. Both give their height to the hero, which can finally run the
      page at 148 mm wide AND show all of it.
      1065 mm of bands + 5 × 16 mm gaps = 1145 mm = the live height exactly. */
-  grid-template-rows: 129mm 234mm 224mm 180mm 143mm 175mm;
+  grid-template-rows: 129mm 236mm 238mm 172mm 143mm 167mm;
   row-gap: 12mm;
 }
 
@@ -424,8 +424,8 @@ strong {
 /* ===== BAND B — the seam ================================================== */
 .bandB {
   display: grid;
-  grid-template-columns: 434mm 1fr;
-  column-gap: 18mm;
+  grid-template-columns: 490mm 295mm;
+  column-gap: 12mm;
 }
 
 .seamwrap {
@@ -736,18 +736,19 @@ strong {
 .stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14mm 14mm;
+  gap: 9mm 8mm;
   align-content: start;
 }
 
 .stats .num {
   font-family: var(--mono);
   font-variant-numeric: tabular-nums;
-  font-size: 112pt;
+  font-size: 104pt;
   font-weight: 500;
   line-height: .92;
   letter-spacing: -.02em;
   margin: 0;
+  white-space: nowrap;
 }
 
 .stat .unit {
@@ -802,7 +803,7 @@ strong {
 /* ===== BAND C ============================================================= */
 .bandC {
   display: grid;
-  grid-template-columns: 424mm 361mm;
+  grid-template-columns: 412mm 361mm;
   column-gap: var(--gut);
 }
 
@@ -869,19 +870,19 @@ strong {
 .axes {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 3mm 5mm;
-  margin: 0 0 5mm;
+  gap: 5mm 5mm;
+  margin: 0 0 6mm;
 }
 
 .axis {
   border-left: 2mm solid var(--axis);
-  padding: 3mm 4mm;
+  padding: 6.5mm 5mm;
   background: color-mix(in srgb, var(--axis) 10%, transparent);
 }
 
 .axis b {
   display: block;
-  font-size: 29pt;
+  font-size: 31pt;
   line-height: 1.02;
   white-space: nowrap;
 }
@@ -895,13 +896,13 @@ strong {
 .axis em {
   display: block;
   font-family: var(--serif);
-  font-size: 27pt;
+  font-size: 28pt;
   line-height: 1.05;
   margin-top: 1.2mm;
 }
 
 .axis p {
-  font-size: 24pt;
+  font-size: 25pt;
   line-height: 1.05;
   color: var(--dim);
   margin: 1.2mm 0 0;
@@ -962,14 +963,14 @@ table.t tr.ours td:first-child {
 
 .format-table th,
 .format-table td {
-  font-size: 26pt;
-  padding: 1mm 1.2mm;
+  font-size: 27pt;
+  padding: 3.2mm 1.2mm;
 }
 
 .format-table .format-groups th {
-  font-size: 24pt;
+  font-size: 25pt;
   text-align: center;
-  padding: 1.4mm .8mm;
+  padding: 2.4mm .8mm;
 }
 
 .format-table .format-groups th:first-child {
@@ -977,9 +978,9 @@ table.t tr.ours td:first-child {
 }
 
 .format-table .format-labels th {
-  font-size: 22pt;
+  font-size: 23pt;
   text-align: center;
-  padding: 1mm .6mm;
+  padding: 2mm .6mm;
 }
 
 .format-table .format-groups th:nth-child(2),
@@ -1085,21 +1086,23 @@ table.t tr.ours td:first-child {
 /* ===== BAND D — pipeline ================================================== */
 .bandD {
   display: grid;
-  place-items: center;
+  place-items: stretch;
   height: 100%;
 }
 
 .original-pipeline {
-  width: 570mm;
-  height: 180mm;
+  width: 531mm;
+  height: 168mm;
   margin: 0;
   position: relative;
+  align-self: center;
+  justify-self: center;
 }
 
 .original-pipeline img {
   display: block;
-  width: 570mm;
-  height: 180mm;
+  width: 531mm;
+  height: 168mm;
   object-fit: contain;
 }
 
@@ -1412,7 +1415,7 @@ dl.defs dd {
 }
 
 .tiles .shot {
-  height: 160mm;
+  height: 134mm;
   background: transparent;
   box-sizing: border-box;
 }
@@ -1482,7 +1485,7 @@ dl.defs dd {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14mm 22mm;
+  gap: 12mm 20mm;
   margin-top: auto;
   padding-top: 0;
   border-top: 0;
@@ -1490,13 +1493,13 @@ dl.defs dd {
 }
 
 .orglogos img {
-  height: 44mm;
+  height: 37mm;
   width: auto;
   display: block;
 }
 
 .orglogos img:last-child {
-  height: 44mm;
+  height: 37mm;
   background: none;
   padding: 0;
 }
@@ -1508,7 +1511,10 @@ dl.defs dd {
 /* ===== band D side heading =============================================== */
 /* The pipeline figure is 592 mm inside a 797 mm band, so ~100 mm of margin sat
    empty on each side. The left one now carries the section title. */
-.bandD { position: relative; }
+.bandD { position: relative;
+  grid-template-columns: 1fr;
+  place-items: center;
+}
 .side-head {
   position: absolute; left: 0; top: 50%; transform: translateY(-50%);
   width: 96mm; margin: 0; text-align: left;
@@ -1541,7 +1547,7 @@ dl.defs dd {
 }
 
 /* ===== band C right panel, lifted into band B's dead column ============== */
-.bandC > div:nth-child(2) { margin-top: -66mm; }
+
 
 /* ===== title block: the project mark hangs in its own gutter ============= */
 /* Absolute, so line 2 of the title, the thesis and the author list all start
@@ -1563,3 +1569,918 @@ dl.defs div:nth-child(4) dt { color: #8A4D21; }
 .formula .ls { color: #496C3D; font-weight: 600; }
 .formula .ps { color: #725F20; font-weight: 600; }
 .formula .vf { color: #8A4D21; font-weight: 600; }
+
+/* ===== BAND B — the same page, three ways ================================ */
+/* Source, Marker and REPLICA share one height, so their widths follow their own
+   aspect ratios (0.760 : 0.778 : 0.756) and the row fills its column exactly. */
+.lostpanel { display: flex; flex-direction: column; min-width: 0; }
+.lostpanel .lede { font-size: 30pt; margin: 0 0 5mm; }
+.strip3 { display: flex; gap: 12mm; align-items: flex-start; justify-content: center; }
+.strip3 figure { margin: 0; }
+.strip3 .shot {
+  height: 179mm; width: auto; display: inline-block;
+  background: #fff; border: .5mm solid rgba(20, 26, 33, .26); box-sizing: content-box;
+}
+.strip3 .shot.paper { background: var(--paper); }
+.strip3 .shot img { height: 158mm; width: auto; max-width: none; display: block;
+  height: 179mm;
+}
+.strip3 figure.ours .shot { border-color: var(--mark); border-width: 1mm; }
+.strip3 figcaption { margin-top: 3mm; line-height: 1.06; white-space: nowrap; }
+.strip3 figcaption b { font-size: 27pt; }
+.strip3 figcaption span { font-size: 23pt; color: var(--dim); margin-left: 1.5mm; }
+.strip3 figure.ours figcaption b { color: var(--mark); }
+
+/* ===== BAND C — one page, rebuilt ======================================== */
+.cadpanel { display: flex; flex-direction: column; min-width: 0; }
+.cadpair { display: flex; gap: 12mm; align-items: flex-start; justify-content: center; flex: 1; }
+.cadpair figure { margin: 0; }
+.cadlab {
+  display: flex; align-items: center; gap: 3mm; height: 14mm; color: var(--ink-p);
+}
+.cadlab.r { color: var(--mark); }
+.cadlab svg { width: 13mm; height: 13mm; flex: none; }
+.cadlab span { font-family: var(--mono); font-size: 20pt; font-weight: 600; line-height: 1; }
+.cadshot { width: auto; display: inline-block; background: #fff; box-sizing: content-box; }
+.cadshot.paper { padding: 3mm; box-shadow: 0 0 0 .5mm rgba(30, 24, 21, .30); }
+.cadshot img { height: 180mm; width: auto; max-width: none; display: block;
+  height: 195mm;
+}
+.cadshot.browser { border: .5mm solid rgba(20, 26, 33, .28); }
+.cadshot.browser .chrome {
+  position: static; width: 100%; height: 8mm; background: #E5E4DF;
+  border: 0; border-bottom: .4mm solid rgba(20, 26, 33, .22);
+  display: flex; align-items: center; gap: 2.4mm; padding: 0 3mm; box-sizing: border-box;
+}
+
+/* ===== BAND D — heading on top, figure left, evidence right ============== */
+.bandD { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+.top-head {
+  grid-column: 1; margin: 0 0 3mm; display: flex; align-items: baseline; gap: 5mm;
+  font-family: var(--serif); font-size: 40pt; font-weight: 600; color: var(--ink-s);
+  justify-self: start;
+}
+.top-head .k {
+  font-family: var(--sans); font-size: 21pt; font-weight: 600; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--mark);
+}
+.top-head .s { font-family: var(--sans); font-size: 25pt; font-weight: 400; color: var(--dim); }
+.original-pipeline { width: 450mm; height: 142mm; margin: 0; position: relative; align-self: center; }
+.original-pipeline img { display: block; width: 450mm; height: 142mm; object-fit: contain; }
+.dside { display: flex; flex-direction: column; justify-content: center; gap: 6mm; min-width: 0; }
+.stagebuys { margin: 0; }
+.stagebuys div { display: flex; gap: 4mm; margin-bottom: 2.6mm; align-items: baseline; }
+.stagebuys dt {
+  font-family: var(--mono); font-weight: 700; font-size: 21pt; width: 46mm; flex: none;
+}
+.stagebuys dt.s1 { color: var(--seg-d); }
+.stagebuys dt.s2 { color: var(--loc-d); }
+.stagebuys dt.s3 { color: var(--asm-d); }
+.stagebuys dt.s4 { color: var(--ref-d); }
+.stagebuys dd { margin: 0; font-size: 20pt; line-height: 1.22; color: var(--ink-s); }
+.stagebuys dd b { color: var(--mark); }
+
+/* BharatGen is a 4.3:1 lockup — give it its own row, with the two square-ish
+   marks beneath, rather than letting the wrap land wherever it lands */
+.orglogos img:first-child { flex-basis: 100%; }
+
+/* the panel fills its own band: the cards and the table share the height that
+   was sitting empty underneath them */
+.bandC > div:first-child { display: flex; flex-direction: column; }
+.bandC .axes { flex: 0 0 auto; }
+.format-table { flex: 0 0 auto; }
+.bandC .axis { display: flex; flex-direction: column; justify-content: center; }
+
+/* ===== A0 density pass ====================================================
+   The upper-right statistics occupy only the first half of Band B.  Let the
+   Cadillac pair rise into that genuinely unused area, then give it enough
+   width to render both complete pages at poster-reading size.  Nothing is
+   cropped: the source and browser render retain their native page ratios. */
+.poster {
+  /* Keep the 22 mm print-safe top/side edges, but use ten millimetres of the
+     former bottom margin for the closing evidence row. */
+  padding: 22mm 22mm 12mm;
+  grid-template-rows: 129mm 236mm 238mm 192mm 143mm 177mm;
+  row-gap: 8mm;
+}
+
+.bandB {
+  /* Give the three-page comparison ten more millimetres while preserving a
+     clear edge before the Cadillac pair that rises from Band C. */
+  grid-template-columns: 430mm 355mm;
+  column-gap: 12mm;
+}
+
+.bandC {
+  grid-template-columns: 420mm 365mm;
+  column-gap: 12mm;
+}
+
+.strip3 {
+  gap: .5mm;
+}
+
+.lostpanel .eyebrow {
+  margin-bottom: .5mm;
+  padding-top: 2mm;
+  padding-bottom: 2mm;
+}
+
+.lostpanel .lede {
+  margin-bottom: 1mm;
+}
+
+.strip3 .shot {
+  height: 186mm;
+  border-width: .3mm;
+}
+
+.strip3 .shot img {
+  height: 186mm;
+}
+
+.strip3 figure.ours .shot {
+  border-width: .5mm;
+}
+
+.stats {
+  /* Large poster-scale statistics, arranged as four equal evidence fields.
+     The inward alignment keeps the two columns related while the full-height
+     rows deliberately occupy the complete available column. */
+  height: 197mm;
+  grid-template-columns: 150mm 150mm;
+  grid-template-rows: 1fr 1fr;
+  justify-content: center;
+  align-content: stretch;
+  gap: 0 14mm;
+}
+
+.stats .stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stats .stat:nth-child(odd) {
+  align-items: flex-end;
+}
+
+.stats .stat:nth-child(even) {
+  align-items: flex-start;
+}
+
+.stats .num {
+  font-size: 104pt;
+}
+
+.stats .cap {
+  font-size: 25pt;
+  margin-top: 3mm;
+}
+
+.bandC .cadpanel {
+  position: relative;
+  top: -48mm;
+  height: 286mm;
+  z-index: 2;
+}
+
+.bandC > div:first-child {
+  min-height: 0;
+  height: 238mm;
+}
+
+.cadpair {
+  gap: 1mm;
+  justify-content: space-between;
+}
+
+.cadshot img {
+  height: 263mm;
+}
+
+.cadshot.paper {
+  padding: .5mm;
+  /* The rendered example has an 8 mm browser bar.  Matching that offset on
+     the PDF side aligns the two page images—and therefore every headline,
+     photograph and text region—on the same page coordinate system. */
+  margin-top: 7.9mm;
+}
+
+.cadpair .cadshot {
+  /* Block layout removes the inline-image descender that added an invisible
+     4.48 px below the source page in the print render. */
+  display: block;
+  width: fit-content;
+}
+
+/* Use the former blank strip below the representation table.  The added
+   height goes into the cards and rows rather than becoming decorative filler. */
+.bandC .axis {
+  padding-top: 8.5mm;
+  padding-bottom: 8.5mm;
+}
+
+.format-table th,
+.format-table td {
+  padding-top: 4.4mm;
+  padding-bottom: 4.4mm;
+}
+
+.format-table .format-groups th {
+  padding-top: 3mm;
+  padding-bottom: 3mm;
+}
+
+.format-table .format-labels th {
+  padding-top: 2.8mm;
+  padding-bottom: 2.8mm;
+}
+
+.format-table tbody td {
+  /* 1.9 mm makes the six measured table rows end exactly on Band C's
+     baseline; larger values intrude into the method heading below. */
+  padding-top: 1.9mm;
+  padding-bottom: 1.9mm;
+}
+
+/* The reclaimed bottom ten millimetres enlarge both complete application
+   examples; the poster still ends inside the 1189 mm A0 page. */
+.tiles .shot {
+  height: 144mm;
+}
+
+.orglogos img,
+.orglogos img:last-child {
+  height: 42mm;
+}
+
+/* ===== BAND E — results first, then the measurement coordinate system ==== */
+.results-panel {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.measure-panel {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.measure-body {
+  display: grid;
+  grid-template-columns: 235mm 149.5mm;
+  column-gap: 8mm;
+  height: 120mm;
+  align-items: center;
+}
+
+.poster-radar {
+  width: 235mm;
+  height: 120mm;
+  display: block;
+  overflow: visible;
+}
+
+.poster-radar .rgrid circle,
+.poster-radar .rgrid line {
+  fill: none;
+  stroke: rgba(20, 26, 33, .24);
+  stroke-width: 2;
+}
+
+.poster-radar .rgrid circle:first-child {
+  stroke: rgba(20, 26, 33, .42);
+}
+
+.poster-radar .rnode .std { fill: var(--seg-d); }
+.poster-radar .rnode .new { fill: var(--asm); }
+
+.poster-radar .ax {
+  font-family: var(--serif);
+  font-size: 35px;
+  font-weight: 700;
+  fill: var(--ink-s);
+}
+
+.poster-radar .qq {
+  font-family: var(--sans);
+  font-size: 22px;
+  font-style: italic;
+  fill: var(--dim);
+}
+
+.poster-radar .mt {
+  font-family: var(--mono);
+  font-size: 24px;
+  font-weight: 600;
+  fill: var(--seg-d);
+}
+
+.poster-radar .new .ax { fill: #725F20; }
+.poster-radar .new .mt { fill: var(--asm-d); }
+.poster-radar .rcentre circle { fill: var(--mark); }
+
+.poster-radar .os {
+  font-family: var(--serif);
+  font-size: 31px;
+  font-weight: 700;
+  fill: #fff;
+}
+
+.poster-radar .osn {
+  font-family: var(--mono);
+  font-size: 13px;
+  fill: rgba(255,255,255,.76);
+}
+
+.measure-meta {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.measure-panel .statchips {
+  grid-template-columns: 1fr 1fr;
+  gap: 5mm 5mm;
+  margin: 0 0 5mm;
+}
+
+.measure-panel .statchip .n {
+  font-size: 34pt;
+}
+
+.measure-panel .statchip .t {
+  font-size: 20pt;
+}
+
+.measure-panel .formula {
+  font-size: 19pt;
+  line-height: 1.2;
+  padding: 2mm 0;
+  margin-bottom: 3mm;
+}
+
+.measure-panel > .eyebrow,
+.results-panel > .eyebrow {
+  margin-bottom: 2.5mm;
+}
+
+.measure-panel .cap {
+  font-size: 18pt;
+  line-height: 1.25;
+}
+
+/* The official 2560 x 650 BharatGen lockup is placed by width in a grid.
+   This preserves its 3.938:1 native ratio and prevents flexbox stretching. */
+.orglogos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8mm 18mm;
+  justify-items: center;
+  align-items: center;
+}
+
+.orglogos img:first-child {
+  grid-column: 1 / -1;
+  width: 200mm;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+  flex-basis: auto;
+}
+
+.orglogos img:nth-child(2),
+.orglogos img:nth-child(3) {
+  height: 42mm;
+  width: auto;
+  object-fit: contain;
+}
+
+/* ===== Method + metric coordinate system ================================ */
+.bandD {
+  grid-template-columns: 495mm 294mm;
+  grid-template-rows: auto 1fr;
+  column-gap: 8mm;
+  place-items: stretch;
+}
+
+.bandD .top-head {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+.bandD .original-pipeline {
+  grid-column: 1;
+  grid-row: 2;
+  width: 495mm;
+  height: 157mm;
+  justify-self: start;
+  align-self: center;
+}
+
+.bandD .original-pipeline img {
+  width: 495mm;
+  height: 157mm;
+}
+
+.method-radar {
+  grid-column: 2;
+  grid-row: 2;
+  width: 294mm;
+  height: 166mm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  padding-left: 1.25mm;
+  box-sizing: border-box;
+}
+
+.method-radar .poster-radar {
+  width: 292.75mm;
+  height: 166mm;
+}
+
+/* ===== How we measure, after the radar has moved beside the method ====== */
+.measure-body {
+  display: block;
+  height: 120mm;
+}
+
+.measure-meta {
+  width: 100%;
+  height: 120mm;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.measure-panel .statchips {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6mm;
+  margin: 0;
+}
+
+.measure-panel .statchip .n {
+  font-size: 38pt;
+}
+
+.measure-panel .statchip .t {
+  font-size: 20pt;
+}
+
+.metric-briefs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3mm 6mm;
+}
+
+.metric-briefs div {
+  display: flex;
+  align-items: baseline;
+  gap: 4mm;
+  border-left: 1.5mm solid currentColor;
+  padding: 2mm 3mm;
+}
+
+.metric-briefs b {
+  font-family: var(--mono);
+  font-size: 24pt;
+}
+
+.metric-briefs span {
+  font-family: var(--mono);
+  font-size: 19pt;
+  color: var(--ink-s);
+  white-space: nowrap;
+}
+
+.metric-briefs .te { color: #355783; }
+.metric-briefs .ls { color: #496C3D; }
+.metric-briefs .ps { color: #725F20; }
+.metric-briefs .vf { color: #8A4D21; }
+
+.measure-foot {
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: 7mm;
+  align-items: center;
+}
+
+.measure-panel .measure-foot .formula {
+  margin: 0;
+}
+
+.measure-panel .measure-foot .cap {
+  margin: 0;
+}
+
+/* ===== Dense evaluation layout: benchmark beside method, radar below ===== */
+.method-measure {
+  grid-column: 2;
+  grid-row: 2;
+  width: 294mm;
+  height: 166mm;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.method-measure > .eyebrow {
+  flex: none;
+  margin-bottom: 4mm;
+  font-size: 30pt;
+}
+
+.method-measure-body {
+  flex: 1;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 6mm;
+  min-height: 0;
+}
+
+.method-measure .statchips {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5mm 12mm;
+  margin: 0;
+  align-content: center;
+}
+
+.method-measure .statchip {
+  padding-left: 4mm;
+  border-left: 1.5mm solid rgba(97, 36, 188, .34);
+}
+
+.method-measure .statchip .n {
+  font-size: 50pt;
+  line-height: .92;
+}
+
+.method-measure .statchip .t {
+  font-size: 22pt;
+  margin-top: 1.3mm;
+}
+
+.method-measure .measure-foot {
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: 7mm;
+  align-items: stretch;
+}
+
+.method-measure .formula,
+.method-measure .cap {
+  margin: 0;
+  padding: 4mm 5mm;
+  background: rgba(97, 36, 188, .055);
+  border: 0;
+  border-left: 1.5mm solid var(--mark);
+  display: flex;
+  align-items: center;
+}
+
+.method-measure .formula {
+  font-size: 20pt;
+  white-space: nowrap;
+}
+
+.method-measure .cap {
+  font-size: 18pt;
+  line-height: 1.24;
+}
+
+.radar-lower {
+  height: 120mm;
+  display: grid;
+  grid-template-columns: 122mm 1fr;
+  gap: 9mm;
+  align-items: stretch;
+}
+
+.radar-lower .poster-radar {
+  width: 122mm;
+  height: 120mm;
+  align-self: center;
+  overflow: visible;
+}
+
+.radar-key {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 4mm 5mm;
+  min-width: 0;
+}
+
+.radar-key > div {
+  display: grid;
+  grid-template-columns: 17mm 1fr;
+  gap: 3mm;
+  align-items: center;
+  min-width: 0;
+  padding: 3mm 4mm;
+  border-left: 1.5mm solid currentColor;
+  background: rgba(20, 26, 33, .035);
+}
+
+.radar-key > div > b {
+  font-family: var(--mono);
+  font-size: 28pt;
+  line-height: 1;
+}
+
+.radar-key > div > span {
+  display: flex;
+  flex-direction: column;
+  gap: .8mm;
+  min-width: 0;
+}
+
+.radar-key strong {
+  font-family: var(--serif);
+  font-size: 23pt;
+  line-height: 1;
+  color: var(--ink-s);
+  white-space: nowrap;
+}
+
+.radar-key i {
+  font-family: var(--sans);
+  font-size: 17pt;
+  line-height: 1.05;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+.radar-key code {
+  font-family: var(--mono);
+  font-size: 17pt;
+  font-weight: 600;
+  line-height: 1.05;
+  color: currentColor;
+  white-space: nowrap;
+}
+
+.radar-key .te { color: #355783; }
+.radar-key .ls { color: #496C3D; }
+.radar-key .ps { color: #725F20; }
+.radar-key .vf { color: #8A4D21; }
+
+/* ===== Reference measurement block requested for the final poster ======= */
+.bandD {
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+}
+
+.bandD .top-head {
+  grid-column: 1;
+}
+
+.bandD .original-pipeline {
+  grid-column: 1;
+  grid-row: 2;
+  width: 550mm;
+  height: 174mm;
+  justify-self: center;
+  align-self: center;
+}
+
+.bandD .original-pipeline img {
+  width: 550mm;
+  height: 174mm;
+}
+
+.measure-text {
+  height: 121mm;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto auto;
+  gap: 2mm;
+  align-content: stretch;
+}
+
+.measure-text > * {
+  grid-column: 1;
+}
+
+.measure-text .statchips {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7mm;
+  margin: 0 0 2mm;
+}
+
+.measure-text .statchip .n {
+  font-size: 42pt;
+}
+
+.measure-text .statchip .t {
+  max-width: 84mm;
+  font-size: 21pt;
+  line-height: 1.08;
+}
+
+.measure-defs {
+  align-self: center;
+  margin: 0;
+}
+
+.measure-defs div {
+  display: grid;
+  grid-template-columns: 18mm 1fr;
+  gap: 2mm;
+  align-items: baseline;
+  margin: 0 0 1.2mm;
+}
+
+.measure-defs dt {
+  width: auto;
+  font-size: 28pt;
+  font-weight: 700;
+  line-height: 1.08;
+}
+
+.measure-defs dd {
+  font-size: 23pt;
+  line-height: 1.12;
+  white-space: nowrap;
+}
+
+.measure-defs .te dt { color: #355783; }
+.measure-defs .ls dt { color: #496C3D; }
+.measure-defs .ps dt { color: #725F20; }
+.measure-defs .vf dt { color: #8A4D21; }
+.measure-defs .ps b,
+.measure-defs .vf b { color: var(--mark); }
+
+.measure-text .formula {
+  margin: 0;
+  padding: 2mm 0;
+  font-size: 23pt;
+  line-height: 1.1;
+}
+
+.measure-text .cap {
+  margin: 0;
+  font-size: 21pt;
+  line-height: 1.1;
+}
+
+/* Keep the reference measurement block intact; pair the method with its
+   four-axis metric coordinate system in the band immediately above. */
+.bandD {
+  grid-template-columns: 495mm 294mm;
+  grid-template-rows: auto 1fr;
+  column-gap: 8mm;
+  place-items: stretch;
+}
+
+.bandD .top-head {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+.bandD .original-pipeline {
+  grid-column: 1;
+  grid-row: 2;
+  width: 495mm;
+  height: 157mm;
+  justify-self: start;
+  align-self: center;
+}
+
+.bandD .original-pipeline img {
+  width: 495mm;
+  height: 157mm;
+}
+
+.bandD .method-radar {
+  grid-column: 2;
+  grid-row: 2;
+  width: 294mm;
+  height: 166mm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  padding-left: 1.25mm;
+  box-sizing: border-box;
+}
+
+.bandD .method-radar .poster-radar {
+  width: 292.75mm;
+  height: 166mm;
+}
+
+/* ===== Near-edge A0 pass ================================================
+   Retain a practical 10 mm side / 5 mm bottom print-safe edge and invest the
+   recovered 24 mm of width and 7 mm of height in the evidence figures. */
+.poster {
+  padding: 22mm 10mm 5mm;
+  grid-template-rows: 129mm 236mm 238mm 192mm 143mm 184mm;
+  row-gap: 8mm;
+}
+
+.bandB {
+  grid-template-columns: 442mm 367mm;
+  column-gap: 12mm;
+}
+
+.bandC {
+  grid-template-columns: 432mm 377mm;
+  column-gap: 12mm;
+}
+
+.strip3 .shot,
+.strip3 .shot img {
+  height: 187mm;
+}
+
+.cadshot img {
+  height: 263mm;
+}
+
+.bandD {
+  grid-template-columns: 507mm 306mm;
+  column-gap: 8mm;
+}
+
+.bandD .original-pipeline,
+.bandD .original-pipeline img {
+  width: 507mm;
+  height: 161mm;
+}
+
+.bandD .method-radar {
+  width: 306mm;
+  height: 169mm;
+}
+
+.bandD .method-radar .poster-radar {
+  width: 304.75mm;
+  height: 169mm;
+}
+
+.bandE {
+  grid-template-columns: 404.5mm 404.5mm;
+  column-gap: 12mm;
+}
+
+.bandF {
+  grid-template-columns: 544mm 265mm;
+  column-gap: 12mm;
+}
+
+.tiles .shot {
+  height: 151mm;
+}
+
+/* Aggressive test-print variant.  This intentionally runs closer to the trim
+   edge; restore the preceding 5 mm setting if the physical proof clips. */
+.poster {
+  padding-bottom: 3mm;
+  grid-template-rows: 129mm 236mm 238mm 192mm 143mm 186mm;
+}
+
+.tiles .shot {
+  height: 153mm;
+}
+
+.orglogos {
+  margin-top: auto;
+  margin-bottom: 0;
+}
+
+.stats {
+  grid-template-columns: 160mm 160mm;
+  column-gap: 30mm;
+  justify-content: center;
+}
+
+.stats .stat,
+.stats .stat:nth-child(odd),
+.stats .stat:nth-child(even) {
+  align-items: center;
+  text-align: center;
+}
+
+.stats .num {
+  font-size: 120pt;
+}
+
+.stats .cap {
+  width: 160mm;
+  text-align: center;
+}
+
+.stats .unit {
+  font-size: 24%;
+}

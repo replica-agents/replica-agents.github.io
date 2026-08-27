@@ -88,48 +88,25 @@
       </div>
     </header>
 
-    <!-- ============================ BAND B — THE SEAM ===================== -->
+    <!-- ================== BAND B — WHAT GETS LOST, THREE WAYS ============= -->
     <section class="band bandB">
-      <div class="seamwrap">
-
-        <div class="plate src">
-          <img src="../static/images/qual/00000127.png" alt="Source Cadillac magazine page">
+      <div class="lostpanel">
+        <p class="eyebrow">What gets lost</p>
+        <p class="lede">Existing converters keep the words and drop the page.</p>
+        <div class="strip3">
+          <figure>
+            <div class="shot paper"><img src="assets/figures/fig1a-source.png" alt="Source page, three columns"></div>
+            <figcaption><b>Source</b><span>&mdash; three columns</span></figcaption>
+          </figure>
+          <figure>
+            <div class="shot"><img src="assets/figures/fig1a-marker.png" alt="Marker output, one column"></div>
+            <figcaption><b>Marker</b><span>&mdash; collapsed to one</span></figcaption>
+          </figure>
+          <figure class="ours">
+            <div class="shot"><img src="assets/figures/fig1a-replica.png" alt="REPLICA output, three columns preserved"></div>
+            <figcaption><b>REPLICA</b><span>&mdash; the page survives</span></figcaption>
+          </figure>
         </div>
-
-        <div class="decomp">
-          <!-- Region rectangles are measured off the page itself, not eyeballed:
-           see poster/tools/measure_regions.py. They are percentages of the
-           IMAGE, so .boxes is sized to the page's own 0.6841 ratio — otherwise
-           the box and the image disagree and every rectangle drifts. -->
-          <div class="boxes" aria-label="Cadillac page with detected layout regions">
-            <img src="../static/images/qual/00000127.png" alt="">
-            <i class="region r-title"></i>
-            <i class="region r-deck"></i>
-            <i class="region r-logo"></i>
-            <i class="region r-photo1"></i>
-            <i class="region r-copy"></i>
-            <i class="region r-side"></i>
-            <i class="region r-photo2"></i>
-          </div>
-          <div class="frag f1">&lt;div class="header"&gt;</div>
-          <div class="frag f2">&lt;p class="para"&gt;</div>
-          <div class="frag f3">&lt;figure&gt;&lt;img&gt;</div>
-        </div>
-
-        <div class="seam"></div>
-
-        <div class="chrome"><i></i><i></i><i></i><span class="addr"></span></div>
-        <div class="plate dst">
-          <img src="assets/figures/qual-magazine-render.png"
-            alt="REPLICA Fid-HTML render of the same Cadillac magazine page">
-        </div>
-
-        <div class="seamlabel l"><svg aria-hidden="true">
-            <use href="#ic-pdf" />
-          </svg><span>source PDF</span></div>
-        <div class="seamlabel r"><svg aria-hidden="true">
-            <use href="#ic-html" />
-          </svg><span>Fid-HTML in a browser</span></div>
       </div>
 
       <div class="stats">
@@ -238,86 +215,104 @@
         </table>
       </div>
 
-      <div>
-        <p class="eyebrow">What gets lost</p>
-        <p style="font-size:30pt;margin:0 0 4mm">Existing converters keep the words and
-          drop the page.</p>
-
-        <div class="strip">
+      <div class="cadpanel">
+        <!-- <p class="eyebrow">One page, rebuilt</p> -->
+        <div class="cadpair">
           <figure>
-            <div class="shot paper"><img src="assets/figures/fig1a-source.png" alt=""></div>
-            <figcaption><b>Source</b><span>&mdash; three columns</span></figcaption>
+            <div class="cadlab"><svg aria-hidden="true"><use href="#ic-pdf" /></svg><span>source PDF</span></div>
+            <div class="cadshot paper"><img src="../static/images/qual/00000127.png" alt="Source Cadillac magazine page"></div>
           </figure>
           <figure>
-            <div class="shot"><img src="assets/figures/fig1a-marker.png" alt=""></div>
-            <figcaption><b>Marker</b><span>&mdash; collapsed to one</span></figcaption>
+            <div class="cadlab r"><svg aria-hidden="true"><use href="#ic-html" /></svg><span>Fid-HTML in a browser</span></div>
+            <div class="cadshot browser">
+              <div class="chrome"><i></i><i></i><i></i><span class="addr"></span></div>
+              <img src="assets/figures/qual-magazine-render.png"
+                alt="REPLICA Fid-HTML render of the same Cadillac magazine page">
+            </div>
           </figure>
         </div>
-
       </div>
 
     </section>
 
     <!-- ============================ BAND D — PIPELINE ===================== -->
     <section class="band bandD">
-      <p class="side-head"><span class="k">Method</span>REPLICA<span class="s">agentic framework</span></p>
+      <p class="top-head"><span class="k">Method</span><b>REPLICA</b><span class="s">&mdash; the agentic framework, end to end</span></p>
       <figure class="original-pipeline">
         <img src="../replica-agents-maindiag-final.png"
           alt="Original paper Figure 4: REPLICA processes a document image or PDF through Segment, Localise, Assemble, and Refine to create a high-fidelity final HTML document.">
         <!-- <figcaption>Original paper Fig. 4 &mdash; the complete REPLICA agentic pipeline.</figcaption> -->
       </figure>
+
+      <div class="method-radar">
+        <svg class="poster-radar" viewBox="230 18 980 592"
+          aria-label="The four axes of document reconstruction and the metric family on each">
+          <g class="rgrid">
+            <circle cx="620" cy="300" r="190" />
+            <circle cx="620" cy="300" r="142" />
+            <circle cx="620" cy="300" r="95" />
+            <circle cx="620" cy="300" r="48" />
+            <line x1="620" y1="300" x2="620" y2="110" />
+            <line x1="620" y1="300" x2="810" y2="300" />
+            <line x1="620" y1="300" x2="620" y2="490" />
+            <line x1="620" y1="300" x2="430" y2="300" />
+          </g>
+          <g class="rnode">
+            <circle cx="620" cy="110" r="7" class="std" />
+            <circle cx="810" cy="300" r="7" class="std" />
+            <circle cx="620" cy="490" r="7" class="new" />
+            <circle cx="430" cy="300" r="7" class="new" />
+          </g>
+          <g class="rlab std">
+            <text x="620" y="66" text-anchor="middle" class="ax">Text Extraction</text>
+            <text x="620" y="90" text-anchor="middle" class="qq">are the words right?</text>
+            <text x="620" y="32" text-anchor="middle" class="mt">WRR &#8593; &middot; CRR &#8593;</text>
+            <text x="828" y="288" class="ax">Logical Structure</text>
+            <text x="828" y="312" class="qq">is the structure right?</text>
+            <text x="828" y="340" class="mt">NTED &#8595; &middot; TEDS &#8593; &middot; CDM &#8593;</text>
+          </g>
+          <g class="rlab new">
+            <text x="620" y="528" text-anchor="middle" class="ax">Physical Structure</text>
+            <text x="620" y="552" text-anchor="middle" class="qq">is the position right?</text>
+            <text x="620" y="580" text-anchor="middle" class="mt">GPS &#8593; &middot; LPS &#8593; &middot; NEW</text>
+            <text x="412" y="288" text-anchor="end" class="ax">Visual Fidelity</text>
+            <text x="412" y="312" text-anchor="end" class="qq">does it look right?</text>
+            <text x="412" y="340" text-anchor="end" class="mt">VFS &#8593; &middot; NEW</text>
+          </g>
+          <g class="rcentre">
+            <circle cx="620" cy="300" r="44" />
+            <text x="620" y="295" text-anchor="middle" class="os">OS</text>
+            <text x="620" y="318" text-anchor="middle" class="osn">mean of 4</text>
+          </g>
+        </svg>
+      </div>
+
     </section>
 
     <!-- ============================ BAND E =============================== -->
     <section class="band bandE">
 
-      <div>
+      <div class="measure-panel">
         <p class="eyebrow">How we measure</p>
-        <div class="statchips">
-          <div class="statchip">
-            <p class="n">5,000</p>
-            <p class="t">documents</p>
+        <div class="measure-body measure-text">
+          <div class="statchips">
+            <div class="statchip"><p class="n">5,000</p><p class="t">documents</p></div>
+            <div class="statchip"><p class="n">15+</p><p class="t">languages</p></div>
+            <div class="statchip"><p class="n">20+</p><p class="t">document categories</p></div>
+            <div class="statchip"><p class="n">100%</p><p class="t">expert human-annotated</p></div>
           </div>
-          <div class="statchip">
-            <p class="n">15+</p>
-            <p class="t">languages</p>
-          </div>
-          <div class="statchip">
-            <p class="n">20+</p>
-            <p class="t">document categories</p>
-          </div>
-          <div class="statchip">
-            <p class="n">100%</p>
-            <p class="t">expert human-annotated</p>
-          </div>
+          <dl class="defs measure-defs">
+            <div class="te"><dt>TE</dt><dd>Text extraction &mdash; CRR, WRR</dd></div>
+            <div class="ls"><dt>LS</dt><dd>Logical structure &mdash; NTED, TEDS, CDM</dd></div>
+            <div class="ps"><dt>PS</dt><dd>Physical structure &mdash; <b>GPS</b> global + <b>LPS</b> local, IoU-matched, area-normalised F1</dd></div>
+            <div class="vf"><dt>VF</dt><dd>Visual fidelity &mdash; <b>VFS</b>, VLM-as-a-judge vs human ground truth</dd></div>
+          </dl>
+          <p class="formula">Overall = (<span class="te">TE</span> + <span class="ls">LS</span> + <span class="ps">PS</span> + <span class="vf">VF</span>) / 4</p>
+          <p class="cap">Pearson r &gt; 0.8 vs seven expert annotators, 100 documents.</p>
         </div>
-        <dl class="defs">
-          <div>
-            <dt>TE</dt>
-            <dd>Text extraction &mdash; CRR, WRR</dd>
-          </div>
-          <div>
-            <dt>LS</dt>
-            <dd>Logical structure &mdash; NTED, TEDS, CDM</dd>
-          </div>
-          <div>
-            <dt>PS</dt>
-            <dd>Physical structure &mdash;
-              <span class="newmetric">GPS</span> global + <span class="newmetric">LPS</span> local,
-              IoU-matched, area-normalised F1
-            </dd>
-          </div>
-          <div>
-            <dt>VF</dt>
-            <dd>Visual fidelity &mdash; <span class="newmetric">VFS</span>,
-              VLM-as-a-judge vs human ground truth</dd>
-          </div>
-        </dl>
-        <p class="formula">Overall = (<span class="te">TE</span> + <span class="ls">LS</span> + <span class="ps">PS</span> + <span class="vf">VF</span>) / 4</p>
-        <p class="cap">Pearson r &gt; 0.8 vs seven expert annotators, 100 documents.</p>
       </div>
 
-      <div>
+      <div class="results-panel">
         <p class="eyebrow">Results</p>
         <table class="t results-table">
           <thead>
@@ -381,14 +376,13 @@
             </tr>
           </tbody>
         </table>
-
         <div class="ablrow">
           <p class="abl-kicker">ABLATION<span>where 0.93<br>comes from</span></p>
           <div class="chain">
             <span class="v0">0.53</span>
             <span class="hop seg"><b>+0.18</b><i>Segment</i></span>
             <span class="v">0.71</span>
-            <span class="hop loc"><b>+0.15</b><i>Localise &mdash; +0.10 is routing</i></span>
+            <span class="hop loc"><b>+0.15</b><i>Localise</i></span>
             <span class="v">0.86</span>
             <span class="hop ref"><b>+0.07</b><i>Refine</i></span>
             <span class="v vend">0.93</span>
@@ -423,7 +417,7 @@
           <div><b>04 &middot; Render cost</b><span>Refinement adds latency</span></div>
         </div>
         <div class="orglogos">
-          <img src="assets/logos/bharatgen.png" alt="BharatGen">
+          <img src="assets/logos/bharatgen-official.png" alt="BharatGen">
           <img src="assets/logos/iiith.png" alt="IIIT Hyderabad">
           <img src="assets/logos/cvit.png" alt="CVIT">
         </div>
