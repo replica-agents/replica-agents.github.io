@@ -63,28 +63,20 @@
         <p class="thesis"><span>Reimagining OCR beyond text extraction.</span>
           <!-- <small>Rebuild any page as HTML that still looks like the page.</small> -->
         </p>
-        <p class="authors">Raghuveer R<sup>1</sup>*, Anirudh Srinivasan<sup>1</sup>*,
-          Venkata Kesav Venna<sup>1</sup>*, Sreevatsa S<sup>2</sup>, Aryan Jain<sup>2</sup>,
-          Sahithi Kukkala<sup>2</sup>, Ravi Kiran Sarvadevabhatla<sup>1,2</sup></p>
+        <p class="authors">Raghuveer R<sup>1</sup>*, Anirudh S<sup>1</sup>*,
+          VK Venna<sup>1</sup>*, Sreevatsa S<sup>2</sup>, Aryan J<sup>2</sup>,
+          Sahithi K<sup>2</sup>, RK Sarvadevabhatla<sup>1,2</sup></p>
         <p class="affils"><sup>1</sup> BharatGen &middot; <sup>2</sup> IIIT Hyderabad
           &middot; * Equal contribution</p>
       </div>
 
       <div class="rail">
         <div class="logo"><img src="assets/logos/icdar26.png" alt="ICDAR 2026, Vienna"></div>
-        <div class="codes">
-          <figure>
-            <img src="assets/qr/project.svg" alt="">
-            <figcaption>Project page</figcaption>
-          </figure>
-          <figure>
-            <img src="assets/qr/contact.svg" alt="">
-            <figcaption>Contact us</figcaption>
-          </figure>
+        <div class="orglogos top-orglogos">
+          <img src="assets/logos/bharatgen-official.png" alt="BharatGen">
+          <img src="assets/logos/iiith.png" alt="IIIT Hyderabad">
+          <img src="assets/logos/cvit.png" alt="CVIT">
         </div>
-        <p class="project-link"><svg class="webicon" aria-hidden="true">
-            <use href="#ic-web" />
-          </svg><span>replica-agents.github.io</span></p>
       </div>
     </header>
 
@@ -252,29 +244,33 @@
             <circle cx="620" cy="300" r="142" />
             <circle cx="620" cy="300" r="95" />
             <circle cx="620" cy="300" r="48" />
-            <line x1="620" y1="300" x2="620" y2="110" />
-            <line x1="620" y1="300" x2="810" y2="300" />
-            <line x1="620" y1="300" x2="620" y2="490" />
-            <line x1="620" y1="300" x2="430" y2="300" />
+            <line class="te" x1="620" y1="300" x2="620" y2="110" />
+            <line class="ls" x1="620" y1="300" x2="810" y2="300" />
+            <line class="ps" x1="620" y1="300" x2="620" y2="490" />
+            <line class="vf" x1="620" y1="300" x2="430" y2="300" />
           </g>
           <g class="rnode">
-            <circle cx="620" cy="110" r="7" class="std" />
-            <circle cx="810" cy="300" r="7" class="std" />
-            <circle cx="620" cy="490" r="7" class="new" />
-            <circle cx="430" cy="300" r="7" class="new" />
+            <circle cx="620" cy="110" r="7" class="te" />
+            <circle cx="810" cy="300" r="7" class="ls" />
+            <circle cx="620" cy="490" r="7" class="ps" />
+            <circle cx="430" cy="300" r="7" class="vf" />
           </g>
-          <g class="rlab std">
+          <g class="rlab te">
             <text x="620" y="66" text-anchor="middle" class="ax">Text Extraction</text>
             <text x="620" y="90" text-anchor="middle" class="qq">are the words right?</text>
             <text x="620" y="32" text-anchor="middle" class="mt">WRR &#8593; &middot; CRR &#8593;</text>
+          </g>
+          <g class="rlab ls">
             <text x="828" y="288" class="ax">Logical Structure</text>
             <text x="828" y="312" class="qq">is the structure right?</text>
             <text x="828" y="340" class="mt">NTED &#8595; &middot; TEDS &#8593; &middot; CDM &#8593;</text>
           </g>
-          <g class="rlab new">
+          <g class="rlab ps">
             <text x="620" y="528" text-anchor="middle" class="ax">Physical Structure</text>
             <text x="620" y="552" text-anchor="middle" class="qq">is the position right?</text>
             <text x="620" y="580" text-anchor="middle" class="mt">GPS &#8593; &middot; LPS &#8593; &middot; NEW</text>
+          </g>
+          <g class="rlab vf">
             <text x="412" y="288" text-anchor="end" class="ax">Visual Fidelity</text>
             <text x="412" y="312" text-anchor="end" class="qq">does it look right?</text>
             <text x="412" y="340" text-anchor="end" class="mt">VFS &#8593; &middot; NEW</text>
@@ -416,10 +412,20 @@
           <div><b>03 &middot; Data skew</b><span>High-resource scripts dominate</span></div>
           <div><b>04 &middot; Render cost</b><span>Refinement adds latency</span></div>
         </div>
-        <div class="orglogos">
-          <img src="assets/logos/bharatgen-official.png" alt="BharatGen">
-          <img src="assets/logos/iiith.png" alt="IIIT Hyderabad">
-          <img src="assets/logos/cvit.png" alt="CVIT">
+        <div class="footer-contact">
+          <div class="codes">
+            <figure>
+              <img src="assets/qr/project.svg" alt="Project page QR code">
+              <figcaption>Project page</figcaption>
+            </figure>
+            <figure>
+              <img src="assets/qr/contact.svg" alt="Contact QR code">
+              <figcaption>Contact us</figcaption>
+            </figure>
+          </div>
+          <p class="project-link"><svg class="webicon" aria-hidden="true">
+              <use href="#ic-web" />
+            </svg><span>replica-agents.github.io</span></p>
         </div>
       </div>
     </section>
