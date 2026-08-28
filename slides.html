@@ -1131,52 +1131,160 @@
     /* ---- invoice detail: a real letterhead, meta grid and totals block.
        Everything below degrades through the same L1/L2/L3 gates as before, so
        level 0 is still a flat stream and level 3 is still the source. ---- */
-    .d-head { display: block; }
-    .doc.L2 .d-head, .doc.L3 .d-head {
-      display: flex; justify-content: space-between; align-items: flex-start;
-      gap: 18px; margin-bottom: 12px;
+    .d-head {
+      display: block;
     }
-    .d-addr, .d-billto, .d-from, .d-meta { transition: all .45s; }
-    .doc:not(.L3) .d-addr { font-size: 13.5px; color: #222; }
-    .doc.L3 .d-addr { font-size: 9.5px; line-height: 1.5; color: #6b6b6b; }
+
+    .doc.L2 .d-head,
+    .doc.L3 .d-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 12px;
+    }
+
+    .d-addr,
+    .d-billto,
+    .d-from,
+    .d-meta {
+      transition: all .45s;
+    }
+
+    .doc:not(.L3) .d-addr {
+      font-size: 13.5px;
+      color: #222;
+    }
+
+    .doc.L3 .d-addr {
+      font-size: 9.5px;
+      line-height: 1.5;
+      color: #6b6b6b;
+    }
+
     .doc:not(.L2):not(.L3) .d-mtab,
     .doc:not(.L2):not(.L3) .d-mtab tbody,
     .doc:not(.L2):not(.L3) .d-mtab tr,
-    .doc:not(.L2):not(.L3) .d-mtab td { display: inline; font-size: 13.5px; padding: 0; }
-    .doc:not(.L2):not(.L3) .d-mtab td::after { content: ' '; }
-    .d-mtab { border-collapse: collapse; font-size: 10px; }
-    .doc.L3 .d-mtab td { padding: 1px 0 1px 12px; color: #444; }
-    .doc.L3 .d-mtab td.num { font-variant-numeric: tabular-nums; text-align: right; font-weight: 700; color: #222; }
-    .d-lbl { display: inline; }
-    .doc.L3 .d-lbl {
-      display: block; font-family: var(--mono); font-size: 8px; letter-spacing: .14em;
-      text-transform: uppercase; color: var(--gold); margin-bottom: 2px; font-weight: 700;
+    .doc:not(.L2):not(.L3) .d-mtab td {
+      display: inline;
+      font-size: 13.5px;
+      padding: 0;
     }
-    .doc.L3 .d-billto { font-size: 10.5px; line-height: 1.45; margin-bottom: 10px; }
+
+    .doc:not(.L2):not(.L3) .d-mtab td::after {
+      content: ' ';
+    }
+
+    .d-mtab {
+      border-collapse: collapse;
+      font-size: 10px;
+    }
+
+    .doc.L3 .d-mtab td {
+      padding: 1px 0 1px 12px;
+      color: #444;
+    }
+
+    .doc.L3 .d-mtab td.num {
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      font-weight: 700;
+      color: #222;
+    }
+
+    .d-lbl {
+      display: inline;
+    }
+
+    .doc.L3 .d-lbl {
+      display: block;
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 2px;
+      font-weight: 700;
+    }
+
+    .doc.L3 .d-billto {
+      font-size: 10.5px;
+      line-height: 1.45;
+      margin-bottom: 10px;
+    }
+
     /* the totals block only becomes a right-aligned column once geometry exists */
-    .d-tot { border-collapse: collapse; }
+    .d-tot {
+      border-collapse: collapse;
+    }
+
     .doc:not(.L2):not(.L3) .d-tot,
     .doc:not(.L2):not(.L3) .d-tot tbody,
     .doc:not(.L2):not(.L3) .d-tot tr,
-    .doc:not(.L2):not(.L3) .d-tot td { display: inline; font-size: 13.5px; padding: 0; }
-    .doc:not(.L2):not(.L3) .d-tot td::after { content: ' '; }
-    .doc.L2 .d-tot, .doc.L3 .d-tot {
-      column-span: all; width: 54%; margin: 8px 0 8px auto; font-size: 10.5px;
+    .doc:not(.L2):not(.L3) .d-tot td {
+      display: inline;
+      font-size: 13.5px;
+      padding: 0;
     }
-    .doc.L3 .d-tot td { padding: 2px 0; border-bottom: 1px solid #eee; }
-    .doc.L3 .d-tot td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+    .doc:not(.L2):not(.L3) .d-tot td::after {
+      content: ' ';
+    }
+
+    .doc.L2 .d-tot,
+    .doc.L3 .d-tot {
+      column-span: all;
+      width: 54%;
+      margin: 8px 0 8px auto;
+      font-size: 10.5px;
+    }
+
+    .doc.L3 .d-tot td {
+      padding: 2px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .doc.L3 .d-tot td.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
     .doc.L3 .d-tot .d-due td {
-      border-top: 2px solid var(--navy); border-bottom: 0; font-weight: 700;
-      color: var(--navy); font-size: 12px; padding-top: 4px;
+      border-top: 2px solid var(--navy);
+      border-bottom: 0;
+      font-weight: 700;
+      color: var(--navy);
+      font-size: 12px;
+      padding-top: 4px;
     }
 
     /* the richer invoice needs a little less leading once it is inside the
        real page box, or the last paragraph clips at levels 2 and 3 */
-    .doc.L2 .d-body, .doc.L3 .d-body { font-size: 11.5px; line-height: 1.42; }
-    .doc.L2 .d-body p, .doc.L3 .d-body p { margin: 0 0 6px; }
-    .doc.L3 .d-tab td, .doc.L3 .d-tab th { padding: 2px 4px; }
-    .doc.L3 .d-tot td { padding: 1.5px 0; }
-    .doc.L3 .d-foot { font-size: 8px; line-height: 1.35; margin-top: 6px; }
+    .doc.L2 .d-body,
+    .doc.L3 .d-body {
+      font-size: 11.5px;
+      line-height: 1.42;
+    }
+
+    .doc.L2 .d-body p,
+    .doc.L3 .d-body p {
+      margin: 0 0 6px;
+    }
+
+    .doc.L3 .d-tab td,
+    .doc.L3 .d-tab th {
+      padding: 2px 4px;
+    }
+
+    .doc.L3 .d-tot td {
+      padding: 1.5px 0;
+    }
+
+    .doc.L3 .d-foot {
+      font-size: 8px;
+      line-height: 1.35;
+      margin-top: 6px;
+    }
 
     .doc {
       font-family: Georgia, serif;
@@ -1372,39 +1480,145 @@
 
     /* ---------- agents vs tools ---------- */
     /* ---- agents vs tools, drawn ---- */
-    .atfig { width: 100%; height: auto; max-height: 380px; display: block; margin-top: 8px; }
-    .atfig .crop, .atfig .out {
-      fill: var(--paper); stroke: var(--line); stroke-width: 2;
+    .atfig {
+      width: 100%;
+      height: auto;
+      max-height: 380px;
+      display: block;
+      margin-top: 8px;
     }
-    .atfig .cl { stroke: #cfd6de; stroke-width: 7; stroke-linecap: round; }
-    .atfig .ob { fill: #dfe5ec; }
-    .atfig .ob.g { fill: #f1eefc; stroke: #ddd6f6; stroke-width: 1.5; }
-    .atfig .ar { fill: none; stroke: var(--navy-soft); stroke-width: 5; stroke-linecap: round; }
-    .atfig .ar.g { stroke: var(--violet); }
-    .atfig .ar.dash, .atfig .ar.loop { stroke: var(--violet); stroke-dasharray: 9 7; stroke-width: 4; }
-    .atfig .gbody { fill: #e7ecf3; stroke: var(--navy-soft); stroke-width: 3; }
-    .atfig .teeth rect { fill: var(--navy-soft); }
-    .atfig .ghole { fill: var(--bg); stroke: var(--navy-soft); stroke-width: 3; }
-    .atfig .brain { fill: #f1eefc; stroke: var(--violet); stroke-width: 3.5; }
-    .atfig .qm { font-family: var(--serif); font-size: 54px; font-weight: 700; fill: var(--violet); }
+
+    .atfig .crop,
+    .atfig .out {
+      fill: var(--paper);
+      stroke: var(--line);
+      stroke-width: 2;
+    }
+
+    .atfig .cl {
+      stroke: #cfd6de;
+      stroke-width: 7;
+      stroke-linecap: round;
+    }
+
+    .atfig .ob {
+      fill: #dfe5ec;
+    }
+
+    .atfig .ob.g {
+      fill: #f1eefc;
+      stroke: #ddd6f6;
+      stroke-width: 1.5;
+    }
+
+    .atfig .ar {
+      fill: none;
+      stroke: var(--navy-soft);
+      stroke-width: 5;
+      stroke-linecap: round;
+    }
+
+    .atfig .ar.g {
+      stroke: var(--violet);
+    }
+
+    .atfig .ar.dash,
+    .atfig .ar.loop {
+      stroke: var(--violet);
+      stroke-dasharray: 9 7;
+      stroke-width: 4;
+    }
+
+    .atfig .gbody {
+      fill: #e7ecf3;
+      stroke: var(--navy-soft);
+      stroke-width: 3;
+    }
+
+    .atfig .teeth rect {
+      fill: var(--navy-soft);
+    }
+
+    .atfig .ghole {
+      fill: var(--bg);
+      stroke: var(--navy-soft);
+      stroke-width: 3;
+    }
+
+    .atfig .brain {
+      fill: #f1eefc;
+      stroke: var(--violet);
+      stroke-width: 3.5;
+    }
+
+    .atfig .qm {
+      font-family: var(--serif);
+      font-size: 54px;
+      font-weight: 700;
+      fill: var(--violet);
+    }
+
     .atfig .atc {
-      font-family: var(--sans); font-size: 25px; font-weight: 600; fill: var(--ink-2);
+      font-family: var(--sans);
+      font-size: 25px;
+      font-weight: 600;
+      fill: var(--ink-2);
     }
-    .atfig .atn { font-family: var(--sans); font-size: 21px; fill: var(--ink-3); font-style: italic; }
-    .atfig .atn.gold { fill: var(--violet); font-style: normal; font-weight: 600; }
+
+    .atfig .atn {
+      font-family: var(--sans);
+      font-size: 21px;
+      fill: var(--ink-3);
+      font-style: italic;
+    }
+
+    .atfig .atn.gold {
+      fill: var(--violet);
+      font-style: normal;
+      font-weight: 600;
+    }
 
     /* ---- closing slide: three cards and one number, so both grow to fill ---- */
-    .slide[data-eyebrow="09 · Conclusion"] .grid3 { gap: 28px; }
+    .slide[data-eyebrow="09 · Conclusion"] .grid3 {
+      gap: 28px;
+    }
+
     .slide[data-eyebrow="09 · Conclusion"] .grid3 .card {
-      min-height: 290px; display: flex; flex-direction: column; justify-content: center;
+      min-height: 290px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       padding: 36px 34px;
     }
-    .slide[data-eyebrow="09 · Conclusion"] .grid3 .card h3 { font-size: 42px; margin-bottom: 16px; }
-    .slide[data-eyebrow="09 · Conclusion"] .grid3 .card p { font-size: 25px; line-height: 1.5; }
-    .slide[data-eyebrow="09 · Conclusion"] .grid3 .card .tag { font-size: 16px; margin-bottom: 12px; }
-    .slide[data-eyebrow="09 · Conclusion"] .stats { margin-top: 46px !important; }
-    .slide[data-eyebrow="09 · Conclusion"] .stats .v { font-size: 140px; line-height: 1; }
-    .slide[data-eyebrow="09 · Conclusion"] .stats .k { font-size: 24px; margin-top: 10px; }
+
+    .slide[data-eyebrow="09 · Conclusion"] .grid3 .card h3 {
+      font-size: 42px;
+      margin-bottom: 16px;
+    }
+
+    .slide[data-eyebrow="09 · Conclusion"] .grid3 .card p {
+      font-size: 25px;
+      line-height: 1.5;
+    }
+
+    .slide[data-eyebrow="09 · Conclusion"] .grid3 .card .tag {
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    .slide[data-eyebrow="09 · Conclusion"] .stats {
+      margin-top: 46px !important;
+    }
+
+    .slide[data-eyebrow="09 · Conclusion"] .stats .v {
+      font-size: 140px;
+      line-height: 1;
+    }
+
+    .slide[data-eyebrow="09 · Conclusion"] .stats .k {
+      font-size: 24px;
+      margin-top: 10px;
+    }
 
     .at-grid {
       display: grid;
@@ -1918,8 +2132,16 @@
       gap: 26px;
     }
 
-    .card.wide .ricon { width: 108px; height: 76px; flex: none; }
-    .card.wide h3 { margin: 0; font-size: 36px; }
+    .card.wide .ricon {
+      width: 108px;
+      height: 76px;
+      flex: none;
+    }
+
+    .card.wide h3 {
+      margin: 0;
+      font-size: 36px;
+    }
 
     .card.wide {
       display: flex;
@@ -2671,7 +2893,9 @@
     }
 
     /* ═══════════ ABLATION CHART ═══════════ */
-    #ablClip rect { transition: width .5s cubic-bezier(.3,.7,.3,1); }
+    #ablClip rect {
+      transition: width .5s cubic-bezier(.3, .7, .3, 1);
+    }
 
     .ablwrap {
       flex: 1;
@@ -3457,6 +3681,164 @@
       stroke-linecap: round;
     }
 
+    /* ═══════════ THE SAME WALL, WITH A SECOND DOOR (format comparison) ═══════════ */
+    /* This is the sequel to the bottleneck figure: identical visual language —
+     same axis column, same hatched slab — so the audience recognises the
+     picture instantly and only has to read what is new, the FID-HTML door on
+     the right. The exhaustive ledger (paper Table 1) is commented out in the
+     markup directly above the new section and can be switched back in as-is. */
+    /* stage units, not screen pixels: the slide body is 1743 wide, so the
+     1620x730 viewBox draws 785 tall. Pinning the box there keeps the figure
+     width-bound — any smaller max-height letterboxes it with side gutters. */
+    .btl.fmtwall {
+      max-height: 786px;
+    }
+
+    .btl.fmtwall .wall.shut {
+      fill: url(#hatch2);
+    }
+
+    /* the composition is width-bound on a 16:9 stage, so the type is stepped up
+     two notches against the bottleneck slide to spend the height that is left.
+     .fidd stays at its base size: at 17px the position:absolute line runs past
+     the right wall of the FID-HTML slab. */
+    .btl.fmtwall .bl {
+      font-size: 19px;
+    }
+
+    .btl.fmtwall .wl {
+      font-size: 18px;
+    }
+
+    .btl.fmtwall .axn {
+      font-size: 42px;
+    }
+
+    .btl.fmtwall .axd {
+      font-size: 20px;
+    }
+
+    .btl.fmtwall .fmtn {
+      font-size: 18px;
+    }
+
+    .btl.fmtwall .fmtc {
+      font-size: 27px;
+    }
+
+    .btl.fmtwall .shutn {
+      font-size: 19px;
+    }
+
+    .btl.fmtwall .shutf {
+      font-size: 23px;
+    }
+
+    .btl.fmtwall .shutr {
+      font-size: 19px;
+    }
+
+    .btl.fmtwall .fidn {
+      font-size: 40px;
+    }
+
+    .btl.fmtwall .fidhead {
+      font-size: 18px;
+    }
+
+    .btl .wall.fid {
+      fill: #fffaf1;
+      stroke: var(--gold);
+      stroke-width: 3.5;
+    }
+
+    .btl .wl.fid {
+      fill: #8a6510;
+    }
+
+    .btl .fidhead {
+      font-family: var(--sans);
+      font-size: 17px;
+      fill: var(--ink-3);
+      font-weight: 600;
+      text-anchor: middle;
+    }
+
+    .btl .fidrule {
+      stroke: var(--gold);
+      stroke-width: 1.5;
+      opacity: .45;
+    }
+
+    .btl .fidn {
+      font-family: var(--serif);
+      font-size: 34px;
+      font-weight: 700;
+      fill: var(--navy);
+    }
+
+    .btl .fidn.gold {
+      fill: #8a6510;
+    }
+
+    .btl .fidd {
+      font-family: var(--mono);
+      font-size: 16px;
+      fill: var(--ink-2);
+    }
+
+    .btl .fidd .req {
+      fill: #8a6510;
+      font-weight: 700;
+    }
+
+    .btl .tick {
+      fill: none;
+      stroke: #2f9e63;
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .btl .tick.gold {
+      stroke: var(--gold);
+    }
+
+    /* where this talk sits in the programme — icdar2026.org/index.php/program-detail/
+     Paper 88 is oral only: it appears in neither Poster Session #1 nor #2, so
+     there is no poster-board number to print here. */
+    .thanks .sesscard {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 8px 0;
+      align-items: center;
+      justify-content: center;
+      margin: -14px 0 28px;
+      padding: 11px 26px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .07);
+      border: 1px solid rgba(255, 255, 255, .17);
+    }
+
+    .thanks .sesscard .sk {
+      font-family: var(--sans);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .thanks .sesscard .sd {
+      font-family: var(--mono);
+      font-size: 18px;
+      color: rgba(255, 255, 255, .78);
+    }
+
+    .thanks .sesscard .sd::before {
+      content: "\00b7";
+      margin: 0 14px;
+      color: rgba(255, 255, 255, .34);
+    }
+
     /* ═══════════ THANK-YOU QR WALL ═══════════ */
     /* two columns: REPLICA owns the left at full height, the three grounding
      models stack on the right — every code stays big enough to photograph */
@@ -3595,7 +3977,7 @@
       <section class="slide" data-eyebrow="01 · Motivation" data-frags="3" id="ladderSlide"
         data-notes="So what did we actually lose? Same document, twice. On the left the original page. On the right I rebuild it one layer at a time — this is running live, and at the end the two are literally the same markup. [CLICK] Level zero, text only: every word is present and in order, but it is a wall of prose. You cannot tell the heading from the body, the table has become a run of numbers, the total is indistinguishable from the fine print. Note the shape does not even match — a text stream has no page. This is what OCR and most parsers give you. [CLICK] Level one, add logical structure: now we know this is a heading, this is a table with rows and columns. Markdown-class output. A big win for machines — but still no page geometry, so the shape still does not match. [CLICK] Level two, add physical position: now the page has the same dimensions as the original, the two-column body is back, and the numbers align under their headers. Now you can tell which number belongs to which item. [CLICK] Level three, add visual fidelity: typography, weight, colour, the brand bar — and critically the strikethrough and the OVERDUE stamp. Now the right side is pixel-for-pixel the left side. Only the cancelled line reads as cancelled, and only now does the overdue notice exist at all.">
         <!-- <h2>Rebuilding a document, <em>one layer at a time</em></h2> -->
-         <h2>What is <em>V</em>isually <em>F</em>aithful <em>D</em>ocument <em>R</em>econstruction ? </h2>
+        <h2>What is <em>V</em>isually <em>F</em>aithful <em>D</em>ocument <em>R</em>econstruction ? </h2>
         <div class="slide-body">
           <div class="lv-steps">
             <div class="lv-step" data-lv="0">0 · Text only</div>
@@ -3620,10 +4002,22 @@
                     <div class="d-meta">
                       <div class="d-sub">Invoice</div>
                       <table class="d-mtab">
-                        <tr><td>Number</td><td class="num">INV-2024-0847</td></tr>
-                        <tr><td>Issued</td><td class="num">12 May 2024</td></tr>
-                        <tr><td>Terms</td><td class="num">Net 15</td></tr>
-                        <tr><td>Due</td><td class="num">27 May 2024</td></tr>
+                        <tr>
+                          <td>Number</td>
+                          <td class="num">INV-2024-0847</td>
+                        </tr>
+                        <tr>
+                          <td>Issued</td>
+                          <td class="num">12 May 2024</td>
+                        </tr>
+                        <tr>
+                          <td>Terms</td>
+                          <td class="num">Net 15</td>
+                        </tr>
+                        <tr>
+                          <td>Due</td>
+                          <td class="num">27 May 2024</td>
+                        </tr>
                       </table>
                     </div>
                   </div>
@@ -3669,10 +4063,22 @@
                       </tr>
                     </table>
                     <table class="d-tot">
-                      <tr><td>Subtotal</td><td class="num">4,980.00</td></tr>
-                      <tr><td>Credit — cancelled licence</td><td class="num">&minus;2,400.00</td></tr>
-                      <tr><td>Sales tax (8%)</td><td class="num">206.40</td></tr>
-                      <tr class="d-due"><td>Total due (USD)</td><td class="num">2,786.40</td></tr>
+                      <tr>
+                        <td>Subtotal</td>
+                        <td class="num">4,980.00</td>
+                      </tr>
+                      <tr>
+                        <td>Credit — cancelled licence</td>
+                        <td class="num">&minus;2,400.00</td>
+                      </tr>
+                      <tr>
+                        <td>Sales tax (8%)</td>
+                        <td class="num">206.40</td>
+                      </tr>
+                      <tr class="d-due">
+                        <td>Total due (USD)</td>
+                        <td class="num">2,786.40</td>
+                      </tr>
                     </table>
                     <p><span class="d-lbl">Remittance</span>Payment by bank transfer to Eastbrook Trust, account
                       0042-88190, routing 011000138, quoting the invoice number as the reference. Cheques payable to
@@ -3700,7 +4106,7 @@
         data-notes="Those four layers are exactly what a faithful reconstruction has to preserve, and they are the spine of the paper. Text — are the words right. Hierarchy — is the structure right: reading order, nesting, tables, lists. Geometry — is the position right: where does each block actually sit. And visual components — does it look right: typography, colour, weight, backgrounds. Prior work optimises the first two and lets the rest go, and the reason is simple: no prior benchmark measured the last two, so no prior system optimised them. [CLICK] And two requirements on the format itself: whatever we output has to be web-native, so it opens anywhere without a bespoke viewer, and machine-readable, so downstream models can consume the structure directly. Those six boxes are the specification for everything that follows.">
         <div class="kicker">The axes of document reconstruction</div>
         <!-- <h2>Requirements for <em>visually faithful</em> reconstruction</h2> -->
-         <h2>Requirements for <em>V</em>isually <em>F</em>aithful <em>D</em>ocument <em>R</em>econstruction</h2>
+        <h2>Requirements for <em>V</em>isually <em>F</em>aithful <em>D</em>ocument <em>R</em>econstruction</h2>
         <div class="slide-body">
           <div class="reqgroup frag" data-frag="1">
             <div class="reqlabel"><span class="rq">Must preserve</span> the four axes of the document</div>
@@ -3804,7 +4210,7 @@
         data-notes="So why did all three lose the same two things? It is not the model. It is what we asked the model to write. [CLICK] The page carries four axes. They all have to pass through one narrow place — the output format. Marker writes Markdown. The OCR VLMs write a flat text stream. GPT-5 and Qwen write generic HTML. [CLICK] And that is where two of them die. Markdown and plain text have no syntax for an x-y coordinate or a font colour — you literally cannot write it down. HTML does have the syntax, and this is the subtle case: the syntax exists, but a div with no style attribute is perfectly valid HTML — so it is optional, and what is optional gets left out. Either way there is no place to put position and style, and the information never reaches the page. [CLICK] So the sentence I want you to keep: what a format does not require, a system does not produce. The bottleneck is not the model. It is the target. Widen the target, and everything downstream changes — so that is what we did.">
         <!-- <div class="kicker">Not a model failure — a format failure</div> -->
         <!-- <h2>Four axes go in. <em>The output format only has room for two.</em></h2> -->
-         <h2>Limitations of Existing Document Representations</h2>
+        <h2>Limitations of Existing Document Representations</h2>
         <div class="slide-body">
           <svg class="btl" viewBox="0 0 1620 560" aria-label="The output format is the bottleneck">
             <defs>
@@ -3936,14 +4342,18 @@
         data-notes="Concretely, this is what Fid-HTML encodes — and the code on the right is the real source of the page on the left, not a mock-up. Six dimensions. One, textual content at word and block level. Two, hierarchical structure through nested divs. Three, semantic tags — li, table, tr, td — with meaningful class names. Four, positional information: global placement by absolute positioning, local alignment by relative containers and p wrappers. Five, styling metadata: font size, colour, bold, italic, underline, strikethrough, as inline CSS. Six, figures and backgrounds layered into the DOM with VLM-generated alt-text — which is also what makes the output screen-reader accessible. Click any dimension and it highlights exactly where it lives in the code; flip to Rendered and your browser draws that exact markup.">
         <!-- <div class="kicker">What made that possible</div> -->
         <!-- <h2>Six dimensions — <em>click one</em> to see where it lives in the source <span class="srcnote"></span></h2> -->
-         <h2>Six Aspects of FID-HTML</h2>
+        <h2>Six Aspects of FID-HTML</h2>
         <div class="slide-body">
           <div class="embed"><iframe src="index.html?embed=fidhtml&part=figure"
               title="FID-HTML anatomy (paper Fig. 3)"></iframe></div>
         </div>
       </section>
 
-      <!-- ═══════════ 8 · FORMAT TABLE (paper Table 1) ═══════════ -->
+      <!-- ═══════════ 8 · FORMAT COMPARISON ═══════════ -->
+      <!-- ORIGINAL (paper Table 1, iframe embed) — kept verbatim so it can be
+           put back at any time: delete the new section below and remove the
+           two comment markers that wrap this one. Nothing else changed. -->
+      <!--
       <section class="slide demo bleed" data-eyebrow="03 · FID-HTML" data-embed="fmt"
         data-notes="We saw three formats hit that wall. This is the full ledger — every representation the field uses, scored on the same four axes. Read down the last two column groups. Markdown has no slot for position or style at all. LaTeX is expressive but partial on hierarchy and not web-native. DocTags and hOCR carry boxes but are partial on styling. And plain HTML — this is the important row — plain HTML CAN express fidelity but never REQUIRES it: two valid HTML documents with the same text can render completely differently. That is the gap. Fid-HTML is the only row full across every column, because position and style are mandatory, inline, per element. Fidelity becomes a property of the format rather than a hope.">
         <div class="kicker">The same wall, for every format</div>
@@ -3952,6 +4362,122 @@
           <div class="embed">
             <iframe src="index.html?embed=fidhtml&part=table" title="Format comparison (paper Table 1)"></iframe>
           </div>
+        </div>
+      </section>
+      -->
+
+      <!-- REPLACEMENT: the same wall as the bottleneck slide, now with a second
+           door. The audience already knows this picture, so the only new thing
+           to read is the FID-HTML panel on the right. -->
+      <section class="slide vcenter" data-eyebrow="03 · FID-HTML" data-frags="4"
+        data-notes="Same picture as the bottleneck slide, so you already know how to read it: the four things a page carries. [CLICK] Every representation the field uses handles the top two. Markdown, plain text, LaTeX, DocTags, hOCR, generic HTML — text and hierarchy get through all of them. [CLICK] Geometry and style do not, and for three different reasons. Markdown and plain text have no syntax for a coordinate or a colour — you cannot write it down even if you want to. LaTeX, DocTags and hOCR are partial: one carries boxes but not styling, another carries styling but not boxes. And generic HTML allows styling but never requires position, so it gets left out. That is the whole of paper Table One in one picture. [CLICK] So we cut a second door. Fid-HTML carries the first two the same way everyone else does. [CLICK] And here is the part that matters: geometry and style are not merely allowed, they are required. Absolute position on every block; font size, weight and colour inline on every span. The format enforces them. That is the difference the rest of the talk is built on.">
+        <!-- <div class="kicker">The same wall, for every format</div> -->
+        <h2>Comparison with <em>existing representations</em></h2>
+        <div class="slide-body">
+          <svg class="btl fmtwall" viewBox="0 0 1620 730"
+            aria-label="Existing representations have no slot for geometry or style; FID-HTML has a slot for all four axes">
+            <defs>
+              <marker id="fhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                <path d="M0 0 L10 5 L0 10 z" fill="var(--navy-soft)" />
+              </marker>
+              <!-- the bottleneck slide's #hatch is inside a display:none slide by the
+                   time this one is on screen, so the shut slab needs its own copy -->
+              <pattern id="hatch2" width="9" height="9" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+                <rect width="9" height="9" fill="#eceff3" />
+                <line x1="0" y1="0" x2="0" y2="9" stroke="#cdd4dd" stroke-width="3" />
+              </pattern>
+            </defs>
+
+            <!-- ───── base beat: the four axes, exactly as the bottleneck slide left them ───── -->
+            <text x="24" y="30" class="bl">The page carries</text>
+            <g class="bax">
+              <rect x="24" y="54" width="330" height="126" rx="11" class="ax ok" />
+              <text x="52" y="115" class="axn">Text</text>
+              <text x="52" y="153" class="axd">the words themselves</text>
+
+              <rect x="24" y="200" width="330" height="126" rx="11" class="ax ok" />
+              <text x="52" y="261" class="axn">Hierarchy</text>
+              <text x="52" y="299" class="axd">headings, tables, lists, order</text>
+
+              <rect x="24" y="414" width="330" height="126" rx="11" class="ax gold" />
+              <text x="52" y="475" class="axn gold">Geometry</text>
+              <text x="52" y="513" class="axd">where each block sits &#8212; x, y</text>
+
+              <rect x="24" y="560" width="330" height="126" rx="11" class="ax gold" />
+              <text x="52" y="621" class="axn gold">Style</text>
+              <text x="52" y="659" class="axd">size, weight, colour, rules</text>
+            </g>
+
+            <!-- ───── 1 · what every existing representation does carry ───── -->
+            <!-- No container is ever drawn before its contents: an empty slab on
+                 screen reads as a rendering fault, not as a held beat. -->
+            <g class="frag" data-frag="1">
+              <path d="M362 117 H 528" class="fl ok" marker-end="url(#fhead)" />
+              <path d="M362 263 H 528" class="fl ok" marker-end="url(#fhead)" />
+              <rect x="540" y="50" width="460" height="296" rx="12" class="wall open" />
+              <text x="770" y="30" class="wl">Existing representations</text>
+              <text x="566" y="92" class="fmtn">text and hierarchy get through every one of them</text>
+              <text x="566" y="158" class="fmtc">Markdown &#183; plain text</text>
+              <text x="566" y="228" class="fmtc">LaTeX &#183; DocTags &#183; hOCR</text>
+              <text x="566" y="298" class="fmtc">generic HTML &#183; Qwen&#8209;HTML</text>
+            </g>
+
+            <!-- ───── 2 · and what it does not — three different reasons ───── -->
+            <g class="frag" data-frag="2">
+              <path d="M362 477 H 480" class="fl gold" />
+              <path d="M362 623 H 480" class="fl gold" />
+              <g class="xm">
+                <line x1="482" y1="461" x2="514" y2="493" />
+                <line x1="514" y1="461" x2="482" y2="493" />
+              </g>
+              <g class="xm">
+                <line x1="482" y1="607" x2="514" y2="639" />
+                <line x1="514" y1="607" x2="482" y2="639" />
+              </g>
+              <rect x="540" y="400" width="460" height="304" rx="12" class="wall shut" />
+              <text x="770" y="444" class="shutn">NO SLOT FOR GEOMETRY OR STYLE</text>
+              <text x="566" y="492" class="shutf">Markdown &#183; plain text</text>
+              <text x="566" y="522" class="shutr">no syntax for a coordinate or a colour</text>
+              <text x="566" y="568" class="shutf">LaTeX &#183; DocTags &#183; hOCR</text>
+              <text x="566" y="598" class="shutr">
+                <tspan class="em">partial</tspan> &#8212; boxes or styling, never both
+              </text>
+              <text x="566" y="644" class="shutf">generic HTML &#183; Qwen&#8209;HTML</text>
+              <text x="566" y="674" class="shutr">styling is allowed, position is <tspan class="em">never required
+                </tspan></text>
+            </g>
+
+            <!-- ───── 3 · the second door, carrying what everyone carries ───── -->
+            <g class="frag" data-frag="3">
+              <rect x="1050" y="50" width="546" height="654" rx="12" class="wall fid" />
+              <text x="1323" y="30" class="wl fid">FID-HTML</text>
+
+              <path d="M1077 105 l 10 12 l 21 -26" class="tick" />
+              <text x="1130" y="115" class="fidn">Text</text>
+              <text x="1130" y="147" class="fidd">word- and block-level content</text>
+
+              <path d="M1077 251 l 10 12 l 21 -26" class="tick" />
+              <text x="1130" y="261" class="fidn">Hierarchy</text>
+              <text x="1130" y="293" class="fidd">nested div &#183; li &#183; table &#183; tr &#183; td</text>
+            </g>
+
+            <!-- ───── 4 · the payoff: the two dead axes, now required ───── -->
+            <g class="frag" data-frag="4">
+              <path d="M1077 465 l 10 12 l 21 -26" class="tick gold" />
+              <text x="1130" y="475" class="fidn gold">Geometry</text>
+              <text x="1130" y="507" class="fidd">position:absolute &#183; left &#183; top &#183; width &#183;
+                height</text>
+
+              <path d="M1077 611 l 10 12 l 21 -26" class="tick gold" />
+              <text x="1130" y="621" class="fidn gold">Style</text>
+              <text x="1130" y="653" class="fidd">font-size &#183; weight &#183; colour &#183; rules, <tspan
+                  class="req">inline</tspan></text>
+
+              <line x1="1076" y1="668" x2="1570" y2="668" class="fidrule" />
+              <text x="1323" y="692" class="fidhead">required on every element &#183; not optional</text>
+            </g>
+
+          </svg>
         </div>
       </section>
 
@@ -3968,7 +4494,7 @@
         data-notes="First the vocabulary, because agentic is an overloaded word. We formalise the system as a coordination between two things. A TOOL is a fixed function: same input, same output, no judgment. A layout detector always returns boxes the same way; reading-order computation, font fitting, background extraction — deterministic, reproducible, cheap. An AGENT reasons: it decides which tool to call, when, and whether the result is good enough — then retries, overrides, reroutes or escalates. In the paper we write script-A for the set of agents and script-T for the set of tools; agents perform semantic reasoning, routing, grouping and generation, while tools execute structured reproducible operations. And the objective is precisely this: given a page image I, produce HTML H such that the RENDER of H aligns with I across all four axes. Note it is R of H — the rendering — not H itself. That single choice is what forces a refine stage to exist at all.">
         <!-- <div class="kicker">The vocabulary, precisely</div> -->
         <!-- <h2>Agents <em>reason</em>. Tools <em>execute</em>.</h2> -->
-         <h2>Defining Agents and Tools</h2>
+        <h2>Defining Agents and Tools</h2>
         <div class="slide-body">
           <div class="at-grid" style="flex:0 0 auto;margin-bottom:26px;">
             <div class="at-col">
@@ -4004,60 +4530,61 @@
                claim as the loop below, and the loop is the part an audience can
                read from the back of the room. -->
           <div class="frag" data-frag="1">
-            <svg class="atfig" viewBox="0 0 1700 250" aria-label="A tool runs once; an agent checks its own result and goes again">
+            <svg class="atfig" viewBox="0 0 1700 250"
+              aria-label="A tool runs once; an agent checks its own result and goes again">
               <defs>
                 <marker id="atA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-                  <path d="M0 0 L10 5 L0 10 z" fill="var(--navy-soft)"/>
+                  <path d="M0 0 L10 5 L0 10 z" fill="var(--navy-soft)" />
                 </marker>
                 <marker id="atB" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-                  <path d="M0 0 L10 5 L0 10 z" fill="var(--violet)"/>
+                  <path d="M0 0 L10 5 L0 10 z" fill="var(--violet)" />
                 </marker>
               </defs>
 
               <!-- ── a tool: one pass, no opinion ── -->
               <g class="tl">
-                <rect class="crop" x="40" y="74" width="96" height="120" rx="8"/>
-                <line class="cl" x1="58" y1="102" x2="118" y2="102"/>
-                <line class="cl" x1="58" y1="122" x2="118" y2="122"/>
-                <line class="cl" x1="58" y1="142" x2="100" y2="142"/>
-                <path class="ar" d="M150 134 H 232" marker-end="url(#atA)"/>
+                <rect class="crop" x="40" y="74" width="96" height="120" rx="8" />
+                <line class="cl" x1="58" y1="102" x2="118" y2="102" />
+                <line class="cl" x1="58" y1="122" x2="118" y2="122" />
+                <line class="cl" x1="58" y1="142" x2="100" y2="142" />
+                <path class="ar" d="M150 134 H 232" marker-end="url(#atA)" />
                 <g class="gear" transform="translate(300,134)">
-                  <circle r="42" class="gbody"/>
+                  <circle r="42" class="gbody" />
                   <g class="teeth">
-                    <rect x="-7" y="-56" width="14" height="16" rx="3"/>
-                    <rect x="-7" y="40"  width="14" height="16" rx="3"/>
-                    <rect x="-56" y="-7" width="16" height="14" rx="3"/>
-                    <rect x="40" y="-7"  width="16" height="14" rx="3"/>
+                    <rect x="-7" y="-56" width="14" height="16" rx="3" />
+                    <rect x="-7" y="40" width="14" height="16" rx="3" />
+                    <rect x="-56" y="-7" width="16" height="14" rx="3" />
+                    <rect x="40" y="-7" width="16" height="14" rx="3" />
                   </g>
-                  <circle r="15" class="ghole"/>
+                  <circle r="15" class="ghole" />
                 </g>
-                <path class="ar" d="M368 134 H 450" marker-end="url(#atA)"/>
-                <rect class="out" x="466" y="74" width="96" height="120" rx="8"/>
-                <rect class="ob" x="482" y="92"  width="64" height="34" rx="4"/>
-                <rect class="ob" x="482" y="134" width="64" height="42" rx="4"/>
+                <path class="ar" d="M368 134 H 450" marker-end="url(#atA)" />
+                <rect class="out" x="466" y="74" width="96" height="120" rx="8" />
+                <rect class="ob" x="482" y="92" width="64" height="34" rx="4" />
+                <rect class="ob" x="482" y="134" width="64" height="42" rx="4" />
                 <text x="300" y="245" text-anchor="middle" class="atc">one pass &#183; the same answer every time</text>
               </g>
 
               <!-- ── an agent: chooses, checks, and goes again ── -->
               <g class="ag">
-                <rect class="crop" x="900" y="74" width="96" height="120" rx="8"/>
-                <line class="cl" x1="918" y1="102" x2="978" y2="102"/>
-                <line class="cl" x1="918" y1="122" x2="978" y2="122"/>
-                <line class="cl" x1="918" y1="142" x2="960" y2="142"/>
-                <path class="ar g" d="M1010 134 H 1092" marker-end="url(#atB)"/>
+                <rect class="crop" x="900" y="74" width="96" height="120" rx="8" />
+                <line class="cl" x1="918" y1="102" x2="978" y2="102" />
+                <line class="cl" x1="918" y1="122" x2="978" y2="122" />
+                <line class="cl" x1="918" y1="142" x2="960" y2="142" />
+                <path class="ar g" d="M1010 134 H 1092" marker-end="url(#atB)" />
                 <g transform="translate(1160,134)">
-                  <rect class="brain" x="-46" y="-46" width="92" height="92" rx="20"/>
+                  <rect class="brain" x="-46" y="-46" width="92" height="92" rx="20" />
                   <text y="14" text-anchor="middle" class="qm">?</text>
                 </g>
                 <!-- it reaches for whichever tool the case needs -->
-                <path class="ar dash" d="M1160 190 V 210 H 1050"/>
+                <path class="ar dash" d="M1160 190 V 210 H 1050" />
                 <text x="1044" y="214" text-anchor="end" class="atn">picks a tool</text>
-                <path class="ar g" d="M1228 134 H 1310" marker-end="url(#atB)"/>
-                <rect class="out" x="1326" y="74" width="96" height="120" rx="8"/>
-                <rect class="ob g" x="1342" y="92"  width="64" height="34" rx="4"/>
-                <rect class="ob g" x="1342" y="134" width="64" height="42" rx="4"/>
+                <path class="ar g" d="M1228 134 H 1310" marker-end="url(#atB)" />
+                <rect class="out" x="1326" y="74" width="96" height="120" rx="8" />
+                <rect class="ob g" x="1342" y="92" width="64" height="34" rx="4" />
+                <rect class="ob g" x="1342" y="134" width="64" height="42" rx="4" />
                 <!-- and looks at what came out -->
-                <path class="ar loop" d="M1374 62 C 1374 34, 1160 34, 1160 76" marker-end="url(#atB)"/>
+                <path class="ar loop" d="M1374 62 C 1374 34, 1160 34, 1160 76" marker-end="url(#atB)" />
                 <text x="1267" y="20" text-anchor="middle" class="atn gold">not good enough &#8594; again</text>
                 <text x="1160" y="245" text-anchor="middle" class="atc">decides &#183; checks &#183; retries</text>
               </g>
@@ -4264,7 +4791,7 @@
         data-notes="Rather than describe it further — here is the whole framework running on a real page with every intermediate output. Step through with the clicker, or hit Play for the full walkthrough. Each beat spotlights the corresponding part of Figure 4 on the left.">
         <!-- <div class="kicker">Interactive walkthrough</div> -->
         <!-- <h2>The framework, running on a real page <span class="srcnote"></span></h2> -->
-         <h2>Walkthrough of the <em>REPLICA</em> Agentic Framework</h2>
+        <h2>Walkthrough of the <em>REPLICA</em> Agentic Framework</h2>
         <div class="slide-body">
           <div class="embed"><iframe src="index.html?embed=demo&doc=magazine&autoplay=1&rate=1.5"
               title="REPLICA framework demo"></iframe></div>
@@ -4379,7 +4906,7 @@
               </div>
               <div class="rs-card gold frag" data-frag="2">
                 <!-- <h4>Two had none. We built them.</h4> -->
-                 <h4>We introduce</h4>
+                <h4>We introduce</h4>
                 <p><b>GPS / LPS</b> — where every block and line lands<br>
                   <b>VFS</b> — typography, colour and spacing, judged by a VLM
                 </p>
@@ -4671,18 +5198,18 @@
             <div class="card"><span class="tag">Representation Format</span>
               <h3>FID-HTML</h3>
               <!-- <p>A web-native format where position and style are <b>required</b>, inline, per element — fidelity by construction.</p> -->
-               <p>A web-native format for <b>Visually Faithful Document Reconstruction</b></p>
+              <p>A web-native format for <b>Visually Faithful Document Reconstruction</b></p>
             </div>
             <div class="card accent"><span class="tag">Method</span>
               <h3>REPLICA</h3>
-              <p>Agentic Framework with <b>Segment → Localize → Assemble → Refine.</b> 
+              <p>Agentic Framework with <b>Segment → Localize → Assemble → Refine.</b>
                 <!-- <b>Agents where judgment is needed, tools where determinism is.</b> -->
               </p>
             </div>
             <div class="card"><span class="tag">Benchmark & Metrics</span>
               <h3>VFDR-Bench + GPS · LPS · VFS</h3>
               <p><b>5,000</b> expert-annotated documents, <b>15+</b> languages, <b>3</b> new metrics.
-                </p>
+              </p>
             </div>
           </div>
           <div class="stats" style="margin-top:34px;">
@@ -4711,6 +5238,12 @@
         data-notes="Thank you. Happy to take questions. Everything — paper, code, dataset, models, and this deck — is linked from the project page.">
         <h1>Thank you</h1>
         <div class="sub">Questions?</div>
+        <!-- <div class="sesscard">
+          <span class="sk">Oral Session #8 &#183; Layout Analysis</span>
+          <span class="sd">Room EI9</span>
+          <span class="sd">Tue 1 Sep &#183; 10:40</span>
+          <span class="sd">Paper 88</span>
+        </div> -->
         <div class="qrwall">
           <div class="qrmain">
             <img src="static/images/qr/replica.png" alt="REPLICA project page QR code"
@@ -4741,8 +5274,7 @@
           </div>
         </div>
         <div class="thanks-logos">
-          <img class="sq" src="static/images/logos/cvit.png" alt="CVIT"
-            onerror="this.style.display=&quot;none&quot;">
+          <img class="sq" src="static/images/logos/cvit.png" alt="CVIT" onerror="this.style.display=&quot;none&quot;">
           <img class="iiith-logo" src="static/images/logos/iiith_logo.jpeg" alt="IIIT Hyderabad">
           <img src="static/images/logos/bgen_logo.png" alt="BharatGen">
         </div>
