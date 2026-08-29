@@ -639,6 +639,33 @@
       background: var(--bg);
     }
 
+    /* full-page demo: compact title, minimal padding, no card chrome — the
+       embedded demo owns nearly the entire slide surface */
+    .slide.demo.full {
+      padding: 14px 16px 8px;
+    }
+
+    .slide.demo.full h2 {
+      font-size: 36px;
+      margin: 0 0 8px;
+      text-align: center;
+    }
+
+    .slide.demo.full .kicker {
+      display: none;
+    }
+
+    .slide.demo.full .embed {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+    }
+
+    .slide.demo.full .eyebrow,
+    .slide.demo.full .counter {
+      display: none;
+    }
+
     /* ---------- formal notation ---------- */
     .math {
       font-family: var(--serif);
@@ -4787,13 +4814,12 @@
 ═════════════════════════════════════════════════════════════════════ -->
 
       <!-- ═══════════ 18 · LIVE FRAMEWORK DEMO ═══════════ -->
-      <section class="slide demo bleed" data-eyebrow="04 · Approach · Demo" data-embed="pipeline" data-frags="0"
-        data-notes="Rather than describe it further — here is the whole framework running on a real page with every intermediate output. Step through with the clicker, or hit Play for the full walkthrough. Each beat spotlights the corresponding part of Figure 4 on the left.">
+      <section class="slide demo bleed full" data-eyebrow="04 · Approach · Demo" data-embed="pipeline" data-frags="0"
+        data-notes="Rather than describe it further — here is the whole framework running on a real page with every intermediate output: a Telugu newspaper, the layout that argues hardest for agents. Watch the Grouping Agent close a dashed outline around each article — headline, deck, figure, body columns — and the Reading-Order Agent reject raster order for story-major order, because a newspaper has no fixed reading order. Step through with the clicker, or hit Play for the full walkthrough. Each beat spotlights the corresponding part of Figure 4 on the left.">
         <!-- <div class="kicker">Interactive walkthrough</div> -->
-        <!-- <h2>The framework, running on a real page <span class="srcnote"></span></h2> -->
         <h2>Walkthrough of the <em>REPLICA</em> Agentic Framework</h2>
         <div class="slide-body">
-          <div class="embed"><iframe src="index.html?embed=demo&doc=magazine&autoplay=1&rate=1.5"
+          <div class="embed"><iframe src="index.html?embed=demo&doc=newspaper&autoplay=1&rate=1.5"
               title="REPLICA framework demo"></iframe></div>
         </div>
       </section>
