@@ -1342,6 +1342,11 @@
         <span class="eyebrow">Benchmark</span>
         <h2>VFDR-Bench &amp; Metrics</h2>
         <p>A Visually-Faithful Document Reconstruction benchmark with high-fidelity FID-HTML annotations.</p>
+        <div style="margin-top:16px;">
+          <a class="btn" href="https://huggingface.co/datasets/replica-agents/VFDR-BENCH" target="_blank" rel="noopener">
+            <img src="static/images/logos/hf_logo.svg" alt="Hugging Face" style="height:16px;width:auto;" /> View VFDR-Bench on Hugging Face
+          </a>
+        </div>
       </div>
 
       <div class="stat-grid reveal" data-part="stats" id="vfdrStats" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 40px;"><!-- injected --></div>
@@ -1595,7 +1600,7 @@
       <div class="logo-strip foot-logos" id="footLogos"><!-- injected --></div>
       <div class="foot-links">
         <a class="btn" href="static/paper/CameraReady-REPLICA_AGENTS__ICDAR_2026.pdf" target="_blank" rel="noopener"><i class="fa-solid fa-file-pdf"></i> Paper</a>
-        <a class="btn disabled" aria-disabled="true"><i class="fa-solid fa-database"></i> Dataset <span class="soon">Soon</span></a>
+        <a class="btn" href="https://huggingface.co/datasets/replica-agents/VFDR-BENCH" target="_blank" rel="noopener"><img src="static/images/logos/hf_logo.svg" alt="" style="height:16px;width:auto;" /> Dataset</a>
       </div>
       <p class="credit">
         <b>REPLICA</b> · An Agentic Framework for Visually Faithful Document Reconstruction · ICDAR 2026 (Oral)<br />
@@ -1629,9 +1634,10 @@
   // Camera-ready paper, served from this repo (GitHub Pages). Referenced by
   // the hero button below; the footer link in the markup uses the same path.
   const PAPER_URL = "static/paper/CameraReady-REPLICA_AGENTS__ICDAR_2026.pdf";
+  const HF_DATASET_URL = "https://huggingface.co/datasets/replica-agents/VFDR-BENCH";
   const HERO_BUTTONS = [
     { label: "Paper",   icon: "fa-solid fa-file-pdf",  url: PAPER_URL, primary: true },
-    { label: "Dataset", icon: "fa-solid fa-database",   url: "#", soon: true },
+    { label: "Dataset", imgIcon: "static/images/logos/hf_logo.svg", url: HF_DATASET_URL },
   ];
 
   // ---- Logos (drop real PNGs at these paths) --------------------------
@@ -2611,7 +2617,10 @@
       // live links open in a new tab so the project page stays put
       const href = b.soon ? "" : ` href="${b.url}" target="_blank" rel="noopener"`;
       const aria = b.soon ? ' aria-disabled="true"' : "";
-      return `<a class="${cls}"${href}${aria}><i class="${b.icon}"></i> ${b.label}${soon}</a>`;
+      const icon = b.imgIcon
+        ? `<img src="${b.imgIcon}" alt="" style="height:16px;width:auto;" />`
+        : `<i class="${b.icon}"></i>`;
+      return `<a class="${cls}"${href}${aria}>${icon} ${b.label}${soon}</a>`;
     }).join("");
   }
   // Logo render: placeholder-friendly, keeps logos inline
