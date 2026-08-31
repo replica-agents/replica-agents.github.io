@@ -128,8 +128,6 @@
     }
     .nav-links a:hover { color: var(--text); background: var(--accent-soft); text-decoration: none; }
     .nav-links a.active { color: var(--accent); }
-    .nav-links a.nav-slides { color: var(--accent); font-weight: 800; }
-    .nav-links a.nav-slides i { font-size: 12px; margin-right: 4px; }
 
     /* ---- embed mode (?embed=<sectionId>): one bare section for iframing in
            slides.html. JS tags the chosen section with .embed-target.        ---- */
@@ -1193,7 +1191,6 @@
         <a href="#results">Results</a>
         <a href="#qualitative">Qualitative</a>
         <a href="#bibtex">BibTeX</a>
-        <a href="slides.html" target="_blank" rel="noopener" class="nav-slides"><i class="fa-solid fa-display"></i> Slides</a>
       </div>
       <div class="nav-right">
         <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
@@ -1601,6 +1598,7 @@
       <div class="foot-links">
         <a class="btn" href="static/paper/CameraReady-REPLICA_AGENTS__ICDAR_2026.pdf" target="_blank" rel="noopener"><i class="fa-solid fa-file-pdf"></i> Paper</a>
         <a class="btn" href="https://huggingface.co/datasets/replica-agents/VFDR-BENCH" target="_blank" rel="noopener"><img src="static/images/logos/hf_logo.svg" alt="" style="height:16px;width:auto;" /> Dataset</a>
+        <a class="btn" href="slides.html" target="_blank" rel="noopener"><i class="fa-solid fa-display"></i> Slides</a>
       </div>
       <p class="credit">
         <b>REPLICA</b> · An Agentic Framework for Visually Faithful Document Reconstruction · ICDAR 2026 (Oral)<br />
@@ -1638,6 +1636,7 @@
   const HERO_BUTTONS = [
     { label: "Paper",   icon: "fa-solid fa-file-pdf",  url: PAPER_URL, primary: true },
     { label: "Dataset", imgIcon: "static/images/logos/hf_logo.svg", url: HF_DATASET_URL },
+    { label: "Slides",  icon: "fa-solid fa-display",   url: "slides.html" },
   ];
 
   // ---- Logos (drop real PNGs at these paths) --------------------------
