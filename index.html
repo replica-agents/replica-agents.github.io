@@ -658,12 +658,18 @@
     .fs-qitem.on { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-soft-2); }
     .fs-qitem.done { background: #e2f7e9; color: #1f9d7c; border-color: #b7e4c7; }
     [data-theme="dark"] .fs-qitem.done { background: rgba(31,157,124,.18); }
-    .apply-page { position: absolute; border: 1px solid var(--border-strong); border-radius: 8px; background: #fff; overflow: hidden; z-index: 6;
-      opacity: 0; transform: translateY(8px); transition: opacity .5s, transform .5s; box-shadow: var(--shadow-md); }
+    .apply-page { position: absolute; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--bg-elev); overflow: hidden; z-index: 6;
+      opacity: 0; transform: translateY(8px); transition: opacity .5s, transform .5s; box-shadow: var(--shadow-md);
+      display: flex; align-items: center; justify-content: center; padding: 16px 5px 5px; }
     .apply-page.show { opacity: 1; transform: none; }
-    .apply-page .ap-t { position: absolute; left: 6px; top: 4px; font-size: 8.5px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: .04em; }
-    .ap-box { position: absolute; border: 1px dashed #c9ceda; border-radius: 3px; overflow: hidden; color: #1c1e26; }
-    .ap-box span { display: block; padding: 1px 3px; line-height: 1.2; font-weight: 600; transition: font-size .45s ease; white-space: nowrap; }
+    .apply-page .ap-t { position: absolute; left: 6px; top: 4px; font-size: 8.5px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: .04em; z-index: 2; }
+    /* true-aspect miniature of the merged page: bboxes + background map 1:1 */
+    .ap-page { position: relative; background: #fff; box-shadow: 0 0 0 1px var(--border); overflow: hidden; }
+    .ap-page .ap-bg { position: absolute; inset: 0; background-size: 100% 100%; opacity: 0; transition: opacity .9s ease; }
+    .ap-box { position: absolute; overflow: hidden; color: #14161c; box-shadow: inset 0 0 0 .5px rgba(37, 99, 235, .22); }
+    .ap-box span { display: block; line-height: 1.18; font-weight: 600; transition: font-size .45s ease; white-space: normal; word-break: break-word; }
+    .ap-box.ap-fig { display: grid; place-items: center; background: rgba(120, 130, 150, .09); color: #a2a8b5; font-size: 7px;
+      box-shadow: inset 0 0 0 .5px rgba(120, 130, 150, .35); }
     .ap-box.flash { animation: apflash 1s ease; }
     @keyframes apflash { 0% { background: transparent; } 35% { background: rgba(31,157,124,.25); } 100% { background: transparent; } }
     @media (prefers-reduced-motion: reduce) {
@@ -3882,8 +3888,11 @@
     const font = nodeEl("N_font", 21.5, 12, 8.5, 17, "fa-text-height", "Font-Size<br>Optimization", "tool");
     const bg   = nodeEl("N_bg",   21.5, 41, 8.5, 17, "fa-brush", "Background<br>Restoration", "tool");
     const refl = nodeEl("N_refl", 21.5, 70, 8.5, 17, "fa-robot", "Reflection<br>Agent (VLM)");
-    const iv = intermPanel("S4_iv", 31.5, 8, 30, 84);
-    const final = slotEl("S4_final", 63, 6, 36, 88, "High-fidelity final HTML (output)");
+    // The compare panel (original / render) and the final-HTML slot share
+    // IDENTICAL geometry, so both contain-fit pages render at exactly the
+    // same size, top-aligned — a true side-by-side comparison.
+    const iv = intermPanel("S4_iv", 31.5, 6, 31.5, 88);
+    const final = slotEl("S4_final", 65, 6, 31.5, 88, "High-fidelity final HTML (output)");
     connect("S4_initial", "N_font");
     connect("S4_initial", "N_bg");
     connect("N_font", "S4_iv");
@@ -3896,8 +3905,12 @@
     //        the converged sizes are applied onto a mini "merged HTML" page.
     const ldata = LOCALIZE_DATA[PIPELINE_PRESETS[currentDoc].id];
     const allCrops = (ldata && ldata.crops) || [];
-    const samples = allCrops.filter(c => c.ocr && c.ocr.length > 15).slice(0, 3);
+    const textCrops = allCrops.filter(c => c.ocr && c.ocr.length > 15 && c.specialist !== "image");
+    const samples = textCrops.slice(0, 3);
     while (samples.length < 3 && samples.length) samples.push(samples[0]);
+    // Resolved lazily: LOCALIZE page image if it exists, else S1_raw.
+    let pageKey = "S1_raw";
+    resolveDocPage(PIPELINE_PRESETS[currentDoc].id, pk => pageKey = pk);
     const fsw = el("div", "fs-widget");
     fsw.style.left = "63%"; fsw.style.top = "6%"; fsw.style.width = "36%";
     fsw.innerHTML =
@@ -3909,19 +3922,55 @@
     CV().appendChild(fsw);
     const fsT = fsw.querySelector(".fs-target"), fsSpan = fsw.querySelector(".fs-target span");
     fsT.style.height = "52px";
-    // mini merged page the optimized sizes get APPLIED to
+    // mini merged page the optimized sizes get APPLIED to — a TRUE-ASPECT
+    // miniature of the page: EVERY region (all text fragments + figures) is
+    // placed at its exact bbox, so when the extracted background lands
+    // beneath it, the HTML text sits precisely on the original print.
     const ap = el("div", "apply-page", '<span class="ap-t">applied to merged HTML</span>');
     ap.style.left = "63%"; ap.style.top = "52%"; ap.style.width = "36%"; ap.style.height = "42%";
-    const apBoxes = samples.map((c, i) => {
-      const bx = el("div", "ap-box");
+    const apPage = el("div", "ap-page");
+    const apBg = el("div", "ap-bg");
+    apPage.appendChild(apBg);
+    ap.appendChild(apPage);
+    let apScale = 0;
+    const apBoxByCrop = new Map();
+    allCrops.forEach(c => {
       const [x, y, w, h] = c.bbox;
-      bx.style.left = (x * 92 + 4) + "%"; bx.style.top = (y * 78 + 14) + "%";
-      bx.style.width = Math.max(w * 92, 22) + "%"; bx.style.height = Math.max(h * 78, 9) + "%";
-      bx.innerHTML = `<span style="font-size:6px">${(c.ocr || "").slice(0, 40)}</span>`;
-      ap.appendChild(bx);
-      return bx;
+      const isFig = c.specialist === "image";
+      const bx = el("div", "ap-box" + (isFig ? " ap-fig" : ""));
+      bx.style.left = (x * 100) + "%"; bx.style.top = (y * 100) + "%";
+      bx.style.width = (w * 100) + "%"; bx.style.height = (h * 100) + "%";
+      if (isFig) bx.innerHTML = '<i class="fa-regular fa-image"></i>';
+      else {
+        bx.dataset.fs = (c.subhtml.match(/font-size:\s*([\d.]+)px/) || [])[1] || 14;
+        bx.innerHTML = `<span>${(c.ocr || "").slice(0, 200)}</span>`;
+      }
+      apPage.appendChild(bx);
+      apBoxByCrop.set(c, bx);
     });
     CV().appendChild(ap);
+    // size the miniature to the page's true aspect; text starts deliberately
+    // OVERSIZED — the pre-4A state where fonts overflow their boxes
+    function sizeApPage() {
+      if (apScale) return;
+      withPageSize(demoSrc(PIPELINE_PRESETS[currentDoc].id, pageKey), sz => {
+        if (!sz || apScale) return;
+        const pw = ap.clientWidth - 10, ph = ap.clientHeight - 22;
+        const s = Math.min(pw / sz.w, ph / sz.h);
+        apPage.style.width = Math.round(sz.w * s) + "px";
+        apPage.style.height = Math.round(sz.h * s) + "px";
+        apScale = s;
+        $$(".ap-box[data-fs] span", apPage).forEach(sp => {
+          sp.style.fontSize = Math.max(2, sp.parentElement.dataset.fs * s * 1.7) + "px";
+        });
+      });
+    }
+    // snap one fragment to its converged (bbox-true) size + flash
+    function fitBox(c) {
+      const bx = apBoxByCrop.get(c); if (!bx || !bx.dataset.fs) return;
+      bx.querySelector("span").style.fontSize = Math.max(1.5, bx.dataset.fs * (apScale || 0.1)) + "px";
+      bx.classList.remove("flash"); void bx.offsetWidth; bx.classList.add("flash");
+    }
 
     function searchOne(text, done) {
       const MINF = 6, MAXF = 42;
@@ -3955,17 +4004,24 @@
     }
     function runFontQueue() {
       fsw.classList.add("show"); ap.classList.add("show");
+      sizeApPage();
       const qItems = $$(".fs-qitem", fsw);
+      const rest = textCrops.filter(c => samples.indexOf(c) === -1);
       const next = i => {
-        if (i >= samples.length) { fsw.querySelector(".st").innerHTML = '<b style="color:#1f9d7c">all fragments optimized ✓</b>'; return; }
+        if (i >= samples.length) {
+          // the real pipeline does this for EVERY fragment — sweep the rest
+          fsw.querySelector(".st").innerHTML = `…and the remaining <b>${rest.length}</b> fragments converge the same way`;
+          rest.forEach((c, j) => addT(() => fitBox(c), 150 * j));
+          addT(() => fsw.querySelector(".st").innerHTML =
+            `<b style="color:#1f9d7c">all ${textCrops.length} text fragments optimized ✓</b>`, 150 * rest.length + 300);
+          return;
+        }
         qItems.forEach((q, j) => q.classList.toggle("on", j === i));
         fsw.querySelector(".st").textContent = `searching “${samples[i].label}”…`;
         searchOne(samples[i].ocr, (best) => {
           qItems[i].classList.add("done"); qItems[i].classList.remove("on");
           // APPLY: the converged size lands on the merged-HTML mini page
-          const span = apBoxes[i].querySelector("span");
-          span.style.fontSize = Math.max(5, best * 0.42) + "px";
-          apBoxes[i].classList.remove("flash"); void apBoxes[i].offsetWidth; apBoxes[i].classList.add("flash");
+          fitBox(samples[i]);
           addT(() => next(i + 1), 420);
         });
       };
@@ -3978,10 +4034,7 @@
     //        (EDIT ME: drop real intermediates as S4_bg_mask.png /
     //        S4_bg_inpaint.png per doc and swap them in here if you want the
     //        true tool outputs instead of this reconstruction.)
-    // Resolved lazily: LOCALIZE page image if it exists, else S1_raw.
-    let pageKey = "S1_raw";
     let bgTagLock = false;   // reflection beat locks the panel tag against late peel timers
-    resolveDocPage(PIPELINE_PRESETS[currentDoc].id, pk => pageKey = pk);
     // 4B — background PEEL-AND-MERGE:
     //   ① content regions are marked on the page (real bboxes)
     //   ② the page splits into two physical layers: the CONTENT layer (the
@@ -3994,6 +4047,7 @@
     // (the CSS clean-paper treatment is only the fallback).
     function runBgExtraction() {
       const docId = PIPELINE_PRESETS[currentDoc].id;
+      sizeApPage();
       iv.show(pageKey, "① page with content");
       const panel = iv.el;
       const pageUrl = demoSrc(docId, pageKey);
@@ -4068,10 +4122,12 @@
             if (!bgTagLock) iv.el.querySelector(".ip-tag").textContent = "④ background slides into the HTML…";
             // the merged-HTML mini page RECEIVES the paper
             addT(() => {
-              ap.style.backgroundImage = `linear-gradient(rgba(255,255,255,.55), rgba(255,255,255,.55)), url("${(probed && cleanUrl) ? cleanUrl : pageUrl}")`;
-              ap.style.backgroundSize = "cover";
+              apBg.style.backgroundImage = `linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,.5)), url("${(probed && cleanUrl) ? cleanUrl : pageUrl}")`;
+              apBg.style.opacity = "1";
               ap.querySelector(".ap-t").textContent = "merged HTML + background preserved";
-              ap.classList.remove("show"); void ap.offsetWidth; ap.classList.add("show");
+              // re-flash only if the reflection beat hasn't dismissed it yet
+              // (fast stepping can outrun this timer)
+              if (!bgTagLock) { ap.classList.remove("show"); void ap.offsetWidth; ap.classList.add("show"); }
               bc.remove();
               // settle: content card returns to the page position
               cc.style.transform = "none"; cc.style.opacity = "1"; cc.style.border = "none";
@@ -4109,8 +4165,8 @@
       reveal(font); font.classList.add("lit");
       tokenBurst("S4_initial", "N_font", 3);
       runFontQueue();
-      cap("<b>Font-Size Optimization (4A):</b> a live <b>binary search per fragment</b> — three real texts from this document, each converging on the largest size that fits its Stage-1 bbox, then <b>applied to the merged HTML</b> below.");
-    }, "4A_font_size", "🔠 The <b>binary search</b> runs fragment after fragment — and every converged size <b>lands on the merged page</b>, box by box. Watch them flash green as they're applied.", 10));
+      cap("<b>Font-Size Optimization (4A):</b> a live <b>binary search per fragment</b> — three shown in detail, then the converged sizes are applied to <b>every text fragment</b> of the merged page below, box by box.");
+    }, "4A_font_size", "🔠 The <b>binary search</b> runs fragment after fragment — three shown live, then <b>every remaining fragment</b> converges the same way. Watch the merged page light up box by box.", 12));
 
     bts.push(B(() => {
       reveal(bg); bg.classList.add("lit"); font.classList.remove("lit");
@@ -4222,13 +4278,29 @@
     $("#pdemoPlay").innerHTML = playing
       ? '<i class="fa-solid fa-pause"></i> Pause'
       : '<i class="fa-solid fa-play"></i> Play';
+    postDemoState();
   }
   function reset() { stop(); finaleDone = false; doneStages = new Set(); story(null); figGo(null); loadStage(0); }
 
+  // The deck steps this demo with the presenter remote, so it has to know when
+  // the walkthrough has run out at either end — that is the press that should
+  // change slide instead of stepping again. Reported rather than inferred:
+  // the demo owns stage/beat bookkeeping and the deck should not duplicate it.
+  function postDemoState() {
+    try {
+      parent.postMessage({
+        type: "replica:demoState",
+        atStart: stageIdx === 0 && beatIdx === 0,
+        atEnd: finaleDone,
+        playing: playing
+      }, "*");
+    } catch (e) { }
+  }
   function updateScrub() {
     $("#pdemoStepCount").textContent = `Stage ${stageIdx + 1} · ${beatIdx}/${beats.length}`;
     const frac = (stageIdx + beatIdx / (beats.length || 1)) / PIPELINE_STAGES.length;
     $("#pdemoProg").style.width = (frac * 100) + "%";
+    postDemoState();
   }
   function buildPicker() {
     const p = $("#pdemoDocRow"); p.innerHTML = "";
@@ -4981,16 +5053,18 @@
       }
     }
 
+    // ?speed accepts either a preset button value or any multiplier via
+    // ?rate=1.5 — the preset row only offers 0.5x / 1x / 2x. Read regardless of
+    // autoplay: the deck starts the walkthrough paused and the presenter plays
+    // it with the spacebar, but it should run at the same speed either way.
+    const sp = params.get("speed");
+    if (sp) { const b = document.querySelector(`#pdemoSpeed [data-s="${sp}"]`); if (b) b.click(); }
+    const rate = parseFloat(params.get("rate"));
+    if (!isNaN(rate) && rate > 0) {
+      speedMult = 1 / rate;
+      $$("#pdemoSpeed button").forEach(x => x.classList.remove("on"));
+    }
     if (params.get("autoplay") === "1") {
-      // ?speed accepts either a preset button value or any multiplier via
-      // ?rate=1.5 — the preset row only offers 0.5x / 1x / 2x.
-      const sp = params.get("speed");
-      if (sp) { const b = document.querySelector(`#pdemoSpeed [data-s="${sp}"]`); if (b) b.click(); }
-      const rate = parseFloat(params.get("rate"));
-      if (!isNaN(rate) && rate > 0) {
-        speedMult = 1 / rate;
-        $$("#pdemoSpeed button").forEach(x => x.classList.remove("on"));
-      }
       setTimeout(() => { const p = $("#pdemoPlay"); if (p) p.click(); }, 700);
     }
 
@@ -4999,17 +5073,32 @@
        purely additive: every mouse interaction still works exactly as before.
        Messages: {type:"replica:demo", action} · {type:"replica:nav", dir}    */
     let navIdx = -1;
+    // `clear` is the figure's own starting point — what it shows before the
+    // first beat. The teaser always has a method on screen, so its zero state is
+    // the first method; the callout figures start with nothing selected.
     const navTargets = {
-      teaser:    () => ({ n: TEASER_METHODS.length,   go: i => showTeaser(i) }),
-      fidhtml:   () => ({ n: FIDHTML_CALLOUTS.length, go: i => { fidActive = null; toggleFid(FIDHTML_CALLOUTS[i].id); scrollCodeToHl(); } }),
+      teaser:    () => ({ n: TEASER_METHODS.length,   go: i => showTeaser(i),
+                          clear: () => showTeaser(0) }),
+      fidhtml:   () => ({ n: FIDHTML_CALLOUTS.length, go: i => { fidActive = null; toggleFid(FIDHTML_CALLOUTS[i].id); scrollCodeToHl(); },
+                          clear: () => {
+                            fidActive = null;
+                            const code = $("#fidCode"); if (code) code.className = "fid-code";
+                            $$("#fidChips .fid-chip").forEach(c => c.classList.remove("active"));
+                         } }),
       downstream:() => ({ n: DOWNSTREAM_APPS.length,  go: i => {
                             downPinned = i;
                             $$("#downCards .dapp").forEach((c, j) => c.classList.toggle("active", j === i));
                             downZoomTo(DOWNSTREAM_APPS[i].id); downSetCaption(DOWNSTREAM_APPS[i]);
+                         },
+                          clear: () => {
+                            downPinned = null;
+                            $$("#downCards .dapp").forEach(c => c.classList.remove("active"));
+                            downZoomTo(null); downSetCaption(null);
                          } }),
       results:   () => ({ n: $$("#ablationTable tbody tr").length, go: i => {
                             $$("#ablationTable tbody tr").forEach((r, j) => setAblHl(j, j === i));
-                         } })
+                         },
+                          clear: () => $$("#ablationTable tbody tr").forEach((r, j) => setAblHl(j, false)) })
     };
     // Bring the highlighted dimension into view inside the code panel.
     function scrollCodeToHl() {
@@ -5039,18 +5128,27 @@
         navIdx = (navIdx + (d.dir || 1) + t.n) % t.n;
         t.go(navIdx);
       }
+      // Absolute form. The deck sends the beat it is on plus how many beats the
+      // slide has; only this side knows how many items the figure holds, so the
+      // offset is worked out here. A slide with as many beats as the figure has
+      // items spends its first beat on an empty figure (frag 0 selects nothing);
+      // a slide with fewer beats starts on the figure's first item.
+      if (d.type === "replica:navto") {
+        const f = navTargets[target]; if (!f) return;
+        const t = f(); if (!t.n) return;
+        const off = ((+d.frags || 0) >= t.n) ? 1 : 0;
+        const i = Math.max(-1, Math.min(t.n - 1, (+d.frag || 0) - off));
+        if (i === navIdx) return;
+        navIdx = i;
+        if (i < 0) { if (t.clear) t.clear(); return; }
+        t.go(i);
+      }
     });
-    // Tell the parent when the demo walkthrough reaches the end, so the deck
-    // knows the next click should move on rather than step the demo again.
-    if (target === "demo") {
-      const prog = $("#pdemoStepCount");
-      if (prog) new MutationObserver(() => {
-        const m = (prog.textContent || "").match(/(\d+)\s*\/\s*(\d+)/);
-        if (m && m[1] === m[2] && parseInt(m[2], 10) > 0) {
-          try { parent.postMessage({ type: "replica:demoBeat", done: true }, "*"); } catch (err) {}
-        }
-      }).observe(prog, { childList: true, characterData: true, subtree: true });
-    }
+    // Position is reported by postDemoState() on every scrub update; the deck
+    // reads atStart/atEnd from that. (This used to watch the step counter for
+    // "n/n", which fired at the end of every stage rather than at the end of
+    // the walkthrough, and so could not tell the deck when to move on.)
+    if (target === "demo") postDemoState();
   }
 
   /* ===================== NAV ===================== */

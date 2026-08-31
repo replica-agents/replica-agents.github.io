@@ -2648,14 +2648,24 @@
     }
 
     /* ═══════════ MAIN RESULTS TABLE ═══════════ */
+    /* The stage is a fixed 1920x1080 canvas, so this table lays out identically
+     on every machine — until a web font falls back and the rows grow, and then
+     the last systems drop below the fold behind a scrollbar. Scrolling hides
+     rows from the room, so the table never scrolls: fitResults() scales .rfit
+     down to whatever height is actually available. */
     .rwrap {
       flex: 0 1 auto;
       min-height: 0;
-      overflow: auto;
+      overflow: hidden;
       border: 1px solid var(--line);
       border-radius: 12px;
       background: var(--paper);
       max-height: 100%;
+    }
+
+    .rfit {
+      width: 100%;
+      transform-origin: top left;
     }
 
     .rtab {
@@ -2760,8 +2770,8 @@
       font-size: 25px;
       padding: 11px 12px;
       border-top: 2.5px solid var(--gold);
-      /* the table scrolls once a category is expanded, and our row lives at the
-       bottom of it — pinned, so expanding a category can never push it off */
+      /* kept from when the table scrolled; inert now that it always fits, and
+       harmless — it holds the row against the floor either way */
       position: sticky;
       bottom: 0;
       z-index: 3;
@@ -4815,11 +4825,11 @@
 
       <!-- ═══════════ 18 · LIVE FRAMEWORK DEMO ═══════════ -->
       <section class="slide demo bleed full" data-eyebrow="04 · Approach · Demo" data-embed="pipeline" data-frags="0"
-        data-notes="Rather than describe it further — here is the whole framework running on a real page with every intermediate output: a Telugu newspaper, the layout that argues hardest for agents. Watch the Grouping Agent close a dashed outline around each article — headline, deck, figure, body columns — and the Reading-Order Agent reject raster order for story-major order, because a newspaper has no fixed reading order. Step through with the clicker, or hit Play for the full walkthrough. Each beat spotlights the corresponding part of Figure 4 on the left.">
+        data-notes="Rather than describe it further — here is the whole framework running on a real page with every intermediate output: a Telugu newspaper, the layout that argues hardest for agents. Watch the Grouping Agent close a dashed outline around each article — headline, deck, figure, body columns — and the Reading-Order Agent reject raster order for story-major order, because a newspaper has no fixed reading order. Step through with the clicker one beat at a time, or press space to let the whole walkthrough run and space again to pause it. Each beat spotlights the corresponding part of Figure 4 on the left.">
         <!-- <div class="kicker">Interactive walkthrough</div> -->
         <h2>Walkthrough of the <em>REPLICA</em> Agentic Framework</h2>
         <div class="slide-body">
-          <div class="embed"><iframe src="index.html?embed=demo&doc=newspaper&autoplay=1&rate=1.5"
+          <div class="embed"><iframe src="index.html?embed=demo&doc=newspaper&rate=1.5"
               title="REPLICA framework demo"></iframe></div>
         </div>
       </section>
@@ -4956,7 +4966,9 @@
         <h2>Quantitative results <span class="srcnote"></span></h2>
         <div class="slide-body">
           <div class="rwrap">
-            <table class="rtab" id="resTable"></table>
+            <div class="rfit">
+              <table class="rtab" id="resTable"></table>
+            </div>
           </div>
           <div class="rnote">
             <div class="rlegend" id="resLegend"><span>weakest</span><i style="background:#fdeceb"></i><i
@@ -5342,6 +5354,10 @@
           <td>Next / previous slide (skip fragments)</td>
         </tr>
         <tr>
+          <td class="k">Space</td>
+          <td>On the walkthrough: play / pause (arrows still step it)</td>
+        </tr>
+        <tr>
           <td class="k">F</td>
           <td>Fullscreen</td>
         </tr>
@@ -5475,7 +5491,7 @@
         if (slides[cur].id === "ladderSlide") renderLadder();
         if (slides[cur].id === "stagesSlide") renderStages();
         if (slides[cur].id === "qualSlide") renderQual();
-        if (slides[cur].id === "resSlide") renderResults();
+        if (slides[cur].id === "resSlide") { renderResults(); fitResults(); }
         if (slides[cur].id === "ablSlide") renderAblation();
       }
 
@@ -5545,13 +5561,24 @@
         history.replaceState(null, "", "#" + cur);
         ovGrid.querySelectorAll(".oi").forEach((o, i) => o.classList.toggle("cur", i === cur));
         if (srcview.classList.contains("on")) showSource();
+        if (lastCur !== cur) { if (lastCur >= 0) rewindEmbed(lastCur); lastCur = cur; }
+        syncNav(cur);
       }
+      let lastCur = -1;
 
       function goto(i, atEnd) {
         cur = Math.max(0, Math.min(slides.length - 1, i));
         frag = atEnd ? fragCount(cur) : 0;
         render();
       }
+      // Where the demo has got to, reported by the figure itself. The deck steps
+      // it beat by beat; only when it has run out at one end does the arrow
+      // change slide — the same idiom as fragments everywhere else.
+      let demoState = { atStart: true, atEnd: false, playing: false };
+      window.addEventListener("message", (e) => {
+        const d = e.data;
+        if (d && d.type === "replica:demoState") demoState = d;
+      });
       // The pipeline demo advances by relative beats, so send it step/back.
       function drivePipeline(action) {
         const s = slides[cur];
@@ -5562,12 +5589,32 @@
       // Slides marked data-nav step *inside* their embedded figure — cycling teaser
       // methods, Fid-HTML dimensions, downstream applications, ablation rows.
       // Additive only: the figures stay fully mouse-interactive.
-      function driveNav(dir) {
-        const s = slides[cur];
-        if (!s.dataset.nav) return false;
-        const f = s.querySelector("iframe");
-        if (f && f.contentWindow) f.contentWindow.postMessage({ type: "replica:nav", dir }, "*");
-        return true;
+      //
+      // The deck used to send a *relative* step and let the figure keep its own
+      // counter. Two counters drift: the figure wraps modulo its own list, so
+      // stepping back off the first item jumped to the last one before the deck
+      // moved on, and a slide re-entered at its final fragment could disagree
+      // with what the figure was showing. The deck owns the beat now and states
+      // it absolutely; the figure maps it onto its own list and cannot wrap.
+      function embedPost(s, msg) {
+        const f = s && s.querySelector("iframe");
+        if (f && f.contentWindow) { try { f.contentWindow.postMessage(msg, "*"); } catch (e) { } }
+      }
+      function syncNav(i) {
+        const s = slides[i];
+        if (!s || !s.dataset.nav) return;
+        embedPost(s, { type: "replica:navto", frag: (i === cur ? frag : 0), frags: fragCount(i) });
+      }
+      // Walking away from an interactive figure rewinds it, so coming back to
+      // the slide always starts the story over rather than resuming mid-way.
+      function rewindEmbed(i) {
+        const s = slides[i];
+        if (!s || !s.dataset.embed) return;
+        if (s.dataset.nav) syncNav(i);
+        if (s.dataset.embed === "pipeline") {
+          embedPost(s, { type: "replica:demo", action: "reset" });
+          demoState = { atStart: true, atEnd: false, playing: false };
+        }
       }
       // Qualitative slide cycles a local list of real source/render pairs.
       // The scan and the FID-HTML render must occupy the SAME rectangle on screen —
@@ -5657,17 +5704,21 @@
       QUAL_SET.forEach(q => measureDoc("static/images/qual/" + q.img + "_corrected.html"));
 
       function next() {
+        if (slides[cur].dataset.embed === "pipeline" && !demoState.atEnd) {
+          drivePipeline("step"); return;
+        }
         if (frag < fragCount(cur)) {
-          frag++; applyFrags(); drivePipeline("step");
-          if (slides[cur].dataset.nav) driveNav(1);
+          frag++; applyFrags(); drivePipeline("step"); syncNav(cur);
           return;
         }
         if (cur < slides.length - 1) goto(cur + 1, false);
       }
       function prev() {
+        if (slides[cur].dataset.embed === "pipeline" && !demoState.atStart) {
+          drivePipeline("back"); return;
+        }
         if (frag > 0) {
-          frag--; applyFrags(); drivePipeline("back");
-          if (slides[cur].dataset.nav) driveNav(-1);
+          frag--; applyFrags(); drivePipeline("back"); syncNav(cur);
           return;
         }
         if (cur > 0) goto(cur - 1, true);
@@ -5814,6 +5865,23 @@
         const cat = tb.querySelector('tr.cat[data-g="' + row.dataset.g + '"]');
         if (cat) cat.click();
       }
+      // Measured in layout pixels, so the stage's own transform does not enter
+      // into it. Transform does not affect layout, so .rwrap keeps its flexed
+      // height and this settles in one pass.
+      function fitResults() {
+        const wrap = document.querySelector("#resSlide .rwrap");
+        const fit = document.querySelector("#resSlide .rfit");
+        if (!wrap || !fit) return;
+        fit.style.transform = "none";
+        fit.style.width = "100%";
+        const avail = wrap.clientHeight, need = fit.scrollHeight;
+        if (!avail || !need) return;
+        // exactly 1 when it genuinely fits — overflow is hidden, so sitting flush
+        // against the box is safe and a 0.3% shrink would be pure noise
+        const k = need > avail ? avail / need : 1;
+        if (k < 1) { fit.style.transform = "scale(" + k + ")"; fit.style.width = (100 / k) + "%"; }
+      }
+
       function renderResults() {
         const tb = document.getElementById("resTable"); if (!tb) return;
         const n = frag;
@@ -6172,6 +6240,12 @@
           }
           if (k === "p" || k === "P") { e.preventDefault(); caro.toggle(); return; }
         }
+        // On the walkthrough, space is play/pause rather than "next". The arrows
+        // still step it beat by beat, so the presenter can narrate it manually
+        // or hand it over and let it run.
+        if (slides[cur].dataset.embed === "pipeline" && (k === " " || k === "Spacebar")) {
+          e.preventDefault(); drivePipeline("play"); return;
+        }
         switch (k) {
           case "ArrowRight": case " ": case "Spacebar": case "PageDown": e.preventDefault(); next(); break;
           case "ArrowLeft": case "PageUp": e.preventDefault(); prev(); break;
@@ -6200,7 +6274,10 @@
       document.getElementById("btnNotes").addEventListener("click", e => { e.stopPropagation(); notesEl.classList.toggle("on"); });
       document.getElementById("btnHelp").addEventListener("click", e => { e.stopPropagation(); helpEl.classList.toggle("on"); });
 
-      window.addEventListener("resize", () => { fit(); fitEmbeds(slides[cur]); if (slides[cur].id === "qualSlide") fitQual(); });
+      window.addEventListener("resize", () => { fit(); fitEmbeds(slides[cur]); fitResults(); if (slides[cur].id === "qualSlide") fitQual(); });
+      // fonts settle after first layout, and their metrics are what decide
+      // whether the last two systems fit — re-fit once they land
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => fitResults());
       window.addEventListener("hashchange", () => {
         const n = parseInt(location.hash.slice(1), 10);
         if (!isNaN(n) && n !== cur) goto(n, false);
@@ -6212,7 +6289,9 @@
       window.addEventListener("load", () => { fit(); fitEmbeds(slides[cur]); });
       // iframes report their content height only once they've loaded; re-fit then
       document.querySelectorAll(".embed iframe").forEach(f => {
-        f.addEventListener("load", () => { if (slides[cur].contains(f)) fitEmbeds(slides[cur]); });
+        f.addEventListener("load", () => {
+          if (slides[cur].contains(f)) { fitEmbeds(slides[cur]); syncNav(cur); }
+        });
       });
       setTimeout(() => fitEmbeds(slides[cur]), 500);
       setTimeout(() => fitEmbeds(slides[cur]), 1400);
