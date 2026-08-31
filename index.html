@@ -1594,8 +1594,7 @@
     <div class="container center">
       <div class="logo-strip foot-logos" id="footLogos"><!-- injected --></div>
       <div class="foot-links">
-        <a class="btn disabled" aria-disabled="true"><i class="fa-solid fa-file-pdf"></i> Paper <span class="soon">Soon</span></a>
-        <a class="btn disabled" aria-disabled="true"><i class="fa-brands fa-github"></i> Code <span class="soon">Soon</span></a>
+        <a class="btn" href="static/paper/CameraReady-REPLICA_AGENTS__ICDAR_2026.pdf" target="_blank" rel="noopener"><i class="fa-solid fa-file-pdf"></i> Paper</a>
         <a class="btn disabled" aria-disabled="true"><i class="fa-solid fa-database"></i> Dataset <span class="soon">Soon</span></a>
       </div>
       <p class="credit">
@@ -1627,12 +1626,12 @@
   ];
 
   // ---- Hero buttons (set url + soon:false to activate) ----------------
+  // Camera-ready paper, served from this repo (GitHub Pages). Referenced by
+  // the hero button below; the footer link in the markup uses the same path.
+  const PAPER_URL = "static/paper/CameraReady-REPLICA_AGENTS__ICDAR_2026.pdf";
   const HERO_BUTTONS = [
-    { label: "Paper",   icon: "fa-solid fa-file-pdf",  url: "#", soon: true, primary: true },
-    { label: "arXiv",   icon: "fa-solid fa-file-lines", url: "#", soon: true },
-    { label: "Code",    icon: "fa-brands fa-github",    url: "#", soon: true },
+    { label: "Paper",   icon: "fa-solid fa-file-pdf",  url: PAPER_URL, primary: true },
     { label: "Dataset", icon: "fa-solid fa-database",   url: "#", soon: true },
-    { label: "Models",  icon: "fa-solid fa-cubes",      url: "#", soon: true },
   ];
 
   // ---- Logos (drop real PNGs at these paths) --------------------------
@@ -2609,7 +2608,8 @@
     $("#heroButtons").innerHTML = HERO_BUTTONS.map(b => {
       const cls = "btn" + (b.primary ? " primary" : "") + (b.soon ? " disabled" : "");
       const soon = b.soon ? ' <span class="soon">Soon</span>' : "";
-      const href = b.soon ? "" : ` href="${b.url}"`;
+      // live links open in a new tab so the project page stays put
+      const href = b.soon ? "" : ` href="${b.url}" target="_blank" rel="noopener"`;
       const aria = b.soon ? ' aria-disabled="true"' : "";
       return `<a class="${cls}"${href}${aria}><i class="${b.icon}"></i> ${b.label}${soon}</a>`;
     }).join("");
